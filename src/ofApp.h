@@ -233,7 +233,14 @@ public:
     void guiSetting();
     ofxPanel gui;
     ofxFloatSlider thresholdF;
+    ofxFloatSlider mainVolume;
+    
+
     
     vector<melody> melodies;
+    void drawDebugPrintScore();
 
+    void printScoreMake();
+    void checkSameNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scoreCh );
+    
 };

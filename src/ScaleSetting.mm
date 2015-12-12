@@ -240,7 +240,7 @@ int ScaleSetting::noteSelector(int _n, int _index, int _subIndex){
 void ScaleSetting::changeScale(){
     
     for (int i=0; i<4; i++){
-        scale41[i] = scale41[i] + 64;
+        scale41[i] = scale41[i] + 60;
         scale42[i] = scale42[i] + 84;
         scale43[i] = scale43[i] + 72;
         scale44[i] = scale44[i] + 48;
