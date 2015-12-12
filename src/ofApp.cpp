@@ -21,6 +21,8 @@ void ofApp::setup(){
     ofSetFrameRate( 60 );
     ofEnableAlphaBlending();
     
+    guiSetting();
+    
     backgroundControPanel.load("controlBackground.png");
     
     cam.setDeviceID(0);
@@ -162,7 +164,7 @@ void ofApp::update(){
         centerCam.setFromPixels(camColorCV.getRoiPixels());
         
         convertColor(centerCam, gray, CV_RGB2GRAY);
-        threshold(gray, gray, grayThreshold);
+        threshold(gray, gray, thresholdF);
         //                erode(gray);
         Canny(gray, edge, cannyThreshold1, cannyThreshold2, 3);
         thin(edge);
@@ -271,8 +273,6 @@ void ofApp::triggerReceive(float & metro){
 void ofApp::draw(){
     
     
-    
-    
     ofPushMatrix();
     
     ofTranslate((ofGetWidth() - 600)*0.5, (ofGetHeight() - 720)*0.5);
@@ -372,12 +372,34 @@ void ofApp::draw(){
     ofPopMatrix();
 
     
-    cam.draw(ofGetWidth()-200, 0, 200, 150);
-    centerCam.draw(ofGetWidth()-175, 150, 150, 150);
-    ofDrawBitmapString(ofToString(ofGetFrameRate(),1), ofGetWidth()-175, 320);
+    debugInformation();
+    gui.draw();
     
     
 }
+
+
+
+//--------------------------------------------------------------
+void ofApp::debugInformation(){
+    
+    ofPushMatrix();
+    
+    cam.draw(ofGetWidth()-200, 0, 200, 150);
+    centerCam.draw(ofGetWidth()-175, 150, 150, 150);
+
+    ofDrawBitmapString(ofToString(ofGetFrameRate(),1), ofGetWidth()-175, 320);
+    
+    if (blackPixels.size()>0) {
+        ofDrawBitmapString(ofToString(blackPixels.size()), ofGetWidth()-175, 340);
+    }
+
+    
+    ofPopMatrix();
+    
+}
+
+
 
 //--------------------------------------------------------------
 void ofApp::drawControlElement(){
@@ -1854,6 +1876,16 @@ vector<int> ofApp::convertDecimalToNBase(int n, int base, int size) {
         }
     }
     return a;
+    
+}
+
+
+//--------------------------------------------------------------
+void ofApp::guiSetting(){
+    
+    gui.setup();
+    gui.add(thresholdF.setup("Threshold", 120, 0, 255));
+    
     
 }
 

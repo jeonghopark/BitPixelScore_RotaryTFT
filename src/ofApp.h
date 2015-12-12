@@ -4,6 +4,7 @@
 #include "ofxCv.h"
 #include "ofxOpenCv.h"
 #include "ofxTonic.h"
+#include "ofxGui.h"
 
 #include "ScaleSetting.h"
 
@@ -220,6 +221,10 @@ public:
     bool allPlayOnOff;
     
     
+    void debugInformation();
     
+    void guiSetting();
+    ofxPanel gui;
+    ofxFloatSlider thresholdF;
 
 };

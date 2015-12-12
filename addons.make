@@ -3,3 +3,4 @@ ofxFontStash
 ofxTonic
 addons
 ofxCv
+ofxGui
