@@ -259,8 +259,9 @@ void ofApp::triggerReceive(float & metro){
     trigScoreNote( scoreNote6, synth6, 6 );
     trigScoreNote( scoreNote7, synth7, 7 );
     
-    cout << index << endl;
 
+    
+    
 }
 
 
@@ -274,7 +275,7 @@ void ofApp::draw(){
     
     ofPushMatrix();
     
-    ofTranslate(340, 0);
+    ofTranslate((ofGetWidth() - 600)*0.5, (ofGetHeight() - 720)*0.5);
 
     
     ofPushMatrix();
