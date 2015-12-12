@@ -23,6 +23,13 @@ struct colorPixels{
 };
 
 
+struct melody{
+    
+    vector<int> melodyLine;
+    
+};
+
+
 using namespace Tonic;
 
 
@@ -226,5 +233,7 @@ public:
     void guiSetting();
     ofxPanel gui;
     ofxFloatSlider thresholdF;
+    
+    vector<melody> melodies;
 
 };

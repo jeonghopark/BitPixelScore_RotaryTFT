@@ -25,6 +25,7 @@ void ofApp::setup(){
     
     backgroundControPanel.load("controlBackground.png");
     
+    
     cam.setDeviceID(0);
     
     cam.setup( 800, 600 );
@@ -138,6 +139,9 @@ void ofApp::setup(){
     touchPos.assign(2, ofVec2f());
 
     allPlayOnOff = false;
+
+    
+    melodies.resize(7);
     
     
     ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
@@ -1211,12 +1215,6 @@ void ofApp::keyReleased(int key){
             touchDownDefault = 0;
         }
 
-        
-        if (allPlayOnOff) {
-            
-
-        }
-
     }
     
     
@@ -1691,6 +1689,10 @@ void ofApp::scoreMake(){
     scoreNote6.clear();
     scoreNote7.clear();
     
+    for (int i=0; i<melodies.size(); i++) {
+        melodies[i].melodyLine.clear();
+    }
+    
     int _intervalDist = 1;
     
     for (int i=0; i<whitePixels.size(); i++) {
@@ -1710,52 +1712,77 @@ void ofApp::scoreMake(){
         int _6Note = _bitNumber[5];
         int _7Note = _bitNumber[6];
         
+        
+        
         if (abs(_1Note - oldNoteIndex1) >= _intervalDist) {
             scoreNote1.push_back(_1Note);
+            int _noteInput = scaleSetting.noteSelector(baseSelection, 1, _1Note);
+            melodies[0].melodyLine.push_back(_noteInput);
         } else {
             scoreNote1.push_back(-1);
+            melodies[0].melodyLine.push_back(0);
         }
         oldNoteIndex1 = _1Note;
         
+        
+        
         if (abs(_2Note - oldNoteIndex2) >= _intervalDist) {
             scoreNote2.push_back(_2Note);
+            int _noteInput = scaleSetting.noteSelector(baseSelection, 2, _2Note);
+            melodies[1].melodyLine.push_back(_noteInput);
         } else {
             scoreNote2.push_back(-1);
+            melodies[1].melodyLine.push_back(0);
         }
         oldNoteIndex2 = _2Note;
         
         if (abs(_3Note - oldNoteIndex3) >= _intervalDist) {
             scoreNote3.push_back(_3Note);
+            int _noteInput = scaleSetting.noteSelector(baseSelection, 3, _3Note);
+            melodies[2].melodyLine.push_back(_noteInput);
         } else {
             scoreNote3.push_back(-1);
+            melodies[2].melodyLine.push_back(0);
         }
         oldNoteIndex3 = _3Note;
         
         if (abs(_4Note - oldNoteIndex4) >= _intervalDist) {
             scoreNote4.push_back(_4Note);
+            int _noteInput = scaleSetting.noteSelector(baseSelection, 4, _4Note);
+            melodies[3].melodyLine.push_back(_noteInput);
         } else {
             scoreNote4.push_back(-1);
+            melodies[3].melodyLine.push_back(0);
         }
         oldNoteIndex4 = _4Note;
         
         if (abs(_5Note - oldNoteIndex5) >= _intervalDist) {
             scoreNote5.push_back(_5Note);
+            int _noteInput = scaleSetting.noteSelector(baseSelection, 5, _5Note);
+            melodies[4].melodyLine.push_back(_noteInput);
         } else {
             scoreNote5.push_back(-1);
+            melodies[4].melodyLine.push_back(0);
         }
         oldNoteIndex5 = _5Note;
         
         if (abs(_6Note - oldNoteIndex6) >= _intervalDist) {
             scoreNote6.push_back(_6Note);
+            int _noteInput = scaleSetting.noteSelector(baseSelection, 6, _6Note);
+            melodies[5].melodyLine.push_back(_noteInput);
         } else {
             scoreNote6.push_back(-1);
+            melodies[5].melodyLine.push_back(0);
         }
         oldNoteIndex6 = _6Note;
         
         if (abs(_7Note - oldNoteIndex7) >= _intervalDist) {
             scoreNote7.push_back(_7Note);
+            int _noteInput = scaleSetting.noteSelector(baseSelection, 7, _7Note);
+            melodies[6].melodyLine.push_back(_noteInput);
         } else {
             scoreNote7.push_back(-1);
+            melodies[6].melodyLine.push_back(0);
         }
         oldNoteIndex7 = _7Note;
         
@@ -1815,6 +1842,8 @@ void ofApp::noteTrig(){
 }
 
 
+
+
 //--------------------------------------------------------------
 void ofApp::trigScoreNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scoreCh ){
     
@@ -1850,6 +1879,12 @@ void ofApp::trigScoreNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scor
     
     
 }
+
+
+
+
+
+
 
 
 
