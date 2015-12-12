@@ -6,6 +6,8 @@
 using namespace ofxCv;
 using namespace cv;
 
+int octaveScaleFactor[7] = {60, 84, 72, 48, 36, 36, 36};
+
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -80,8 +82,8 @@ void ofApp::setup(){
     int _x = (cam.getWidth() - screenW) * 0.5;
     
     
-    index       = 0;
-    noteIndex   = 0;
+    index       = -1;
+    noteIndex   = -1;
     
     oldNoteIndex1 = 0;
     oldNoteIndex2 = 0;
@@ -258,7 +260,7 @@ void ofApp::triggerReceive(float & metro){
     noteIndex = index;
     
     trigScoreNote( scoreNote1, synth1, 1 );
-//    trigScoreNote( scoreNote2, synth2, 2 );
+    trigScoreNote( scoreNote2, synth2, 2 );
 //    trigScoreNote( scoreNote3, synth3, 3 );
 //    trigScoreNote( scoreNote4, synth4, 4 );
 //    trigScoreNote( scoreNote5, synth5, 5 );
@@ -430,89 +432,42 @@ void ofApp::drawDebugPrintScore(){
     ofTranslate(0, _upBaseLine);
 
     ofSetColor(255, 0, 0, 255);
-    float _x1 = ofMap(index, 0, melodies[0].melodyLine.size(), 10, ofGetWidth()-10);
-    float _y1 = 0;
-    ofDrawLine(_x1, _y1 + 100, _x1, _y1 - 100);
+    if (melodies[0].melodyLine.size()>0) {
+        int _index = noteIndex % melodies[0].melodyLine.size();
+        float _x1 = ofMap(_index, 0, melodies[0].melodyLine.size(), 10, ofGetWidth()-10);
+        float _y1 = 0;
+        ofDrawLine(_x1, _y1 + 100, _x1, _y1 - 100);
+    }
     
     
     ofPushStyle();
     
     ofSetColor(0, 255);
     
-    for (int j=0; j<melodies[0].melodyLine.size(); j++) {
+    for (int i=0; i<melodies.size(); i++) {
 
-        float _x1 = ofMap(j, 0, melodies[0].melodyLine.size(), 10, ofGetWidth()-10);
-        float _y1;
-
-        if (melodies[0].melodyLine[j]>0) {
+        for (int j=0; j<melodies[i].melodyLine.size(); j++) {
             
-            int _note = melodies[0].melodyLine[j] % 12;
-            int _noteOctave = (melodies[0].melodyLine[j] - 60) / 12;
+            float _x1 = ofMap(j, 0, melodies[i].melodyLine.size(), 10, ofGetWidth()-10);
             
-            
-            switch (_note) {
-                case 0:
-                    _y1 = _stepLine;
-                    break;
-                    
-                case 1:
-                    _y1 = _stepLine;
-                    break;
-                    
-                case 2:
-                    _y1 = _stepLine * 0.5;
-                    break;
-                    
-                case 3:
-                    _y1 = _stepLine * 0.5;
-                    break;
-                    
-                case 4:
-                    _y1 = 0;
-                    break;
-                    
-                case 5:
-                    _y1 = -_stepLine * 0.5;
-                    break;
-                    
-                case 6:
-                    _y1 = -_stepLine * 1;
-                    break;
-                    
-                case 7:
-                    _y1 = -_stepLine * 1;
-                    break;
-                    
-                case 8:
-                    _y1 = -_stepLine * 1.5;
-                    break;
-                    
-                case 9:
-                    _y1 = -_stepLine * 1.5;
-                    break;
-                    
-                case 10:
-                    _y1 = -_stepLine * 2;
-                    break;
-                    
-                case 11:
-                    _y1 = -_stepLine * 2;
-                    break;
-                    
-                    
-                default:
-                    break;
+            if (melodies[i].melodyLine[j]>0) {
+                
+                int _note = melodies[i].melodyLine[j] % 12;
+                
+                int _octaveFactor = octaveScaleFactor[i];
+                int _noteOctave = (melodies[i].melodyLine[j] - _octaveFactor) / 12;
+                
+                float _posY = notePosition(_note, _stepLine);
+                
+                float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
+                
+                ofDrawCircle(_x1, _yOutput, 3);
+                
             }
             
-            float _yOutput = _y1 - _noteOctave * _stepLine * 3.5;
-
-            ofDrawCircle(_x1, _yOutput, 3);
-
         }
-        
-        
-        
     }
+    
 
     ofPopStyle();
     
@@ -525,6 +480,70 @@ void ofApp::drawDebugPrintScore(){
 }
 
 
+//--------------------------------------------------------------
+int ofApp::notePosition(int _note, int _stepLine){
+    
+    int _y1;
+    
+    switch (_note) {
+        case 0:
+            _y1 = _stepLine;
+            break;
+            
+        case 1:
+            _y1 = _stepLine;
+            break;
+            
+        case 2:
+            _y1 = _stepLine * 0.5;
+            break;
+            
+        case 3:
+            _y1 = _stepLine * 0.5;
+            break;
+            
+        case 4:
+            _y1 = 0;
+            break;
+            
+        case 5:
+            _y1 = -_stepLine * 0.5;
+            break;
+            
+        case 6:
+            _y1 = -_stepLine * 1;
+            break;
+            
+        case 7:
+            _y1 = -_stepLine * 1;
+            break;
+            
+        case 8:
+            _y1 = -_stepLine * 1.5;
+            break;
+            
+        case 9:
+            _y1 = -_stepLine * 1.5;
+            break;
+            
+        case 10:
+            _y1 = -_stepLine * 2;
+            break;
+            
+        case 11:
+            _y1 = -_stepLine * 2;
+            break;
+            
+            
+        default:
+            break;
+    }
+
+    
+    return _y1;
+    
+}
+
 
 
 
@@ -535,6 +554,8 @@ void ofApp::printScoreMake(){
     for (int i=0; i<melodies.size(); i++) {
         melodies[i].melodyLine.clear();
     }
+    
+    
     
     for (int i=1; i<scoreNote1.size(); i++) {
         
@@ -555,10 +576,30 @@ void ofApp::printScoreMake(){
             melodies[0].melodyLine.push_back(0);
         }
         
-        
     }
     
-    
+
+    for (int i=1; i<scoreNote2.size(); i++) {
+        
+        int _note = scoreNote2[i];
+        int _noteOld = scoreNote2[i-1];
+        
+        int _outputNote;
+        if ( abs(_noteOld - _note) >= intervalDist ) {
+            
+            if (_note>0) {
+                _outputNote = scaleSetting.noteSelector(baseSelection, 2, _note);
+                melodies[1].melodyLine.push_back(_outputNote);
+            } else {
+                melodies[1].melodyLine.push_back(0);
+            }
+            
+        } else {
+            melodies[1].melodyLine.push_back(0);
+        }
+        
+    }
+
 }
 
 
@@ -1382,7 +1423,7 @@ void ofApp::keyReleased(int key){
             bufferImg = edge;
             
             if ( !bCameraCapturePlay ) {
-                index = 0;
+                index = -1;
                 ofRemoveListener(* metroOut, this, &ofApp::triggerReceive);
             } else {
                 scoreMake();

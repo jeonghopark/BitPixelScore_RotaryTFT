@@ -51,6 +51,8 @@ int scale94[9] = {0, 4, 5, 7, 9, 12, 16, 17, 19};
 int scale95[2] = {0, 5};
 
 
+int octaveScale[7] = {60, 84, 72, 48, 36, 36, 36};
+
 
 //--------------------------------------------------------------
 void ScaleSetting::setup(){
@@ -253,7 +255,7 @@ void ScaleSetting::changeScale(){
 
     
     for (int i=0; i<5; i++){
-        scale51[i] = scale51[i] + 64;
+        scale51[i] = scale51[i] + 60;
         scale52[i] = scale52[i] + 84;
         scale53[i] = scale53[i] + 72;
         scale54[i] = scale54[i] + 48;
@@ -264,7 +266,7 @@ void ScaleSetting::changeScale(){
     }
     
     for (int i=0; i<6; i++){
-        scale61[i] = scale61[i] + 64;
+        scale61[i] = scale61[i] + 60;
         scale62[i] = scale62[i] + 84;
         scale63[i] = scale63[i] + 72;
         scale64[i] = scale64[i] + 48;
@@ -275,7 +277,7 @@ void ScaleSetting::changeScale(){
     }
     
     for (int i=0; i<7; i++){
-        scale71[i] = scale71[i] + 64;
+        scale71[i] = scale71[i] + 60;
         scale72[i] = scale72[i] + 84;
         scale73[i] = scale73[i] + 72;
         scale74[i] = scale74[i] + 48;
@@ -285,7 +287,7 @@ void ScaleSetting::changeScale(){
     }
     
     for (int i=0; i<8; i++){
-        scale81[i] = scale81[i] + 64;
+        scale81[i] = scale81[i] + 60;
         scale82[i] = scale82[i] + 84;
         scale83[i] = scale83[i] + 72;
         scale84[i] = scale84[i] + 48;
@@ -295,7 +297,7 @@ void ScaleSetting::changeScale(){
     }
 
     for (int i=0; i<9; i++){
-        scale91[i] = scale91[i] + 64;
+        scale91[i] = scale91[i] + 60;
         scale92[i] = scale92[i] + 84;
         scale93[i] = scale93[i] + 72;
         scale94[i] = scale94[i] + 48;
