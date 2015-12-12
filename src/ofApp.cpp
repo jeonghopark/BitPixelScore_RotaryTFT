@@ -7,7 +7,6 @@ using namespace ofxCv;
 using namespace cv;
 
 
-
 //--------------------------------------------------------------
 void ofApp::setup(){
     
@@ -26,12 +25,14 @@ void ofApp::setup(){
     
     cam.setDeviceID(0);
     
-    cam.setup( 800, 450 );
-    cam.setDesiredFrameRate(15);
+    cam.setup( 800, 600 );
+    cam.setDesiredFrameRate(30);
     
-    screenW = 800;
-    screenH = ofGetWidth() * 16.0 / 9.0;
+    screenW = 600;
+    screenH = 600;
     
+    camColorCV.allocate(cam.getWidth(), cam.getHeight());
+    centerCam.allocate(screenW, screenH);
     
     float _sizeF = screenW;
     ctrlPnX = 0;
@@ -39,11 +40,10 @@ void ofApp::setup(){
     ctrlPnW = screenW;
     ctrlPnH = screenH - ctrlPnY;
     
-    shiftValueIphoneY = ofGetHeight() * 0.5 - (ctrlPnY + ctrlPnH) * 0.5;
+    shiftValueIphoneY = 0;
     
     bufferImg.allocate(screenW, screenW, OF_IMAGE_GRAYSCALE);
     
-    cameraScreenRatio = screenW / cam.getWidth();
     
     float _widthDefault = ofGetWidth();
     pixelCircleSize     = 10 / _widthDefault * _sizeF;
@@ -64,11 +64,17 @@ void ofApp::setup(){
 
     synthMain.setOutputGen(synth1 + synth2 + synth3 + synth4 + synth5 + synth6 + synth7);
     
+
     
-    pixelStepS      = 4;
-    camSize         = cam.getWidth();
+    pixelStepS      = 5;
+    camSize         = screenW;
     changedCamSize  = camSize / pixelStepS;  // 90
     thresholdValue  = 80;
+    
+    cameraScreenRatio = 1;
+
+    
+    int _x = (cam.getWidth() - screenW) * 0.5;
     
     
     index       = 0;
@@ -108,6 +114,8 @@ void ofApp::setup(){
     grayThreshold = 120;
     
     
+    
+    
     float _posIndexRight = 13.5;
     float _posIndexLeft = 2.5;
     base4Pos = ofPoint( guideWidthStepSize * _posIndexLeft, ctrlPnY + stepBasePos * 1 );
@@ -127,7 +135,19 @@ void ofApp::setup(){
     
     touchPos.assign(2, ofVec2f());
 
+    allPlayOnOff = false;
+    
+    
+    ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
+
+    
 }
+
+
+
+
+
+
 
 //--------------------------------------------------------------
 void ofApp::update(){
@@ -136,7 +156,12 @@ void ofApp::update(){
     
     if(cam.isFrameNew()) {
         
-        convertColor(cam, gray, CV_RGB2GRAY);
+        camColorCV.setFromPixels(cam.getPixels().getData(), cam.getWidth(), cam.getHeight());
+        camColorCV.setROI(100, 0, 600, 600);
+        
+        centerCam.setFromPixels(camColorCV.getRoiPixels());
+        
+        convertColor(centerCam, gray, CV_RGB2GRAY);
         threshold(gray, gray, grayThreshold);
         //                erode(gray);
         Canny(gray, edge, cannyThreshold1, cannyThreshold2, 3);
@@ -162,8 +187,9 @@ void ofApp::update(){
             whitePixels.clear();
             blackPixels.clear();
             
-            for (int j=0; j<camSize; j+=pixelStepS) {
-                for (int i=0; i<camSize; i+=pixelStepS) {
+            
+            for (int j=0; j<screenW; j+=pixelStepS) {
+                for (int i=0; i<screenW; i+=pixelStepS) {
                     int _index = i + j * camSize;
                     float _brightness = _src[_index];
                     pixelBright.push_back(_brightness);
@@ -212,8 +238,12 @@ void ofApp::update(){
         
     }
 
+    
 
 }
+
+
+
 
 //--------------------------------------------------------------
 void ofApp::triggerReceive(float & metro){
@@ -229,13 +259,23 @@ void ofApp::triggerReceive(float & metro){
     trigScoreNote( scoreNote6, synth6, 6 );
     trigScoreNote( scoreNote7, synth7, 7 );
     
-    
+    cout << index << endl;
+
 }
+
+
+
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    ofTranslate( 0, shiftValueIphoneY );
+    
+    
+    
+    ofPushMatrix();
+    
+    ofTranslate(340, 0);
+
     
     ofPushMatrix();
     
@@ -327,6 +367,13 @@ void ofApp::draw(){
     
 //    drawBaseInterface();
     
+    
+    ofPopMatrix();
+
+    
+    cam.draw(ofGetWidth()-200, 0, 200, 150);
+    centerCam.draw(ofGetWidth()-175, 150, 150, 150);
+    ofDrawBitmapString(ofToString(ofGetFrameRate(),1), ofGetWidth()-175, 320);
     
     
 }
@@ -1119,218 +1166,9 @@ void ofApp::keyPressed(int key){
 void ofApp::keyReleased(int key){
     
     
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
-    
-    ofPoint _changedTouch = ofPoint(x, y - shiftValueIphoneY);
-    
-    if (bSpeedCtrl) {
-        float _minY = ctrlPnY + speedCSize * 0.75;
-        float _maxY = screenH - speedCSize * 0.75;
+    if (key == ' ') {
+        allPlayOnOff = !allPlayOnOff;
         
-        if ( (_changedTouch.y>_minY) && (_changedTouch.y<_maxY) && _changedTouch.x>speedCPos.x - (ctrlPnW-speedCPos.x) ) {
-            speedCPos.y = _changedTouch.y;
-            float _tempo = ofMap( speedCPos.y, _minY, _maxY, maxSpeed, minSpeed );
-            synthMain.setParameter("tempo", _tempo);
-        }
-        
-    }
-    
-    //        if (bthresholdCtrl) {
-    //            float _minY = ctrlPnY + speedCSize * 0.75;
-    //            float _maxY = screenH - speedCSize * 0.75;
-    //
-    //            if ((_changedTouch.y>_minY)&&(_changedTouch.y<_maxY)) {
-    //                thresholdCPos.y = _changedTouch.y;
-    //                float _threshold = ofMap(thresholdCPos.y, _minY, _maxY, 255, 0);
-    //                grayThreshold = _threshold;
-    //            }
-    //        }
-    
-    
-    if (bInterval) {
-        float _minY = ctrlPnY + speedCSize * 0.75;
-        float _maxY = screenH - speedCSize * 0.75;
-        if ((_changedTouch.y>_minY)&&(_changedTouch.y<_maxY) && _changedTouch.x<intervalPos.x * 2 ) {
-            intervalPos.y = _changedTouch.y;
-            float _interval = ofMap(intervalPos.y, _minY, _maxY, 0, 20);
-            intervalDist = _interval;
-        }
-    }
-    
-    
-    
-//    if ( touch.id==0 ) {
-    
-        //        if (bSpeedCtrl) {
-        //            float _minY = ctrlPnY + speedCSize * 0.75;
-        //            float _maxY = screenH - speedCSize * 0.75;
-        //
-        //            if ((_changedTouch.y>_minY)&&(_changedTouch.y<_maxY)) {
-        //                speedCPos.y = _changedTouch.y;
-        //                float _tempo = ofMap( speedCPos.y, _minY, _maxY, maxSpeed, minSpeed );
-        //                synthMain.setParameter("tempo", _tempo);
-        //            }
-        //
-        //        }
-        //
-        ////        if (bthresholdCtrl) {
-        ////            float _minY = ctrlPnY + speedCSize * 0.75;
-        ////            float _maxY = screenH - speedCSize * 0.75;
-        ////
-        ////            if ((_changedTouch.y>_minY)&&(_changedTouch.y<_maxY)) {
-        ////                thresholdCPos.y = _changedTouch.y;
-        ////                float _threshold = ofMap(thresholdCPos.y, _minY, _maxY, 255, 0);
-        ////                grayThreshold = _threshold;
-        ////            }
-        ////        }
-        //
-        //
-        //        if (bInterval) {
-        //            float _minY = ctrlPnY + speedCSize * 0.75;
-        //            float _maxY = screenH - speedCSize * 0.75;
-        //            if ((_changedTouch.y>_minY)&&(_changedTouch.y<_maxY)) {
-        //                intervalPos.y = _changedTouch.y;
-        //                float _interval = ofMap(intervalPos.y, _minY, _maxY, 0, 20);
-        //                intervalDist = _interval;
-        //            }
-        //        }
-        
-        
-        
-//    }
-    
-    if ( (_changedTouch.x>0)&&(_changedTouch.x<ctrlPnW) && (_changedTouch.y<ctrlPnY)&&(_changedTouch.y>0) ) {
-        
-        grayThreshold = 120 + (_changedTouch.y - touchDownDefault);
-        
-    }
-    
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
-    
-    float _tolerance = 3;
-    
-    ofPoint _changedTouch = ofPoint(x, y - shiftValueIphoneY);
-    
-    
-    float _distS = ofDist( speedCPos.x, speedCPos.y , _changedTouch.x, _changedTouch.y );
-    
-    for (int i=0; i<2; i++) {
-        
-        float _distS = ofDist( speedCPos.x, speedCPos.y , _changedTouch.x, _changedTouch.y );
-        if ( (_distS < thresholdCSize * _tolerance) && bSpeedCtrl == false) {
-            bSpeedCtrl = true;
-        }
-        
-    }
-    
-    
-    float _distI = ofDist( intervalPos.x, intervalPos.y , _changedTouch.x, _changedTouch.y );
-    
-    for (int i=0; i<2; i++) {
-        float _distI = ofDist( intervalPos.x, intervalPos.y , _changedTouch.x, _changedTouch.y );
-        if ( (_distI < intervalSize * _tolerance) && bInterval == false) {
-            bInterval = true;
-        }
-        
-    }
-    
-    
-    
-    
-//    if ( touch.id==0 ) {
-    
-        //        float _distS = ofDist( speedCPos.x, speedCPos.y , _changedTouch.x, _changedTouch.y );
-        //
-        //        if (_distS < thresholdCSize * _tolerance) {
-        //            bSpeedCtrl = true;
-        //        } else {
-        //            bSpeedCtrl = false;
-        //        }
-        
-        //        float _distT = ofDist( thresholdCPos.x, thresholdCPos.y , _changedTouch.x, _changedTouch.y );
-        
-        //        if (_distT < thresholdCSize * _tolerance) {
-        //            bthresholdCtrl = true;
-        //        } else {
-        //            bthresholdCtrl = false;
-        //        }
-        
-        //        float _distI = ofDist( intervalPos.x, intervalPos.y , _changedTouch.x, _changedTouch.y );
-        //
-        //        if (_distI < intervalSize * _tolerance) {
-        //            bInterval = true;
-        //        } else {
-        //            bInterval = false;
-        //        }
-    
-    
-//    }
-    
-    if ( (_changedTouch.x>0)&&(_changedTouch.x<ctrlPnW) && (_changedTouch.y<ctrlPnY)&&(_changedTouch.y>0) ) {
-        
-        grayThreshold = 120;
-        touchDownDefault = _changedTouch.y;
-        
-    }
-
-    
-    float _4BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base4Pos.x, base4Pos.y );
-    if ( _4BaseDist < baseSize ) {
-        //        index = 0;
-        baseSelection = 4;
-    }
-    
-    float _5BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base5Pos.x, base5Pos.y );
-    if ( _5BaseDist < baseSize ) {
-        //        index = 0;
-        baseSelection = 5;
-    }
-    
-    float _6BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base6Pos.x, base6Pos.y );
-    if ( _6BaseDist < baseSize ) {
-        //        index = 0;
-        baseSelection = 6;
-    }
-    
-    float _7BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base7Pos.x, base7Pos.y );
-    if ( _7BaseDist < baseSize ) {
-        //        index = 0;
-        baseSelection = 7;
-    }
-    
-    float _8BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base8Pos.x, base8Pos.y );
-    if ( _8BaseDist < baseSize ) {
-        //        index = 0;
-        baseSelection = 8;
-    }
-    
-    float _9BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base9Pos.x, base9Pos.y );
-    if ( _9BaseDist < baseSize ) {
-        //        index = 0;
-        baseSelection = 9;
-    }
-    
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
- 
-    ofPoint _changedTouch = ofPoint(x, y - shiftValueIphoneY);
-    
-    if ( (_changedTouch.x>0)&&(_changedTouch.x<ctrlPnW) && (_changedTouch.y<ctrlPnY)&&(_changedTouch.y>0) ) {
         if ((whitePixels.size()>2)) {
             bCameraCapturePlay = !bCameraCapturePlay;
             //            blur(edge, 3);
@@ -1349,33 +1187,273 @@ void ofApp::mouseReleased(int x, int y, int button){
             grayThreshold = 120;
             touchDownDefault = 0;
         }
+
         
-    }
-    
-    
-    if ( (_changedTouch.x<guideWidthStepSize * 11)&&(_changedTouch.x>guideWidthStepSize * 4) && (_changedTouch.y>ctrlPnY)&&(_changedTouch.y<screenH) && bCameraCapturePlay ) {
-        
-        bPlayNote = !bPlayNote;
-        
-        if ( !bPlayNote ) {
-            ofRemoveListener(* metroOut, this, &ofApp::triggerReceive);
-        } else {
-            ofAddListener(* metroOut, this, &ofApp::triggerReceive);
+        if (allPlayOnOff) {
+            
+
         }
-        
+
     }
     
-    float _tolerance = 2;
     
-    float _distS = ofDist( speedCPos.x, speedCPos.y , _changedTouch.x, _changedTouch.y );
-    if (_distS < (thresholdCSize * _tolerance) && bSpeedCtrl==true) {
-        bSpeedCtrl = false;
-    }
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseMoved(int x, int y){
     
-    float _distI = ofDist( intervalPos.x, intervalPos.y , _changedTouch.x, _changedTouch.y );
-    if (_distI < (intervalSize * _tolerance) && bInterval == true) {
-        bInterval = false;
-    }
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseDragged(int x, int y, int button){
+    
+//    ofPoint _changedTouch = ofPoint(x, y - shiftValueIphoneY);
+//    
+//    if (bSpeedCtrl) {
+//        float _minY = ctrlPnY + speedCSize * 0.75;
+//        float _maxY = screenH - speedCSize * 0.75;
+//        
+//        if ( (_changedTouch.y>_minY) && (_changedTouch.y<_maxY) && _changedTouch.x>speedCPos.x - (ctrlPnW-speedCPos.x) ) {
+//            speedCPos.y = _changedTouch.y;
+//            float _tempo = ofMap( speedCPos.y, _minY, _maxY, maxSpeed, minSpeed );
+//            synthMain.setParameter("tempo", _tempo);
+//        }
+//        
+//    }
+//    
+//    //        if (bthresholdCtrl) {
+//    //            float _minY = ctrlPnY + speedCSize * 0.75;
+//    //            float _maxY = screenH - speedCSize * 0.75;
+//    //
+//    //            if ((_changedTouch.y>_minY)&&(_changedTouch.y<_maxY)) {
+//    //                thresholdCPos.y = _changedTouch.y;
+//    //                float _threshold = ofMap(thresholdCPos.y, _minY, _maxY, 255, 0);
+//    //                grayThreshold = _threshold;
+//    //            }
+//    //        }
+//    
+//    
+//    if (bInterval) {
+//        float _minY = ctrlPnY + speedCSize * 0.75;
+//        float _maxY = screenH - speedCSize * 0.75;
+//        if ((_changedTouch.y>_minY)&&(_changedTouch.y<_maxY) && _changedTouch.x<intervalPos.x * 2 ) {
+//            intervalPos.y = _changedTouch.y;
+//            float _interval = ofMap(intervalPos.y, _minY, _maxY, 0, 20);
+//            intervalDist = _interval;
+//        }
+//    }
+//    
+//    
+//    
+////    if ( touch.id==0 ) {
+//    
+//        //        if (bSpeedCtrl) {
+//        //            float _minY = ctrlPnY + speedCSize * 0.75;
+//        //            float _maxY = screenH - speedCSize * 0.75;
+//        //
+//        //            if ((_changedTouch.y>_minY)&&(_changedTouch.y<_maxY)) {
+//        //                speedCPos.y = _changedTouch.y;
+//        //                float _tempo = ofMap( speedCPos.y, _minY, _maxY, maxSpeed, minSpeed );
+//        //                synthMain.setParameter("tempo", _tempo);
+//        //            }
+//        //
+//        //        }
+//        //
+//        ////        if (bthresholdCtrl) {
+//        ////            float _minY = ctrlPnY + speedCSize * 0.75;
+//        ////            float _maxY = screenH - speedCSize * 0.75;
+//        ////
+//        ////            if ((_changedTouch.y>_minY)&&(_changedTouch.y<_maxY)) {
+//        ////                thresholdCPos.y = _changedTouch.y;
+//        ////                float _threshold = ofMap(thresholdCPos.y, _minY, _maxY, 255, 0);
+//        ////                grayThreshold = _threshold;
+//        ////            }
+//        ////        }
+//        //
+//        //
+//        //        if (bInterval) {
+//        //            float _minY = ctrlPnY + speedCSize * 0.75;
+//        //            float _maxY = screenH - speedCSize * 0.75;
+//        //            if ((_changedTouch.y>_minY)&&(_changedTouch.y<_maxY)) {
+//        //                intervalPos.y = _changedTouch.y;
+//        //                float _interval = ofMap(intervalPos.y, _minY, _maxY, 0, 20);
+//        //                intervalDist = _interval;
+//        //            }
+//        //        }
+//        
+//        
+//        
+////    }
+//    
+//    if ( (_changedTouch.x>0)&&(_changedTouch.x<ctrlPnW) && (_changedTouch.y<ctrlPnY)&&(_changedTouch.y>0) ) {
+//        
+//        grayThreshold = 120 + (_changedTouch.y - touchDownDefault);
+//        
+//    }
+//    
+    
+}
+
+//--------------------------------------------------------------
+void ofApp::mousePressed(int x, int y, int button){
+    
+//    float _tolerance = 3;
+//    
+//    ofPoint _changedTouch = ofPoint(x, y - shiftValueIphoneY);
+//    
+//    
+//    float _distS = ofDist( speedCPos.x, speedCPos.y , _changedTouch.x, _changedTouch.y );
+//    
+//    for (int i=0; i<2; i++) {
+//        
+//        float _distS = ofDist( speedCPos.x, speedCPos.y , _changedTouch.x, _changedTouch.y );
+//        if ( (_distS < thresholdCSize * _tolerance) && bSpeedCtrl == false) {
+//            bSpeedCtrl = true;
+//        }
+//        
+//    }
+//    
+//    
+//    float _distI = ofDist( intervalPos.x, intervalPos.y , _changedTouch.x, _changedTouch.y );
+//    
+//    for (int i=0; i<2; i++) {
+//        float _distI = ofDist( intervalPos.x, intervalPos.y , _changedTouch.x, _changedTouch.y );
+//        if ( (_distI < intervalSize * _tolerance) && bInterval == false) {
+//            bInterval = true;
+//        }
+//        
+//    }
+//    
+//    
+//    
+//    
+////    if ( touch.id==0 ) {
+//    
+//        //        float _distS = ofDist( speedCPos.x, speedCPos.y , _changedTouch.x, _changedTouch.y );
+//        //
+//        //        if (_distS < thresholdCSize * _tolerance) {
+//        //            bSpeedCtrl = true;
+//        //        } else {
+//        //            bSpeedCtrl = false;
+//        //        }
+//        
+//        //        float _distT = ofDist( thresholdCPos.x, thresholdCPos.y , _changedTouch.x, _changedTouch.y );
+//        
+//        //        if (_distT < thresholdCSize * _tolerance) {
+//        //            bthresholdCtrl = true;
+//        //        } else {
+//        //            bthresholdCtrl = false;
+//        //        }
+//        
+//        //        float _distI = ofDist( intervalPos.x, intervalPos.y , _changedTouch.x, _changedTouch.y );
+//        //
+//        //        if (_distI < intervalSize * _tolerance) {
+//        //            bInterval = true;
+//        //        } else {
+//        //            bInterval = false;
+//        //        }
+//    
+//    
+////    }
+//    
+//    if ( (_changedTouch.x>0)&&(_changedTouch.x<ctrlPnW) && (_changedTouch.y<ctrlPnY)&&(_changedTouch.y>0) ) {
+//        
+//        grayThreshold = 120;
+//        touchDownDefault = _changedTouch.y;
+//        
+//    }
+//
+//    
+//    float _4BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base4Pos.x, base4Pos.y );
+//    if ( _4BaseDist < baseSize ) {
+//        //        index = 0;
+//        baseSelection = 4;
+//    }
+//    
+//    float _5BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base5Pos.x, base5Pos.y );
+//    if ( _5BaseDist < baseSize ) {
+//        //        index = 0;
+//        baseSelection = 5;
+//    }
+//    
+//    float _6BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base6Pos.x, base6Pos.y );
+//    if ( _6BaseDist < baseSize ) {
+//        //        index = 0;
+//        baseSelection = 6;
+//    }
+//    
+//    float _7BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base7Pos.x, base7Pos.y );
+//    if ( _7BaseDist < baseSize ) {
+//        //        index = 0;
+//        baseSelection = 7;
+//    }
+//    
+//    float _8BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base8Pos.x, base8Pos.y );
+//    if ( _8BaseDist < baseSize ) {
+//        //        index = 0;
+//        baseSelection = 8;
+//    }
+//    
+//    float _9BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base9Pos.x, base9Pos.y );
+//    if ( _9BaseDist < baseSize ) {
+//        //        index = 0;
+//        baseSelection = 9;
+//    }
+    
+    
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseReleased(int x, int y, int button){
+ 
+//    ofPoint _changedTouch = ofPoint(x, y - shiftValueIphoneY);
+//    
+//    if ( (_changedTouch.x>0)&&(_changedTouch.x<ctrlPnW) && (_changedTouch.y<ctrlPnY)&&(_changedTouch.y>0) ) {
+//        if ((whitePixels.size()>2)) {
+//            bCameraCapturePlay = !bCameraCapturePlay;
+//            //            blur(edge, 3);
+//            bufferImg = edge;
+//            
+//            if ( !bCameraCapturePlay ) {
+//                index = 0;
+//                ofRemoveListener(* metroOut, this, &ofApp::triggerReceive);
+//            } else {
+//                scoreMake();
+//                //                noteIndex = index;
+//                ofAddListener(* metroOut, this, &ofApp::triggerReceive);
+//                bPlayNote = true;
+//            }
+//            
+//            grayThreshold = 120;
+//            touchDownDefault = 0;
+//        }
+//        
+//    }
+//    
+//    
+//    if ( (_changedTouch.x<guideWidthStepSize * 11)&&(_changedTouch.x>guideWidthStepSize * 4) && (_changedTouch.y>ctrlPnY)&&(_changedTouch.y<screenH) && bCameraCapturePlay ) {
+//        
+//        bPlayNote = !bPlayNote;
+//        
+//        if ( !bPlayNote ) {
+//            ofRemoveListener(* metroOut, this, &ofApp::triggerReceive);
+//        } else {
+//            ofAddListener(* metroOut, this, &ofApp::triggerReceive);
+//        }
+//        
+//    }
+//    
+//    float _tolerance = 2;
+//    
+//    float _distS = ofDist( speedCPos.x, speedCPos.y , _changedTouch.x, _changedTouch.y );
+//    if (_distS < (thresholdCSize * _tolerance) && bSpeedCtrl==true) {
+//        bSpeedCtrl = false;
+//    }
+//    
+//    float _distI = ofDist( intervalPos.x, intervalPos.y , _changedTouch.x, _changedTouch.y );
+//    if (_distI < (intervalSize * _tolerance) && bInterval == true) {
+//        bInterval = false;
+//    }
     
     
     

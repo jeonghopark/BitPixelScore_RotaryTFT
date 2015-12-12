@@ -86,6 +86,10 @@ public:
     
     //openCV
     ofVideoGrabber cam;
+    
+    ofxCvColorImage camColorCV;
+    ofxCvColorImage centerCam;
+    
     ofImage edge;
     ofPixels gray;
     bool camOpen;
@@ -210,5 +214,12 @@ public:
     vector<bool> ctrlSlider;
     float distS[2];
     float distI[2];
+    
+    
+    
+    bool allPlayOnOff;
+    
+    
+    
 
 };
