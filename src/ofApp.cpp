@@ -419,6 +419,25 @@ void ofApp::drawDebugPrintScore(){
     ofPopMatrix();
     
     
+    
+    
+    ofPushMatrix();
+    ofTranslate(0, _downBaseLine);
+
+    for (int j=0; j<melodies[0].melodyLine.size(); j++) {
+        
+        float _xStep = (ofGetWidth() - 20.0) / melodies[0].melodyLine.size();
+        
+        if (j % 8 == 0) {
+            float _x1 = ofMap(j, 0, melodies[0].melodyLine.size(), 10, ofGetWidth()-10);
+            ofDrawLine(_x1 - _xStep * 0.5, 0, _x1 - _xStep * 0.5, -_stepLine * 11);
+        }
+        
+    }
+    
+    ofPopMatrix();
+
+
 
     
     ofPopStyle();
