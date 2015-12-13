@@ -13,19 +13,20 @@ int octaveScaleFactor[7] = {60, 86, 36, 48, 72, 36, 36};
 void ofApp::setup(){
     
     ofSetFrameRate(60);
+
+    ofEnableAntiAliasing();
     
     // !!! Only Full Screen !!!
     ofSetFullscreen(true);
     
     ofSetCircleResolution(16);
     
+    gclef.load("GClef.png");
+    fclef.load("FClef.png");
+    
     baseSelection = 7;
     
-    if (WHITE_VIEW) {
-        ofBackground( 40 );
-    } else {
-        ofBackground( 15 );
-    }
+    ofBackground(255);
     
     ofSetFrameRate( 60 );
     ofEnableAlphaBlending();
@@ -176,11 +177,6 @@ void ofApp::update(){
     
     if(cam.isFrameNew()) {
         
-
-//        centerCam.setROI(_center.x - _faceWidth * 0.5, _center.y - _faceHeight * 0.5, _faceWidth, _faceHeight);
-//        faceCam.setFromPixels(centerCam.getRoiPixels());
-
-        
         
         camColorCV.setFromPixels(cam.getPixels().getData(), cam.getWidth(), cam.getHeight());
         camColorCV.setROI(100, 0, 600, 600);
@@ -226,11 +222,6 @@ void ofApp::update(){
             noteIndex = index;
         } else {
             
-//            changedCamSize  = _faceWidth / pixelStepS;
-//            changedCamW = _faceWidth / pixelStepS;
-//            changedCamH = _faceHeight / pixelStepS;
-
-
             unsigned char * _src = edge.getPixels().getData();
             
             noteIndex = 0;
@@ -240,9 +231,6 @@ void ofApp::update(){
             whitePixels.clear();
             blackPixels.clear();
             
-            int _startPosX = _center.x - _faceWidth * 0.5;
-            int _startPosY = _center.y - _faceHeight * 0.5;
-            
 
             for (int i=0; i<camSize; i+=pixelStepS) {
                 for (int j=0; j<camSize; j+=pixelStepS) {
@@ -251,8 +239,9 @@ void ofApp::update(){
                     float _brightness = _src[_index];
                     
                     ofVec2f _pos = ofVec2f( i, j );
-                    float _dist = ofDist(_center.x, _center.y, i, j);
-                    if (_dist<_facesize) {
+                    float _distX = ofDist(_center.x, _center.y, _center.x, j);
+                    float _distY = ofDist(_center.x, _center.y, i, _center.y);
+                    if ((_distY<_facesize*1.25)&&(_distX<_facesize*0.75)) {
                         pixelBright.push_back(_brightness);
                     } else {
                         pixelBright.push_back(255);
@@ -342,7 +331,7 @@ void ofApp::draw(){
     
     ofPushMatrix();
     
-    ofTranslate((ofGetWidth() - 600)*0.5, 0);
+    ofTranslate((ofGetWidth() - 600) * 0.5, 0);
 
     
     ofPushMatrix();
@@ -364,6 +353,7 @@ void ofApp::draw(){
     
     ofPushStyle();
     if (bCameraCapturePlay) {
+        
         ofSetColor( 255, 255 );
         ofDrawRectangle(0, 0, screenW, screenH);
         
@@ -461,11 +451,10 @@ void ofApp::drawDebugPrintScore(){
     
     
     float _stepLine = 10;
-    float _downBaseLine = ofGetHeight() - 100;
+    float _downBaseLine = ofGetHeight() - 70;
     float _upBaseLine = _downBaseLine - _stepLine * 7;
     
     ofPushMatrix();
-
 
     ofPushStyle();
     
@@ -477,6 +466,7 @@ void ofApp::drawDebugPrintScore(){
     ofTranslate(0, _upBaseLine);
     for (int i=0; i<5; i++) {
         ofDrawLine(0, -i * _stepLine, ofGetWidth(), -i * _stepLine);
+        gclef.draw(0, -_stepLine * 5, _stepLine * 2.3, _stepLine * 6.1);
     }
     ofPopMatrix();
 
@@ -486,21 +476,22 @@ void ofApp::drawDebugPrintScore(){
     ofTranslate(0, _downBaseLine);
     for (int i=0; i<5; i++) {
         ofDrawLine(0, -i * _stepLine, ofGetWidth(), -i * _stepLine);
+        fclef.draw(0, -_stepLine * 3.2, _stepLine * 2.7, _stepLine * 2.7);
     }
     ofPopMatrix();
     
     
-    
+    float _xFactor = _stepLine * 3.2;
     
     ofPushMatrix();
     ofTranslate(0, _downBaseLine);
 
-    for (int j=0; j<melodies[0].melodyLine.size(); j++) {
+    for (int j=1; j<melodies[0].melodyLine.size(); j++) {
         
         float _xStep = (ofGetWidth() - 20.0) / melodies[0].melodyLine.size();
         
         if (j % 8 == 0) {
-            float _x1 = ofMap(j, 0, melodies[0].melodyLine.size(), 10, ofGetWidth()-10);
+            float _x1 = ofMap(j, 0, melodies[0].melodyLine.size(), _xFactor, ofGetWidth()-_xFactor);
             ofDrawLine(_x1 - _xStep * 0.5, 0, _x1 - _xStep * 0.5, -_stepLine * 11);
         }
         
@@ -523,7 +514,7 @@ void ofApp::drawDebugPrintScore(){
     ofSetColor(255, 0, 0, 255);
     if (melodies[0].melodyLine.size()>0) {
         int _index = noteIndex % melodies[0].melodyLine.size();
-        float _x1 = ofMap(_index, 0, melodies[0].melodyLine.size(), 10, ofGetWidth()-10);
+        float _x1 = ofMap(_index, 0, melodies[0].melodyLine.size(), _xFactor, ofGetWidth()-_xFactor);
         float _y1 = 0;
         ofDrawLine(_x1, _y1 + 100, _x1, _y1 - 100);
     }
@@ -533,11 +524,16 @@ void ofApp::drawDebugPrintScore(){
     
     ofSetColor(0, 255);
     
+    float _stempLength = 27;
+    float _teilWidth = 2;
+    float _teilLength = 10;
+    float _teilEndX = _teilLength * 0.75;
+    
     for (int i=0; i<melodies.size(); i++) {
 
         for (int j=0; j<melodies[i].melodyLine.size(); j++) {
             
-            float _x1 = ofMap(j, 0, melodies[i].melodyLine.size(), 10, ofGetWidth()-10);
+            float _x1 = ofMap(j, 0, melodies[i].melodyLine.size(), _xFactor, ofGetWidth()-_xFactor);
             
             if (melodies[i].melodyLine[j]>0) {
                 
@@ -550,8 +546,15 @@ void ofApp::drawDebugPrintScore(){
                     float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
                     
                     ofDrawCircle(_x1, _yOutput, 3);
-                    ofDrawLine(_x1+2, _yOutput, _x1+2, _yOutput - 30);
+
+                    ofSetLineWidth(1);
+                    ofDrawLine(_x1+2, _yOutput, _x1+2, _yOutput - _stempLength);
+                    
+                    ofSetLineWidth(_teilWidth);
+                    ofDrawLine(_x1+2, _yOutput-_stempLength, _x1+_teilEndX, _yOutput - _teilLength);
+
                 } else {
+                    
                     int _note = melodies[i].melodyLine[j] % 12;
                     int _octaveFactor = octaveScaleFactor[i];
                     int _noteOctave = (melodies[i].melodyLine[j] - _octaveFactor) / 12 - 2;
@@ -560,7 +563,13 @@ void ofApp::drawDebugPrintScore(){
                     float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
                     
                     ofDrawCircle(_x1, _yOutput, 3);
-                    ofDrawLine(_x1+2, _yOutput, _x1+2, _yOutput - 30);
+
+                    ofSetLineWidth(1);
+                    ofDrawLine(_x1+2, _yOutput, _x1+2, _yOutput - _stempLength);
+                    
+                    ofSetLineWidth(_teilWidth);
+                    ofDrawLine(_x1+2, _yOutput-_stempLength, _x1+_teilEndX, _yOutput - _teilLength);
+                    
                 }
                 
             }
@@ -573,10 +582,6 @@ void ofApp::drawDebugPrintScore(){
     
     ofPopMatrix();
     
-    
-    
-    
-
 }
 
 

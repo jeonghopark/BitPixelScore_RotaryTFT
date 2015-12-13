@@ -257,4 +257,6 @@ public:
   
     int changedCamW, changedCamH;
     
+    ofImage gclef, fclef;
+    
 };
