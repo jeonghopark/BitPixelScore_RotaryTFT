@@ -80,16 +80,9 @@ public:
     ControlGenerator metro;
     ofEvent<float> * metroOut;
     void triggerReceive(float & metro);
+
     int index;
     int noteIndex;
-    int oldNoteIndex1;
-    int oldNoteIndex2;
-    int oldNoteIndex3;
-    int oldNoteIndex4;
-    int oldNoteIndex5;
-    int oldNoteIndex6;
-    int oldNoteIndex7;
-    void noteTrigger();
     
     
     // Main
@@ -124,7 +117,7 @@ public:
     int pixelCircleSize;
     
     //Video
-    int videoGrabberW, videoGrabberH, camSize, changedCamSize;
+    int camSize, changedCamSize;
     float cameraScreenRatio;
     
     
@@ -186,16 +179,12 @@ public:
     
     // Line Score
     void drawLineScore();
-    float oldScoreNote1, oldScoreNote2, oldScoreNote3, oldScoreNote4, oldScoreNote5, oldScoreNote6, oldScoreNote7;
     
     vector<int> oldScoreNote;
-    
-    vector<int> scoreNote1, scoreNote2, scoreNote3, scoreNote4, scoreNote5, scoreNote6, scoreNote7;
     vector<noteList> noteLists;
     
     int lineScoreStepX, lineScoreStepY;
     void scoreMake();
-    void noteTrig();
     
     
     int intervalDist;
@@ -203,33 +192,19 @@ public:
     ScaleSetting scaleSetting;
     
     
-    int playOldNote1;
-    int drawOldPointNote1;
-    int drawOldLineNote1;
-    
-    
     void drawScoreCircleLine( vector<int> _vNote, int _scoreCh );
     void trigScoreNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scoreCh );
     
     
     float pixeShapeSize;
-        
     
     int lineScoreNumber;
-    
-    bool bIPhone;
-    float shiftValueIphoneY;
-    
-    //    ofSoundStream soundStream;
     
     
     float touchDownDefault;
     
     vector<ofVec2f> touchPos;
     vector<bool> ctrlSlider;
-    float distS[2];
-    float distI[2];
-    
     
     
     bool allPlayOnOff;
