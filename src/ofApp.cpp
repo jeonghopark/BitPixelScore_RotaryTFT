@@ -2023,9 +2023,6 @@ void ofApp::scoreMake(){
     for (int i=0; i<whitePixels.size(); i++) {
         
         
-        
-        
-        
         vector<int> _bitNumber;
         _bitNumber.resize(7);
         
@@ -2331,6 +2328,7 @@ void ofApp::guiSetting(){
 //--------------------------------------------------------------
 void ofApp::exit(){
     
+    ofSoundStreamStop();
     
 }
 
