@@ -307,7 +307,7 @@ void ofApp::update(){
     // FBO
     printScoreFbo.begin();
     
-    ofClear(180, 255);
+    ofClear(255, 255);
 
     drawPrintScoreFBO();
     
@@ -436,12 +436,22 @@ void ofApp::draw(){
 }
 
 
+
 //--------------------------------------------------------------
 void ofApp::drawPrintScoreFBO(){
+    
+    
     
     ofPushMatrix();
     //FIXME:: 40 ????
     ofTranslate(ofGetHeight()*0.5-40, 0);
+    
+    ofSetColor(0);
+    ofDrawRectangle(0, 0, printScoreFbo.getWidth(), printScoreFbo.getHeight());
+
+    ofSetColor(255);
+    ofDrawRectangle(10, 10, printScoreFbo.getWidth()-20, printScoreFbo.getHeight()-20);
+
     ofRotateZ(90);
     
     
@@ -550,6 +560,10 @@ void ofApp::drawPrintScoreFBO(){
                     
                     float _posY = notePosition(_note, _stepLine);
                     float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
+                    
+                    if (_yOutput == _stepLine) {
+                        ofDrawLine(_x1-5, _yOutput, _x1+5, _yOutput);
+                    }
                     
                     ofDrawCircle(_x1, _yOutput, 3);
                     
@@ -1078,13 +1092,9 @@ void ofApp::drawPixelAllNoteShapes( vector<int> _vNote, int _scoreCh ){
     
     ofPushMatrix();
     ofPushStyle();
-    ofEnableAntiAliasing();
+//    ofEnableAntiAliasing();
     
-    if (WHITE_VIEW) {
-        ofSetColor( 0, 80 );
-    } else {
-        ofSetColor( 255, 80 );
-    }
+    ofSetColor( 0, 60 );
     
     for (int i=0; i<whitePixels.size(); i++) {
         
@@ -1199,11 +1209,7 @@ void ofApp::drawPixelNumbersCircleNotes(){
     ofPushStyle();
     ofEnableAntiAliasing();
     
-    if (WHITE_VIEW) {
-        ofSetColor( 0, 120 );
-    } else {
-        ofSetColor( 255, 120 );
-    }
+    ofSetColor( 0, 30 );
     
     if (whitePixels.size()>0) {
         
