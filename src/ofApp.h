@@ -24,9 +24,12 @@ struct colorPixels{
 
 
 struct melody{
-    
     vector<int> melodyLine;
-    
+};
+
+
+struct noteList{
+    vector<int> noteArray;
 };
 
 
@@ -184,7 +187,11 @@ public:
     void drawLineScore();
     float oldScoreNote1, oldScoreNote2, oldScoreNote3, oldScoreNote4, oldScoreNote5, oldScoreNote6, oldScoreNote7;
     
+    vector<int> oldScoreNote;
+    
     vector<int> scoreNote1, scoreNote2, scoreNote3, scoreNote4, scoreNote5, scoreNote6, scoreNote7;
+    vector<noteList> noteLists;
+    
     int lineScoreStepX, lineScoreStepY;
     void scoreMake();
     void noteTrig();
