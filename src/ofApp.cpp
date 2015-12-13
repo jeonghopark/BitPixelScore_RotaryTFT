@@ -65,6 +65,7 @@ void ofApp::setup(){
     stepBasePos         = 105 / _widthDefault * _sizeF;
     pixeShapeSize       = 1 / _widthDefault * _sizeF;
     
+
     synthSetting();
     maxSpeed    = 200;
     minSpeed    = 30;
@@ -294,10 +295,6 @@ void ofApp::triggerReceive(float & metro){
     index++;
     noteIndex = index;
     
-//    for (int i=0; i<noteLists.size(); i++) {
-//        trigScoreNote( noteLists[i].noteArray, synth1, 1 );
-//    }
-    
     trigScoreNote( noteLists[0].noteArray, synth1, 1 );
     trigScoreNote( noteLists[1].noteArray, synth2, 2 );
     trigScoreNote( noteLists[2].noteArray, synth3, 3 );
@@ -305,9 +302,6 @@ void ofApp::triggerReceive(float & metro){
     trigScoreNote( noteLists[4].noteArray, synth5, 5 );
     trigScoreNote( noteLists[5].noteArray, synth6, 6 );
     trigScoreNote( noteLists[6].noteArray, synth7, 7 );
-    
-
-    
     
 }
 
