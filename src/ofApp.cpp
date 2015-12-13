@@ -155,6 +155,12 @@ void ofApp::setup(){
     ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
 
     
+    //
+    faceFind.setup("haarcascade_frontalface_default.xml");
+    faceFind.setPreset(ObjectFinder::Fast);
+    faceFind.setFindBiggestObject(true);
+
+    
 }
 
 
@@ -170,10 +176,38 @@ void ofApp::update(){
     
     if(cam.isFrameNew()) {
         
+
+//        centerCam.setROI(_center.x - _faceWidth * 0.5, _center.y - _faceHeight * 0.5, _faceWidth, _faceHeight);
+//        faceCam.setFromPixels(centerCam.getRoiPixels());
+
+        
+        
         camColorCV.setFromPixels(cam.getPixels().getData(), cam.getWidth(), cam.getHeight());
         camColorCV.setROI(100, 0, 600, 600);
-        
         centerCam.setFromPixels(camColorCV.getRoiPixels());
+
+        faceFind.update(centerCam);
+        
+        ofVec2f _center;
+        
+        float _faceWidth;
+        float _faceHeight;
+        float _facesize;
+        
+        float _sizeAdd = 20;
+        if (faceFind.size()>0) {
+            _center = faceFind.getObject(0).getCenter();
+            _faceWidth = faceFind.getObject(0).getWidth() + _sizeAdd;
+            _faceHeight = faceFind.getObject(0).getHeight() + _sizeAdd;
+            _facesize = max(_faceWidth, _faceHeight) * 0.5;
+        } else {
+            _center = ofVec2f(400, 300);
+            _faceWidth = 600;
+            _faceHeight = 600;
+            _facesize = 600;
+        }
+        
+
         
         convertColor(centerCam, gray, CV_RGB2GRAY);
         threshold(gray, gray, thresholdF);
@@ -192,6 +226,11 @@ void ofApp::update(){
             noteIndex = index;
         } else {
             
+//            changedCamSize  = _faceWidth / pixelStepS;
+//            changedCamW = _faceWidth / pixelStepS;
+//            changedCamH = _faceHeight / pixelStepS;
+
+
             unsigned char * _src = edge.getPixels().getData();
             
             noteIndex = 0;
@@ -201,12 +240,24 @@ void ofApp::update(){
             whitePixels.clear();
             blackPixels.clear();
             
+            int _startPosX = _center.x - _faceWidth * 0.5;
+            int _startPosY = _center.y - _faceHeight * 0.5;
             
-            for (int j=0; j<screenW; j+=pixelStepS) {
-                for (int i=0; i<screenW; i+=pixelStepS) {
-                    int _index = i + j * camSize;
+
+            for (int i=0; i<camSize; i+=pixelStepS) {
+                for (int j=0; j<camSize; j+=pixelStepS) {
+            
+                    int _index = j + i * camSize;
                     float _brightness = _src[_index];
-                    pixelBright.push_back(_brightness);
+                    
+                    ofVec2f _pos = ofVec2f( i, j );
+                    float _dist = ofDist(_center.x, _center.y, i, j);
+                    if (_dist<_facesize) {
+                        pixelBright.push_back(_brightness);
+                    } else {
+                        pixelBright.push_back(255);
+                    }
+                    
                 }
             }
             

@@ -101,6 +101,7 @@ public:
     
     ofxCvColorImage camColorCV;
     ofxCvColorImage centerCam;
+    ofxCvColorImage faceCam;
     
     ofImage edge;
     ofPixels gray;
@@ -251,5 +252,9 @@ public:
     
     int notePosition(int _note, int _stepLine);
     
+    
+    ofxCv::ObjectFinder faceFind;
+  
+    int changedCamW, changedCamH;
     
 };
