@@ -6,11 +6,18 @@
 using namespace ofxCv;
 using namespace cv;
 
-int octaveScaleFactor[7] = {60, 84, 72, 48, 36, 36, 36};
+int octaveScaleFactor[7] = {60, 86, 36, 48, 72, 36, 36};
 
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    
+    ofSetFrameRate(60);
+    
+    // !!! Only Full Screen !!!
+    ofSetFullscreen(true);
+    
+    ofSetCircleResolution(16);
     
     baseSelection = 7;
     
@@ -24,8 +31,6 @@ void ofApp::setup(){
     ofEnableAlphaBlending();
     
     guiSetting();
-    
-    backgroundControPanel.load("controlBackground.png");
     
     
     cam.setDeviceID(0);
@@ -63,7 +68,7 @@ void ofApp::setup(){
     synthSetting();
     maxSpeed    = 200;
     minSpeed    = 30;
-    bpm         = synthMain.addParameter("tempo",60).min(minSpeed).max(maxSpeed);
+    bpm         = synthMain.addParameter("tempo", 100).min(minSpeed).max(maxSpeed);
     metro       = ControlMetro().bpm(4 * bpm);
     metroOut    = synthMain.createOFEvent(metro);
 
@@ -261,7 +266,7 @@ void ofApp::triggerReceive(float & metro){
     
     trigScoreNote( scoreNote1, synth1, 1 );
     trigScoreNote( scoreNote2, synth2, 2 );
-//    trigScoreNote( scoreNote3, synth3, 3 );
+    trigScoreNote( scoreNote3, synth3, 3 );
 //    trigScoreNote( scoreNote4, synth4, 4 );
 //    trigScoreNote( scoreNote5, synth5, 5 );
 //    trigScoreNote( scoreNote6, synth6, 6 );
@@ -281,7 +286,7 @@ void ofApp::draw(){
     
     ofPushMatrix();
     
-    ofTranslate((ofGetWidth() - 600)*0.5, (ofGetHeight() - 720)*0.5);
+    ofTranslate((ofGetWidth() - 600)*0.5, 0);
 
     
     ofPushMatrix();
@@ -382,6 +387,8 @@ void ofApp::draw(){
     gui.draw();
     
     drawDebugPrintScore();
+    
+    
 }
 
 
@@ -390,7 +397,7 @@ void ofApp::drawDebugPrintScore(){
     
     
     float _stepLine = 10;
-    float _downBaseLine = ofGetHeight() - 200;
+    float _downBaseLine = ofGetHeight() - 100;
     float _upBaseLine = _downBaseLine - _stepLine * 7;
     
     ofPushMatrix();
@@ -471,19 +478,30 @@ void ofApp::drawDebugPrintScore(){
             
             if (melodies[i].melodyLine[j]>0) {
                 
-                int _note = melodies[i].melodyLine[j] % 12;
-                
-                int _octaveFactor = octaveScaleFactor[i];
-                int _noteOctave = (melodies[i].melodyLine[j] - _octaveFactor) / 12;
-                
-                float _posY = notePosition(_note, _stepLine);
-                
-                float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
-                
-                ofDrawCircle(_x1, _yOutput, 3);
+                if (i%3==0 || i%3==1) {
+                    int _note = melodies[i].melodyLine[j] % 12;
+                    int _octaveFactor = octaveScaleFactor[i];
+                    int _noteOctave = (melodies[i].melodyLine[j] - _octaveFactor) / 12;
+                    
+                    float _posY = notePosition(_note, _stepLine);
+                    float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
+                    
+                    ofDrawCircle(_x1, _yOutput, 3);
+                    ofDrawLine(_x1+2, _yOutput, _x1+2, _yOutput - 30);
+                } else {
+                    int _note = melodies[i].melodyLine[j] % 12;
+                    int _octaveFactor = octaveScaleFactor[i];
+                    int _noteOctave = (melodies[i].melodyLine[j] - _octaveFactor) / 12 - 2;
+                    
+                    float _posY = notePosition(_note, _stepLine);
+                    float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
+                    
+                    ofDrawCircle(_x1, _yOutput, 3);
+                    ofDrawLine(_x1+2, _yOutput, _x1+2, _yOutput - 30);
+                }
                 
             }
-            
+
         }
     }
     
@@ -619,6 +637,28 @@ void ofApp::printScoreMake(){
         
     }
 
+    
+    for (int i=1; i<scoreNote3.size(); i++) {
+        
+        int _note = scoreNote3[i];
+        int _noteOld = scoreNote3[i-1];
+        
+        int _outputNote;
+        if ( abs(_noteOld - _note) >= intervalDist ) {
+            
+            if (_note>0) {
+                _outputNote = scaleSetting.noteSelector(baseSelection, 3, _note);
+                melodies[2].melodyLine.push_back(_outputNote);
+            } else {
+                melodies[2].melodyLine.push_back(0);
+            }
+            
+        } else {
+            melodies[2].melodyLine.push_back(0);
+        }
+        
+    }
+
 }
 
 
@@ -661,7 +701,6 @@ void ofApp::drawControlElement(){
     } else {
         ofSetColor( 255, 20 );
     }
-    backgroundControPanel.draw( 0, ctrlPnY, ctrlPnW, 140 );
     ofPopStyle();
     
     ofPushMatrix();
@@ -1788,7 +1827,7 @@ void ofApp::synthSetting(){
     ControlParameter carrierPitch3 = synth3.addParameter("carrierPitch3");
     float amountMod3 = 12;
     ControlGenerator rCarrierFreq3 = ControlMidiToFreq().input(carrierPitch3);
-    ControlGenerator rModFreq3 = rCarrierFreq3 * 14.489;
+    ControlGenerator rModFreq3 = rCarrierFreq3 * 1.2;
     Generator modulationTone3 = SineWave().freq( rModFreq3 ) * rModFreq3 * amountMod3;
     Generator tone3 = SineWave().freq(rCarrierFreq3 + modulationTone3);
     ControlGenerator envelopTrigger3 = synth3.addParameter("trigger3");
@@ -2225,4 +2264,10 @@ void ofApp::guiSetting(){
 
 
 
+
+//--------------------------------------------------------------
+void ofApp::exit(){
+    
+    
+}
 

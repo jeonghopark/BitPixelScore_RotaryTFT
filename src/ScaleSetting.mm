@@ -51,7 +51,7 @@ int scale94[9] = {0, 4, 5, 7, 9, 12, 16, 17, 19};
 int scale95[2] = {0, 5};
 
 
-int octaveScale[7] = {60, 84, 72, 48, 36, 36, 36};
+int octaveScale[7] = {60, 84, 36, 48, 72, 36, 36};
 
 
 //--------------------------------------------------------------
@@ -242,68 +242,68 @@ int ScaleSetting::noteSelector(int _n, int _index, int _subIndex){
 void ScaleSetting::changeScale(){
     
     for (int i=0; i<4; i++){
-        scale41[i] = scale41[i] + 60;
-        scale42[i] = scale42[i] + 84;
-        scale43[i] = scale43[i] + 72;
-        scale44[i] = scale44[i] + 48;
-        scale45[i] = scale45[i] + 36;
-        scale46[i] = scale46[i] + 36;
+        scale41[i] = scale41[i] + octaveScale[0];
+        scale42[i] = scale42[i] + octaveScale[1];
+        scale43[i] = scale43[i] + octaveScale[2];
+        scale44[i] = scale44[i] + octaveScale[3];
+        scale45[i] = scale45[i] + octaveScale[4];
+        scale46[i] = scale46[i] + octaveScale[5];
     }
     for (int i=0; i<2; i++){
-        scale47[i] = scale47[i] + 36;
+        scale47[i] = scale47[i] + octaveScale[6];
     }
 
     
     for (int i=0; i<5; i++){
-        scale51[i] = scale51[i] + 60;
-        scale52[i] = scale52[i] + 84;
-        scale53[i] = scale53[i] + 72;
-        scale54[i] = scale54[i] + 48;
-        scale55[i] = scale55[i] + 36;
+        scale51[i] = scale51[i] + octaveScale[0];
+        scale52[i] = scale52[i] + octaveScale[1];
+        scale53[i] = scale53[i] + octaveScale[2];
+        scale54[i] = scale54[i] + octaveScale[3];
+        scale55[i] = scale55[i] + octaveScale[4];
     }
     for (int i=0; i<3; i++){
-        scale56[i] = scale56[i] + 36;
+        scale56[i] = scale56[i] + octaveScale[5];
     }
     
     for (int i=0; i<6; i++){
-        scale61[i] = scale61[i] + 60;
-        scale62[i] = scale62[i] + 84;
-        scale63[i] = scale63[i] + 72;
-        scale64[i] = scale64[i] + 48;
-        scale65[i] = scale65[i] + 36;
+        scale61[i] = scale61[i] + octaveScale[0];
+        scale62[i] = scale62[i] + octaveScale[1];
+        scale63[i] = scale63[i] + octaveScale[2];
+        scale64[i] = scale64[i] + octaveScale[3];
+        scale65[i] = scale65[i] + octaveScale[4];
     }
     for (int i=0; i<2; i++){
-        scale66[i] = scale66[i] + 36;
+        scale66[i] = scale66[i] + octaveScale[5];
     }
     
     for (int i=0; i<7; i++){
-        scale71[i] = scale71[i] + 60;
-        scale72[i] = scale72[i] + 84;
-        scale73[i] = scale73[i] + 72;
-        scale74[i] = scale74[i] + 48;
+        scale71[i] = scale71[i] + octaveScale[0];
+        scale72[i] = scale72[i] + octaveScale[1];
+        scale73[i] = scale73[i] + octaveScale[2];
+        scale74[i] = scale74[i] + octaveScale[3];
     }
     for (int i=0; i<3; i++){
-        scale75[i] = scale75[i] + 36;
+        scale75[i] = scale75[i] + octaveScale[4];
     }
     
     for (int i=0; i<8; i++){
-        scale81[i] = scale81[i] + 60;
-        scale82[i] = scale82[i] + 84;
-        scale83[i] = scale83[i] + 72;
-        scale84[i] = scale84[i] + 48;
+        scale81[i] = scale81[i] + octaveScale[0];
+        scale82[i] = scale82[i] + octaveScale[1];
+        scale83[i] = scale83[i] + octaveScale[2];
+        scale84[i] = scale84[i] + octaveScale[3];
     }
     for (int i=0; i<2; i++){
-        scale85[i] = scale85[i] + 36;
+        scale85[i] = scale85[i] + octaveScale[4];
     }
 
     for (int i=0; i<9; i++){
-        scale91[i] = scale91[i] + 60;
-        scale92[i] = scale92[i] + 84;
-        scale93[i] = scale93[i] + 72;
-        scale94[i] = scale94[i] + 48;
+        scale91[i] = scale91[i] + octaveScale[0];
+        scale92[i] = scale92[i] + octaveScale[1];
+        scale93[i] = scale93[i] + octaveScale[2];
+        scale94[i] = scale94[i] + octaveScale[3];
     }
     for (int i=0; i<2; i++){
-        scale95[i] = scale95[i] + 36;
+        scale95[i] = scale95[i] + octaveScale[4];
     }
 
 }
