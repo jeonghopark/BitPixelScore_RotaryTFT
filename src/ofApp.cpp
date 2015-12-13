@@ -69,7 +69,7 @@ void ofApp::setup(){
     synthSetting();
     maxSpeed    = 200;
     minSpeed    = 30;
-    bpm         = synthMain.addParameter("tempo", 100).min(minSpeed).max(maxSpeed);
+    bpm         = synthMain.addParameter("tempo", 60).min(minSpeed).max(maxSpeed);
     metro       = ControlMetro().bpm(4 * bpm);
     metroOut    = synthMain.createOFEvent(metro);
 
@@ -231,6 +231,7 @@ void ofApp::update(){
                     ofVec2f _pos = ofVec2f( i, j );
                     float _distX = ofDist(_center.x, _center.y, _center.x, j);
                     float _distY = ofDist(_center.x, _center.y, i, _center.y);
+                    
                     if ((_distY<_facesize*1.25)&&(_distX<_facesize*0.75)) {
                         pixelBright.push_back(_brightness);
                     } else {
@@ -271,12 +272,27 @@ void ofApp::update(){
                         _bWP.indexPos = i;
                         _bWP.pixelN = _bCounter;
                         whitePixels.push_back(_bWP);
+
                     }
+                    
+
                     _wCounter++;
                     _bCounter = 0;
                 }
             }
+
             
+            if (whitePixels.size()%8 !=0) {
+                int _restNum = whitePixels.size() % 8;
+                for (int j=0; j<=(8-_restNum); j++) {
+                    blackWhitePixels _bWP;
+                    _bWP.indexPos = j;
+                    _bWP.pixelN = _bCounter;
+                    whitePixels.push_back(_bWP);
+                }
+            }
+            
+
             
         }
         
@@ -322,7 +338,9 @@ void ofApp::draw(){
     ofPushStyle();
     if (!bCameraCapturePlay) {
         ofSetColor( 255, 255 );
-        edge.draw( 0, 0, screenW, screenH);
+        if (edge.isAllocated()) {
+            edge.draw( 0, 0, screenW, screenH);
+        }
     }
     ofPopStyle();
     
@@ -359,8 +377,8 @@ void ofApp::draw(){
     if (bCameraCapturePlay) {
         
         drawPixelNumbersCircleNotes();
-        //        drawPlayingShapeNotes();
-        //        drawPixelAllNoteShape();
+//                drawPlayingShapeNotes();
+//                drawPixelAllNoteShape();
         
         for (int i=0; i<noteLists.size(); i++) {
             drawPixelAllNoteShapes( noteLists[i].noteArray, i );
@@ -406,34 +424,45 @@ void ofApp::drawDebugPrintScore(){
 
     int _melodyNoteNum = melodies[0].melodyLine.size();
     
-    ofPushMatrix();
+    float _scoreXStart = 0;
+    float _scoreXEnd = ofGetWidth()-_xSizeFactor - (ofGetWidth() - 20.0) / _melodyNoteNum * 0.5;
+    
 
+    ofPushMatrix();
+    ofTranslate( (ofGetWidth() - (_scoreXEnd - _scoreXStart)) * 0.5, 0 );
+
+    
+    ofPushMatrix();
+    
     ofPushStyle();
     
     ofSetColor(0, 255);
 
+
     ofPushMatrix();
     ofTranslate(0, _upBaseLine);
     for (int i=0; i<5; i++) {
-        ofDrawLine(0, -i * _stepLine, ofGetWidth(), -i * _stepLine);
+        ofDrawLine(0, -i * _stepLine, _scoreXEnd, -i * _stepLine);
         gclef.draw(0, -_stepLine * 5, _stepLine * 2.3, _stepLine * 6.1);
     }
     ofPopMatrix();
 
     
+
     ofPushMatrix();
     ofTranslate(0, _downBaseLine);
     for (int i=0; i<5; i++) {
-        ofDrawLine(0, -i * _stepLine, ofGetWidth(), -i * _stepLine);
+        ofDrawLine(0, -i * _stepLine, _scoreXEnd, -i * _stepLine);
         fclef.draw(0, -_stepLine * 3.2, _stepLine * 2.7, _stepLine * 2.7);
     }
     ofPopMatrix();
     
     
+
     ofPushMatrix();
     ofTranslate(0, _downBaseLine);
 
-    for (int j=1; j<_melodyNoteNum; j++) {
+    for (int j=1; j<=_melodyNoteNum; j++) {
         
         float _xStep = (ofGetWidth() - 20.0) / _melodyNoteNum;
         
@@ -441,9 +470,8 @@ void ofApp::drawDebugPrintScore(){
             float _x1 = ofMap(j, 0, _melodyNoteNum, _xSizeFactor, ofGetWidth()-_xSizeFactor);
             ofDrawLine(_x1 - _xStep * 0.5, 0, _x1 - _xStep * 0.5, -_stepLine * 11);
         }
-        
+
     }
-    
     ofPopMatrix();
 
 
@@ -531,7 +559,9 @@ void ofApp::drawDebugPrintScore(){
     ofPopStyle();
     
     ofPopMatrix();
-    
+
+    ofPopMatrix();
+
 }
 
 
