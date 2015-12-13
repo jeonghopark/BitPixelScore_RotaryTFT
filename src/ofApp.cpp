@@ -91,21 +91,22 @@ void ofApp::setup(){
     index       = -1;
     noteIndex   = -1;
     
-    oldNoteIndex1 = 0;
-    oldNoteIndex2 = 0;
-    oldNoteIndex3 = 0;
-    oldNoteIndex4 = 0;
-    oldNoteIndex5 = 0;
-    oldNoteIndex6 = 0;
-    oldNoteIndex7 = 0;
+//    oldNoteIndex1 = 0;
+//    oldNoteIndex2 = 0;
+//    oldNoteIndex3 = 0;
+//    oldNoteIndex4 = 0;
+//    oldNoteIndex5 = 0;
+//    oldNoteIndex6 = 0;
+//    oldNoteIndex7 = 0;
     
-    oldScoreNote1 = 0;
-    oldScoreNote2 = 0;
-    oldScoreNote3 = 0;
-    oldScoreNote4 = 0;
-    oldScoreNote5 = 0;
-    oldScoreNote6 = 0;
-    oldScoreNote7 = 0;
+//    oldScoreNote1 = 0;
+//    oldScoreNote2 = 0;
+//    oldScoreNote3 = 0;
+//    oldScoreNote4 = 0;
+//    oldScoreNote5 = 0;
+//    oldScoreNote6 = 0;
+//    oldScoreNote7 = 0;
+    
     
     speedCSize = ctrlRectS;
     speedCPos = ofPoint( 15 * guideWidthStepSize, ctrlPnY + ctrlPnH * 0.5 );
@@ -152,6 +153,12 @@ void ofApp::setup(){
     melodies.resize(7);
     noteLists.resize(7);
     oldScoreNote.resize(7);
+
+    for (int i=0; i<oldScoreNote.size(); i++) {
+        oldScoreNote[i] = 0;
+        noteLists[i].noteArray.push_back(0);
+        melodies[i].melodyLine.push_back(0);
+    }
     
     ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
 
@@ -161,6 +168,8 @@ void ofApp::setup(){
     faceFind.setPreset(ObjectFinder::Fast);
     faceFind.setFindBiggestObject(true);
 
+    
+    debugView = true;
     
 }
 
@@ -337,15 +346,8 @@ void ofApp::draw(){
     ofPushMatrix();
     
     ofPushStyle();
-    
     if (!bCameraCapturePlay) {
-        
-        if (WHITE_VIEW) {
-            ofSetColor( 255, 255 );
-        } else {
-            ofSetColor( 255, 150 );
-        }
-        
+        ofSetColor( 255, 255 );
         edge.draw( 0, 0, screenW, screenH);
     }
     ofPopStyle();
@@ -353,19 +355,16 @@ void ofApp::draw(){
     
     ofPushStyle();
     if (bCameraCapturePlay) {
-        
         ofSetColor( 255, 255 );
         ofDrawRectangle(0, 0, screenW, screenH);
         
-        if (WHITE_VIEW) {
-            ofSetColor( 255, 80 );
-        } else {
-            ofSetColor( 255, 120 );
-        }
+        ofSetColor( 255, 180 );
         bufferImg.draw( 0, 0, screenW, screenH);
     }
     ofPopStyle();
+    
     ofPopMatrix();
+    
     
     //    ofPushStyle();
     //    ofSetColor(255,230);
@@ -375,17 +374,9 @@ void ofApp::draw(){
     
     ofPushStyle();
     if (bCameraCapturePlay) {
-        if (WHITE_VIEW) {
-            ofSetColor( 0, 60 );
-        } else {
-            ofSetColor( 255, 60 );
-        }
+        ofSetColor( 0, 60 );
     } else {
-        if (WHITE_VIEW) {
-            ofSetColor( 0, 160 );
-        } else {
-            ofSetColor( 255, 160 );
-        }
+        ofSetColor( 0, 160 );
     }
     drawTrianglePixel();
     ofPopStyle();
@@ -404,25 +395,7 @@ void ofApp::draw(){
         for (int i=0; i<noteLists.size(); i++) {
             drawPlayingShapeNote( noteLists[i].noteArray, i );
         }
-        
-//        drawPixelAllNoteShapes( scoreNote1, 1 );
-//        drawPixelAllNoteShapes( scoreNote2, 2 );
-//        drawPixelAllNoteShapes( scoreNote3, 3 );
-//        drawPixelAllNoteShapes( scoreNote4, 4 );
-//        drawPixelAllNoteShapes( scoreNote5, 5 );
-//        drawPixelAllNoteShapes( scoreNote6, 6 );
-//        drawPixelAllNoteShapes( scoreNote7, 7 );
-//        
-//        //        drawPixelShapeColorSize();
-//        
-//        drawPlayingShapeNote( scoreNote1, 1 );
-//        drawPlayingShapeNote( scoreNote2, 2 );
-//        drawPlayingShapeNote( scoreNote3, 3 );
-//        drawPlayingShapeNote( scoreNote4, 4 );
-//        drawPlayingShapeNote( scoreNote5, 5 );
-//        drawPlayingShapeNote( scoreNote6, 6 );
-//        drawPlayingShapeNote( scoreNote7, 7 );
-        
+                
     }
     
 //    drawControlElement();
@@ -437,8 +410,14 @@ void ofApp::draw(){
     ofPopMatrix();
 
     
-    debugInformation();
-    gui.draw();
+
+    if (debugView ) {
+        
+        debugInformation();
+        gui.draw();
+
+    }
+    
     
     drawDebugPrintScore();
     
@@ -481,7 +460,7 @@ void ofApp::drawDebugPrintScore(){
     ofPopMatrix();
     
     
-    float _xFactor = _stepLine * 3.2;
+    float _xSizeFactor = _stepLine * 5;
     
     ofPushMatrix();
     ofTranslate(0, _downBaseLine);
@@ -491,7 +470,7 @@ void ofApp::drawDebugPrintScore(){
         float _xStep = (ofGetWidth() - 20.0) / melodies[0].melodyLine.size();
         
         if (j % 8 == 0) {
-            float _x1 = ofMap(j, 0, melodies[0].melodyLine.size(), _xFactor, ofGetWidth()-_xFactor);
+            float _x1 = ofMap(j, 0, melodies[0].melodyLine.size(), _xSizeFactor, ofGetWidth()-_xSizeFactor);
             ofDrawLine(_x1 - _xStep * 0.5, 0, _x1 - _xStep * 0.5, -_stepLine * 11);
         }
         
@@ -509,15 +488,18 @@ void ofApp::drawDebugPrintScore(){
     
     
     ofPushMatrix();
+
+    ofPushStyle();
     ofTranslate(0, _upBaseLine);
 
     ofSetColor(255, 0, 0, 255);
     if (melodies[0].melodyLine.size()>0) {
         int _index = noteIndex % melodies[0].melodyLine.size();
-        float _x1 = ofMap(_index, 0, melodies[0].melodyLine.size(), _xFactor, ofGetWidth()-_xFactor);
+        float _x1 = ofMap(_index, 0, melodies[0].melodyLine.size(), _xSizeFactor, ofGetWidth()-_xSizeFactor);
         float _y1 = 0;
         ofDrawLine(_x1, _y1 + 100, _x1, _y1 - 100);
     }
+    ofPopStyle();
     
     
     ofPushStyle();
@@ -533,7 +515,7 @@ void ofApp::drawDebugPrintScore(){
 
         for (int j=0; j<melodies[i].melodyLine.size(); j++) {
             
-            float _x1 = ofMap(j, 0, melodies[i].melodyLine.size(), _xFactor, ofGetWidth()-_xFactor);
+            float _x1 = ofMap(j, 0, melodies[i].melodyLine.size(), _xSizeFactor, ofGetWidth()-_xSizeFactor);
             
             if (melodies[i].melodyLine[j]>0) {
                 
@@ -1593,6 +1575,10 @@ void ofApp::keyReleased(int key){
             touchDownDefault = 0;
         }
 
+    }
+    
+    if (key == 'g') {
+        debugView = !debugView;
     }
     
     

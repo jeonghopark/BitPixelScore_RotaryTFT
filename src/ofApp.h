@@ -259,4 +259,6 @@ public:
     
     ofImage gclef, fclef;
     
+    bool debugView;
+    
 };
