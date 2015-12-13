@@ -69,7 +69,7 @@ void ofApp::setup(){
     synthSetting();
     maxSpeed    = 200;
     minSpeed    = 30;
-    bpm         = synthMain.addParameter("tempo", 60).min(minSpeed).max(maxSpeed);
+    bpm         = synthMain.addParameter("tempo", 100).min(minSpeed).max(maxSpeed);
     metro       = ControlMetro().bpm(4 * bpm);
     metroOut    = synthMain.createOFEvent(metro);
 
@@ -152,6 +152,9 @@ void ofApp::setup(){
  
     ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
 
+    printScoreFbo.allocate(384, ofGetWidth() * 2);
+    
+    
 }
 
 
@@ -299,6 +302,16 @@ void ofApp::update(){
     }
 
     
+    
+    
+    // FBO
+    printScoreFbo.begin();
+    
+    ofClear(180, 255);
+
+    drawPrintScoreFBO();
+    
+    printScoreFbo.end();
 
 }
 
@@ -408,14 +421,183 @@ void ofApp::draw(){
     }
     
     
-    drawDebugPrintScore();
+//    drawPrintScore();
     
+    ofPushMatrix();
+    
+    //FIXME: 12 ????
+    ofTranslate(-ofGetWidth()*0.5 + 12, ofGetHeight());
+    ofRotateZ(-90);
+    
+    printScoreFbo.draw(0, ofGetHeight() - 384 * 0.5, 384 * 0.5, ofGetWidth());
+    
+    ofPopMatrix();
     
 }
 
 
 //--------------------------------------------------------------
-void ofApp::drawDebugPrintScore(){
+void ofApp::drawPrintScoreFBO(){
+    
+    ofPushMatrix();
+    //FIXME:: 40 ????
+    ofTranslate(ofGetHeight()*0.5-40, 0);
+    ofRotateZ(90);
+    
+    
+    float _stepLine = 10;
+    float _downBaseLine = 260;
+    float _upBaseLine = _downBaseLine - _stepLine * 7;
+    float _xSizeFactor = _stepLine * 5;
+    
+    int _melodyNoteNum = melodies[0].melodyLine.size();
+    
+    float _scoreXStart = 0;
+    float _scoreXEnd = ofGetWidth() * 2-_xSizeFactor - (ofGetWidth() * 2 - 20.0) / _melodyNoteNum * 0.5;
+    
+    ofPushMatrix();
+    ofTranslate( (ofGetWidth() * 2 - (_scoreXEnd - _scoreXStart)) * 0.5, 0 );
+    
+    
+    ofPushMatrix();
+    
+    ofPushStyle();
+    
+    ofSetColor(0, 255);
+    
+    
+    ofPushMatrix();
+    ofTranslate(0, _upBaseLine);
+    for (int i=0; i<5; i++) {
+        ofDrawLine(0, -i * _stepLine, _scoreXEnd, -i * _stepLine);
+        gclef.draw(0, -_stepLine * 5, _stepLine * 2.3, _stepLine * 6.1);
+    }
+    ofPopMatrix();
+    
+    
+    
+    ofPushMatrix();
+    ofTranslate(0, _downBaseLine);
+    for (int i=0; i<5; i++) {
+        ofDrawLine(0, -i * _stepLine, _scoreXEnd, -i * _stepLine);
+        fclef.draw(0, -_stepLine * 3.2, _stepLine * 2.7, _stepLine * 2.7);
+    }
+    ofPopMatrix();
+    
+    
+    
+    ofPushMatrix();
+    ofTranslate(0, _downBaseLine);
+    
+    for (int j=1; j<=_melodyNoteNum; j++) {
+        
+        float _xStep = (ofGetWidth() * 2 - 20.0) / _melodyNoteNum;
+        
+        if (j % 8 == 0) {
+            float _x1 = ofMap(j, 0, _melodyNoteNum, _xSizeFactor, ofGetWidth() * 2-_xSizeFactor);
+            ofDrawLine(_x1 - _xStep * 0.5, 0, _x1 - _xStep * 0.5, -_stepLine * 11);
+        }
+        
+    }
+    ofPopMatrix();
+    
+    
+    
+    ofPopStyle();
+    
+    ofPopMatrix();
+    
+    
+    
+    
+    ofPushMatrix();
+    
+    ofPushStyle();
+    ofTranslate(0, _upBaseLine);
+    
+    ofSetColor(255, 0, 0, 255);
+    if (_melodyNoteNum>0) {
+        int _index = noteIndex % _melodyNoteNum;
+        float _x1 = ofMap(_index, 0, _melodyNoteNum, _xSizeFactor, ofGetWidth() * 2-_xSizeFactor);
+        float _y1 = 0;
+        ofDrawLine(_x1, _y1 + 100, _x1, _y1 - 100);
+    }
+    ofPopStyle();
+    
+    
+    ofPushStyle();
+    
+    ofSetColor(0, 255);
+    
+    float _stempLength = 27;
+    float _teilWidth = 2;
+    float _teilLength = 10;
+    float _teilEndX = _teilLength * 0.75;
+    
+    for (int i=0; i<melodies.size(); i++) {
+        
+        for (int j=0; j<melodies[i].melodyLine.size(); j++) {
+            
+            float _x1 = ofMap(j, 0, melodies[i].melodyLine.size(), _xSizeFactor, ofGetWidth() * 2-_xSizeFactor);
+            
+            if (melodies[i].melodyLine[j]>0) {
+                
+                //TODO: Fix Score
+                if (i%3==0 || i%3==1) {
+                    int _note = melodies[i].melodyLine[j] % 12;
+                    int _octaveFactor = octaveScaleFactor[i];
+                    int _noteOctave = (melodies[i].melodyLine[j] - _octaveFactor) / 12;
+                    
+                    float _posY = notePosition(_note, _stepLine);
+                    float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
+                    
+                    ofDrawCircle(_x1, _yOutput, 3);
+                    
+                    ofSetLineWidth(1);
+                    ofDrawLine(_x1+2, _yOutput, _x1+2, _yOutput - _stempLength);
+                    
+                    ofSetLineWidth(_teilWidth);
+                    ofDrawLine(_x1+2, _yOutput-_stempLength, _x1+_teilEndX, _yOutput - _teilLength);
+                    
+                } else {
+                    
+                    int _note = melodies[i].melodyLine[j] % 12;
+                    int _octaveFactor = octaveScaleFactor[i];
+                    int _noteOctave = (melodies[i].melodyLine[j] - _octaveFactor) / 12 - 2;
+                    
+                    float _posY = notePosition(_note, _stepLine);
+                    float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
+                    
+                    ofDrawCircle(_x1, _yOutput, 3);
+                    
+                    ofSetLineWidth(1);
+                    ofDrawLine(_x1+2, _yOutput, _x1+2, _yOutput - _stempLength);
+                    
+                    ofSetLineWidth(_teilWidth);
+                    ofDrawLine(_x1+2, _yOutput-_stempLength, _x1+_teilEndX, _yOutput - _teilLength);
+                    
+                }
+                
+            }
+            
+        }
+    }
+    
+    
+    ofPopStyle();
+    
+    ofPopMatrix();
+    
+    ofPopMatrix();
+    
+    ofPopMatrix();
+
+    
+}
+
+
+//--------------------------------------------------------------
+void ofApp::drawPrintScore(){
     
     float _stepLine = 10;
     float _downBaseLine = ofGetHeight() - 70;
@@ -515,6 +697,7 @@ void ofApp::drawDebugPrintScore(){
             
             if (melodies[i].melodyLine[j]>0) {
                 
+                //TODO: Fix Score
                 if (i%3==0 || i%3==1) {
                     int _note = melodies[i].melodyLine[j] % 12;
                     int _octaveFactor = octaveScaleFactor[i];
@@ -678,8 +861,14 @@ void ofApp::debugInformation(){
     
     ofPushMatrix();
     
+    ofPushStyle();
+    
+    ofSetColor(255);
+    
     cam.draw(ofGetWidth()-200, 0, 200, 150);
     centerCam.draw(ofGetWidth()-175, 150, 150, 150);
+
+    ofSetColor(0);
 
     ofDrawBitmapString(ofToString(ofGetFrameRate(),1), ofGetWidth()-175, 320);
     
@@ -687,6 +876,7 @@ void ofApp::debugInformation(){
         ofDrawBitmapString(ofToString(blackPixels.size()), ofGetWidth()-175, 340);
     }
 
+    ofPopStyle();
     
     ofPopMatrix();
     

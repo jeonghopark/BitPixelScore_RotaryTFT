@@ -220,7 +220,7 @@ public:
 
     
     vector<melody> melodies;
-    void drawDebugPrintScore();
+    void drawPrintScore();
 
     void printScoreMake();
     void checkSameNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scoreCh );
@@ -236,4 +236,8 @@ public:
     
     bool debugView;
     
+    ofFbo printScoreFbo;
+  
+    void drawPrintScoreFBO();
+
 };
