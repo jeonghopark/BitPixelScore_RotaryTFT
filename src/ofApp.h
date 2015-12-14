@@ -221,6 +221,9 @@ public:
     ofxPanel gui;
     ofxFloatSlider thresholdF;
     ofxFloatSlider mainVolume;
+    ofxLabel frameRate;
+    ofxLabel noteNum;
+    ofxLabel faceNum;
     
 
     
@@ -249,5 +252,8 @@ public:
     
     ofxThermalPrinter printer;
 
+    void printHeader();
+    void printFooter();
+    
     
 };

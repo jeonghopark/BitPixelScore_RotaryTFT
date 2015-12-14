@@ -323,6 +323,18 @@ void ofApp::update(){
     
     printScoreFbo.end();
 
+    
+    frameRate = ofToString(ofGetFrameRate(),2);
+    if (faceFind.size()>0) {
+        faceNum = ofToString(faceFind.size());
+    }
+    if (blackPixels.size()>0) {
+        noteNum = ofToString(blackPixels.size());
+    }
+
+    
+    
+    
 }
 
 
@@ -902,26 +914,10 @@ void ofApp::debugInformation(){
     ofPushMatrix();
     
     ofPushStyle();
-    
     ofSetColor(255);
     
-    cam.draw(ofGetWidth()-200, 0, 200, 150);
     centerCam.draw(ofGetWidth()-175, 150, 150, 150);
-
     printCam.draw(ofGetWidth()-175, 300, 150, 150);
-    
-    
-    ofSetColor(0);
-
-    ofDrawBitmapString(ofToString(ofGetFrameRate(),1), ofGetWidth()-175, 320);
-    
-    if (blackPixels.size()>0) {
-        ofDrawBitmapString(ofToString(blackPixels.size()), ofGetWidth()-175, 340);
-    }
-    
-    if (faceFind.size()>0) {
-        ofDrawBitmapString(ofToString(faceFind.size()), ofGetWidth()-175, 360);
-    }
 
     ofPopStyle();
     
@@ -1731,12 +1727,8 @@ void ofApp::keyReleased(int key){
         debugView = !debugView;
 
     }  else if (key == 's') {
-        
-        printer.print(" ");
-        printer.print(" ");
-        printer.print(" ");
-        printer.print(" ");
-
+        printer.println("------------------------");
+        printer.println(" ");
         ofPixels _p;
         printScoreFbo.readToPixels(_p);
         ofImage _image;
@@ -1744,20 +1736,17 @@ void ofApp::keyReleased(int key){
         float _h = printScoreFbo.getHeight();
         _image.setFromPixels(_p.getData(), _w, _h, OF_IMAGE_COLOR_ALPHA);
         printer.print(_image, 100);
-
-        printer.print(" ");
-        printer.print(" ");
-        printer.print(" ");
-        printer.print(" ");
         
     } else if (key == 'e') {
-        
-        printer.stopThread();
+        printer.close();
+        printer.open("/dev/cu.usbserial-A900adIr");
         
     } else if (key == 'i') {
-        
         printer.print(printCam);
-        
+    } else if (key == 'h') {
+        printHeader();
+    } else if (key == 'f') {
+        printFooter();
     }
 
     
@@ -2040,6 +2029,34 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 }
 
 
+
+//--------------------------------------------------------------
+void ofApp::printHeader(){
+ 
+    string _date = ofGetTimestampString();
+    printer.println("------------------------");
+    printer.println(_date);
+    printer.println("------------------------");
+    printer.println(" ");
+
+}
+
+
+
+//--------------------------------------------------------------
+void ofApp::printFooter(){
+    
+    string _date = ofGetTimestampString();
+    printer.println("------------------------");
+    printer.println(" ");
+    printer.println(" ");
+    printer.println(" ");
+    printer.println(" ");
+
+}
+
+
+
 //--------------------------------------------------------------
 void ofApp::synthSetting(){
     
@@ -2285,6 +2302,9 @@ void ofApp::guiSetting(){
     gui.setup();
     gui.add(thresholdF.setup("Threshold", 120, 0, 255));
     gui.add(mainVolume.setup("Volume", 0.5, 0, 1));
+    gui.add(frameRate.setup("fr", ""));
+    gui.add(noteNum.setup("Notes", ""));
+    gui.add(faceNum.setup("face Num", ""));
     
     
 }
