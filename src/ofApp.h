@@ -240,4 +240,6 @@ public:
   
     void drawPrintScoreFBO();
 
+    ofVec2f faceCenter;
+    
 };

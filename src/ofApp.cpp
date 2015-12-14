@@ -60,7 +60,7 @@ void ofApp::setup(){
     ctrlRectS           = 80 / _widthDefault * _sizeF;
     guideWidthStepSize  = 96 / _widthDefault * _sizeF;
     guideHeightStepSize = 64 / _widthDefault * _sizeF;
-    lineScoreStepX      = 35.5 / _widthDefault * _sizeF;
+    lineScoreStepX      = 51 / _widthDefault * _sizeF;
     lineScoreStepY      = 5 / _widthDefault * _sizeF;
     stepBasePos         = 105 / _widthDefault * _sizeF;
     pixeShapeSize       = 1 / _widthDefault * _sizeF;
@@ -177,7 +177,6 @@ void ofApp::update(){
 
         faceFind.update(centerCam);
         
-        ofVec2f _center;
         
         float _faceWidth;
         float _faceHeight;
@@ -185,18 +184,18 @@ void ofApp::update(){
         
         float _sizeAdd = 20;
         if (faceFind.size()>0) {
-            _center = faceFind.getObject(0).getCenter();
+            faceCenter = faceFind.getObject(0).getCenter();
             _faceWidth = faceFind.getObject(0).getWidth() + _sizeAdd;
             _faceHeight = faceFind.getObject(0).getHeight() + _sizeAdd;
             _facesize = max(_faceWidth, _faceHeight) * 0.5;
         } else {
-            _center = ofVec2f(400, 300);
+            faceCenter = ofVec2f(300, 300);
             _faceWidth = 600;
             _faceHeight = 600;
             _facesize = 600;
         }
         
-
+        
         
         convertColor(centerCam, gray, CV_RGB2GRAY);
         threshold(gray, gray, thresholdF);
@@ -225,17 +224,19 @@ void ofApp::update(){
             blackPixels.clear();
             
 
-            for (int i=0; i<camSize; i+=pixelStepS) {
-                for (int j=0; j<camSize; j+=pixelStepS) {
+            for (int i=0; i<screenW; i+=pixelStepS) {
+                for (int j=0; j<screenW; j+=pixelStepS) {
             
-                    int _index = j + i * camSize;
+                    int _index = j + i * screenW;
                     float _brightness = _src[_index];
                     
-                    ofVec2f _pos = ofVec2f( i, j );
-                    float _distX = ofDist(_center.x, _center.y, _center.x, j);
-                    float _distY = ofDist(_center.x, _center.y, i, _center.y);
+                    ofVec2f _pos = ofVec2f( j, i );
+                    float _distX = ofDist(faceCenter.x, faceCenter.y, _pos.x, faceCenter.y);
+                    float _distY = ofDist(faceCenter.x, faceCenter.y, faceCenter.x, _pos.y);
                     
-                    if ((_distY<_facesize*1.25)&&(_distX<_facesize*0.75)) {
+                    float _dist = ofDist(faceCenter.x, faceCenter.y, _pos.x, _pos.y);
+                    
+                    if ((_distX<_facesize*0.75)&&(_distY<_facesize*1.25)) {
                         pixelBright.push_back(_brightness);
                     } else {
                         pixelBright.push_back(255);
@@ -403,13 +404,18 @@ void ofApp::draw(){
         
     }
     
-//    drawControlElement();
-    
-    if (bCameraCapturePlay) {
-        drawLineScore();
-    }
     
 //    drawBaseInterface();
+
+    
+    
+//    ofPushStyle();
+//    ofRectMode(OF_RECTMODE_CENTER);
+//    ofNoFill();
+//    ofSetColor(0,255,0);
+//    ofDrawRectangle(faceCenter.x, faceCenter.y, 30, 30);
+//    ofPopStyle();
+    
     
     
     ofPopMatrix();
@@ -433,6 +439,17 @@ void ofApp::draw(){
     
     ofPopMatrix();
     
+    
+    
+    
+//    ofPushMatrix();
+//    ofTranslate((ofGetWidth() - 600) * 0.5, 0);
+//    drawControlElement();
+//    if (bCameraCapturePlay) {
+//        drawLineScore();
+//    }
+//    ofPopMatrix();
+
 }
 
 
@@ -889,6 +906,10 @@ void ofApp::debugInformation(){
     if (blackPixels.size()>0) {
         ofDrawBitmapString(ofToString(blackPixels.size()), ofGetWidth()-175, 340);
     }
+    
+    if (faceFind.size()>0) {
+        ofDrawBitmapString(ofToString(faceFind.size()), ofGetWidth()-175, 360);
+    }
 
     ofPopStyle();
     
@@ -902,55 +923,52 @@ void ofApp::debugInformation(){
 void ofApp::drawControlElement(){
     
     
-    ofPushStyle();
-    if (WHITE_VIEW) {
-        ofSetColor( 255 );
-    } else {
-        ofSetColor( 0 );
-    }
-    ofDrawRectangle( 0, ctrlPnY, ctrlPnW, ctrlPnH );
-    if (WHITE_VIEW) {
-        ofSetColor( 0, 10 );
-    } else {
-        ofSetColor( 255, 20 );
-    }
-    ofPopStyle();
-    
-    ofPushMatrix();
-    ofPushStyle();
-    
-    if (WHITE_VIEW) {
-        ofSetColor( 0, 80 );
-    } else {
-        ofSetColor( 255, 80 );
-    }
-    
-    float _speedX = guideWidthStepSize;
-    float _yD = 20;
-    ofDrawLine( _speedX, ctrlPnY + _yD, _speedX, screenH - _yD);
-    
-    float _thresholdX = guideWidthStepSize * 15;
-    ofDrawLine( _thresholdX, ctrlPnY + _yD, _thresholdX, screenH - _yD);
-    
-    //    float _intervalX = guideWidthStepSize * 2.5;
-    //    ofDrawLine( _intervalX, ctrlPnY + _yD, _intervalX, screenH - _yD);
-    
-    ofPopStyle();
-    ofPopMatrix();
-    
-    int _alpha = 180;
-    ofPushStyle();
-    if (WHITE_VIEW) {
-        ofSetColor( 0, _alpha );
-    } else {
-        ofSetColor( 255, _alpha );
-    }
-    ofSetCircleResolution(48);
-    float _sX = speedCPos.x;
-    float _sY = speedCPos.y;
-    ofNoFill();
-    ofDrawCircle( _sX, _sY, speedCSize * 0.5 );
-    ofPopStyle();
+//    ofPushStyle();
+//    if (WHITE_VIEW) {
+//        ofSetColor( 255 );
+//    } else {
+//        ofSetColor( 0 );
+//    }
+//    ofDrawRectangle( 0, ctrlPnY, ctrlPnW, ctrlPnH );
+//    if (WHITE_VIEW) {
+//        ofSetColor( 0, 10 );
+//    } else {
+//        ofSetColor( 255, 20 );
+//    }
+//    ofPopStyle();
+//    
+//    ofPushMatrix();
+//    ofPushStyle();
+//    
+//    if (WHITE_VIEW) {
+//        ofSetColor( 0, 80 );
+//    } else {
+//        ofSetColor( 255, 80 );
+//    }
+//    
+//    ofDrawLine( _speedX, ctrlPnY + _yD, _speedX, screenH - _yD);
+//    
+//    float _thresholdX = guideWidthStepSize * 15;
+//    ofDrawLine( _thresholdX, ctrlPnY + _yD, _thresholdX, screenH - _yD);
+//    
+//    //    float _intervalX = guideWidthStepSize * 2.5;
+//    //    ofDrawLine( _intervalX, ctrlPnY + _yD, _intervalX, screenH - _yD);
+//    
+//    ofPopStyle();
+//    ofPopMatrix();
+//    
+//    ofPushStyle();
+//    if (WHITE_VIEW) {
+//        ofSetColor( 0, _alpha );
+//    } else {
+//        ofSetColor( 255, _alpha );
+//    }
+//    ofSetCircleResolution(48);
+//    float _sX = speedCPos.x;
+//    float _sY = speedCPos.y;
+//    ofNoFill();
+//    ofDrawCircle( _sX, _sY, speedCSize * 0.5 );
+//    ofPopStyle();
     
     //    ofPushStyle();
     //    ofSetColor( 255, _alpha );
@@ -965,20 +983,23 @@ void ofApp::drawControlElement(){
     //    ofDrawTriangle( _x1, _y1, _x2, _y2, _x3, _y3 );
     //    ofPopStyle();
     
-    
-    ofPushStyle();
-    if (WHITE_VIEW) {
-        ofSetColor( 0, _alpha );
-    } else {
-        ofSetColor( 255, _alpha );
-    }
-    float _iX = intervalPos.x;
-    float _iY = intervalPos.y;
-    ofDrawLine( _iX - intervalSize, _iY, _iX, _iY + intervalSize );
-    ofDrawLine( _iX, _iY - intervalSize, _iX + intervalSize, _iY );
-    ofDrawLine( _iX + intervalSize, _iY, _iX, _iY + intervalSize );
-    ofDrawLine( _iX, _iY - intervalSize, _iX - intervalSize, _iY );
-    ofPopStyle();
+    int _alpha = 180;
+    float _speedX = guideWidthStepSize;
+    float _yD = 20;
+
+//    ofPushStyle();
+//    if (WHITE_VIEW) {
+//        ofSetColor( 0, _alpha );
+//    } else {
+//        ofSetColor( 255, _alpha );
+//    }
+//    float _iX = intervalPos.x;
+//    float _iY = intervalPos.y;
+//    ofDrawLine( _iX - intervalSize, _iY, _iX, _iY + intervalSize );
+//    ofDrawLine( _iX, _iY - intervalSize, _iX + intervalSize, _iY );
+//    ofDrawLine( _iX + intervalSize, _iY, _iX, _iY + intervalSize );
+//    ofDrawLine( _iX, _iY - intervalSize, _iX - intervalSize, _iY );
+//    ofPopStyle();
     
     
     ofPushMatrix();
@@ -992,10 +1013,10 @@ void ofApp::drawControlElement(){
     int _xDefaultPos = lineScoreStepX * (lineScoreNumber-1);
     
     float _xL1 = ctrlPnW * 0.5 - _xDefaultPos * 0.5;
-    ofDrawLine( _xL1, ctrlPnY + _yD, _xL1, screenH - _yD);
+    ofDrawLine( _xL1, ctrlPnY + _yD, _xL1, ofGetHeight() - _yD);
     
     float _xL2 = ctrlPnW * 0.5 + _xDefaultPos * 0.5;
-    ofDrawLine( _xL2, ctrlPnY + _yD, _xL2, screenH - _yD);
+    ofDrawLine( _xL2, ctrlPnY + _yD, _xL2, ofGetHeight() - _yD);
     
     float _xM = ctrlPnW * 0.5;
     if (WHITE_VIEW) {
