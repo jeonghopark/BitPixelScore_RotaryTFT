@@ -21,6 +21,8 @@ void ofApp::setup(){
     
     ofSetCircleResolution(16);
     
+    printer.open("/dev/cu.usbserial-A900adIr");
+
     gclef.load("GClef.png");
     fclef.load("FClef.png");
     
@@ -44,6 +46,8 @@ void ofApp::setup(){
     
     camColorCV.allocate(cam.getWidth(), cam.getHeight());
     centerCam.allocate(screenW, screenH);
+    cannyInverted.allocate(screenW, screenH, OF_PIXELS_GRAY);
+
     
     float _sizeF = screenW;
     ctrlPnX = 0;
@@ -174,9 +178,9 @@ void ofApp::update(){
         camColorCV.setFromPixels(cam.getPixels().getData(), cam.getWidth(), cam.getHeight());
         camColorCV.setROI(100, 0, 600, 600);
         centerCam.setFromPixels(camColorCV.getRoiPixels());
-
-        faceFind.update(centerCam);
         
+        
+        faceFind.update(centerCam);
         
         float _faceWidth;
         float _faceHeight;
@@ -195,17 +199,22 @@ void ofApp::update(){
             _facesize = 600;
         }
         
-        
-        
+
         convertColor(centerCam, gray, CV_RGB2GRAY);
         threshold(gray, gray, thresholdF);
         //                erode(gray);
         Canny(gray, edge, cannyThreshold1, cannyThreshold2, 3);
-        thin(edge);
         
-        if (WHITE_VIEW) {
-            invert(edge);
-        }
+        
+        printCam.setFromPixels(centerCam.getPixels().getData(), 600, 600, OF_IMAGE_COLOR);
+//        invert(printCam);
+        rotate(printCam, printCam, -90);
+        printCam.resize(348, 348);
+
+        
+        thin(edge);
+        invert(edge);
+        
         
         edge.update();
         
@@ -899,6 +908,9 @@ void ofApp::debugInformation(){
     cam.draw(ofGetWidth()-200, 0, 200, 150);
     centerCam.draw(ofGetWidth()-175, 150, 150, 150);
 
+    printCam.draw(ofGetWidth()-175, 300, 150, 150);
+    
+    
     ofSetColor(0);
 
     ofDrawBitmapString(ofToString(ofGetFrameRate(),1), ofGetWidth()-175, 320);
@@ -1714,12 +1726,40 @@ void ofApp::keyReleased(int key){
             touchDownDefault = 0;
         }
 
-    }
+    } else if (key == 'g') {
     
-    if (key == 'g') {
         debugView = !debugView;
+
+    }  else if (key == 's') {
+        
+        printer.print(" ");
+        printer.print(" ");
+        printer.print(" ");
+        printer.print(" ");
+
+        ofPixels _p;
+        printScoreFbo.readToPixels(_p);
+        ofImage _image;
+        float _w = printScoreFbo.getWidth();
+        float _h = printScoreFbo.getHeight();
+        _image.setFromPixels(_p.getData(), _w, _h, OF_IMAGE_COLOR_ALPHA);
+        printer.print(_image, 100);
+
+        printer.print(" ");
+        printer.print(" ");
+        printer.print(" ");
+        printer.print(" ");
+        
+    } else if (key == 'e') {
+        
+        printer.stopThread();
+        
+    } else if (key == 'i') {
+        
+        printer.print(printCam);
+        
     }
-    
+
     
 }
 
@@ -2256,6 +2296,7 @@ void ofApp::guiSetting(){
 void ofApp::exit(){
     
     ofSoundStreamStop();
-    
+    printer.close();
+
 }
 

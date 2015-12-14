@@ -5,8 +5,10 @@
 #include "ofxOpenCv.h"
 #include "ofxTonic.h"
 #include "ofxGui.h"
+#include "ofxThermalPrinter.h"
 
 #include "ScaleSetting.h"
+
 
 struct blackWhitePixels{
     int indexPos;
@@ -96,7 +98,10 @@ public:
     ofxCvColorImage centerCam;
     ofxCvColorImage faceCam;
     
+    ofPixels cannyInverted;
+
     ofImage edge;
+    ofImage printCam;
     ofPixels gray;
     bool camOpen;
     float cannyThreshold1;
@@ -241,5 +246,8 @@ public:
     void drawPrintScoreFBO();
 
     ofVec2f faceCenter;
+    
+    ofxThermalPrinter printer;
+
     
 };

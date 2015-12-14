@@ -61,6 +61,10 @@
 		A89E3A661C1CA47800EBE165 /* ofxSlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A89E3A5B1C1CA47800EBE165 /* ofxSlider.cpp */; };
 		A89E3A671C1CA47800EBE165 /* ofxSliderGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A89E3A5D1C1CA47800EBE165 /* ofxSliderGroup.cpp */; };
 		A89E3A681C1CA47800EBE165 /* ofxToggle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A89E3A5F1C1CA47800EBE165 /* ofxToggle.cpp */; };
+		A8E4AE5C1C1EFC6C0017C6FE /* unix.cc in Sources */ = {isa = PBXBuildFile; fileRef = A8E4AE501C1EFC6C0017C6FE /* unix.cc */; };
+		A8E4AE5D1C1EFC6C0017C6FE /* win.cc in Sources */ = {isa = PBXBuildFile; fileRef = A8E4AE521C1EFC6C0017C6FE /* win.cc */; };
+		A8E4AE5E1C1EFC6C0017C6FE /* ofxThermalPrinter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8E4AE551C1EFC6C0017C6FE /* ofxThermalPrinter.cpp */; };
+		A8E4AE5F1C1EFC6C0017C6FE /* serial.cc in Sources */ = {isa = PBXBuildFile; fileRef = A8E4AE571C1EFC6C0017C6FE /* serial.cc */; };
 		A90BD1857986C638E780E425 /* ofxCvGrayscaleImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 07853DBFC70478F3562A1472 /* ofxCvGrayscaleImage.cpp */; };
 		A9D85B9BF0FB5A1B65DD3E34 /* ofxCvShortImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 57BFA2AD0192A7419C5AB226 /* ofxCvShortImage.cpp */; };
 		B02424F31695B26B06225FD6 /* fdog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F05514E5F6E1647A4B797112 /* fdog.cpp */; };
@@ -372,6 +376,15 @@
 		A89E3A5E1C1CA47800EBE165 /* ofxSliderGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxSliderGroup.h; sourceTree = "<group>"; };
 		A89E3A5F1C1CA47800EBE165 /* ofxToggle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxToggle.cpp; sourceTree = "<group>"; };
 		A89E3A601C1CA47800EBE165 /* ofxToggle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxToggle.h; sourceTree = "<group>"; };
+		A8E4AE501C1EFC6C0017C6FE /* unix.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = unix.cc; path = ../../../../openFrameworks/addons/ofxThermalPrinter/src/impl/unix.cc; sourceTree = "<group>"; };
+		A8E4AE511C1EFC6C0017C6FE /* unix.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = unix.h; path = ../../../../openFrameworks/addons/ofxThermalPrinter/src/impl/unix.h; sourceTree = "<group>"; };
+		A8E4AE521C1EFC6C0017C6FE /* win.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = win.cc; path = ../../../../openFrameworks/addons/ofxThermalPrinter/src/impl/win.cc; sourceTree = "<group>"; };
+		A8E4AE531C1EFC6C0017C6FE /* win.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = win.h; path = ../../../../openFrameworks/addons/ofxThermalPrinter/src/impl/win.h; sourceTree = "<group>"; };
+		A8E4AE551C1EFC6C0017C6FE /* ofxThermalPrinter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ofxThermalPrinter.cpp; path = ../../../../openFrameworks/addons/ofxThermalPrinter/src/ofxThermalPrinter.cpp; sourceTree = "<group>"; };
+		A8E4AE561C1EFC6C0017C6FE /* ofxThermalPrinter.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxThermalPrinter.h; path = ../../../../openFrameworks/addons/ofxThermalPrinter/src/ofxThermalPrinter.h; sourceTree = "<group>"; };
+		A8E4AE571C1EFC6C0017C6FE /* serial.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = serial.cc; path = ../../../../openFrameworks/addons/ofxThermalPrinter/src/serial.cc; sourceTree = "<group>"; };
+		A8E4AE581C1EFC6C0017C6FE /* serial.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = serial.h; path = ../../../../openFrameworks/addons/ofxThermalPrinter/src/serial.h; sourceTree = "<group>"; };
+		A8E4AE591C1EFC6C0017C6FE /* v8stdint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = v8stdint.h; path = ../../../../openFrameworks/addons/ofxThermalPrinter/src/v8stdint.h; sourceTree = "<group>"; };
 		AA0130D578AA6F7698BDBE9D /* gpu.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = gpu.hpp; path = ../../../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/gpu/gpu.hpp; sourceTree = SOURCE_ROOT; };
 		AA4F813F8FC93CFD10E41855 /* ControlCallback.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ControlCallback.cpp; path = ../../../../openFrameworks/addons/ofxTonic/src/Tonic/ControlCallback.cpp; sourceTree = SOURCE_ROOT; };
 		ACCF177C70FC4A32CE6F95A1 /* ControlRecorder.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ControlRecorder.cpp; path = ../../../../openFrameworks/addons/ofxTonic/src/Tonic/ControlRecorder.cpp; sourceTree = SOURCE_ROOT; };
@@ -1032,6 +1045,39 @@
 			path = src;
 			sourceTree = "<group>";
 		};
+		A8E4AE541C1EFC6C0017C6FE /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				A8E4AE501C1EFC6C0017C6FE /* unix.cc */,
+				A8E4AE511C1EFC6C0017C6FE /* unix.h */,
+				A8E4AE521C1EFC6C0017C6FE /* win.cc */,
+				A8E4AE531C1EFC6C0017C6FE /* win.h */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		A8E4AE5A1C1EFC6C0017C6FE /* src */ = {
+			isa = PBXGroup;
+			children = (
+				A8E4AE541C1EFC6C0017C6FE /* impl */,
+				A8E4AE551C1EFC6C0017C6FE /* ofxThermalPrinter.cpp */,
+				A8E4AE561C1EFC6C0017C6FE /* ofxThermalPrinter.h */,
+				A8E4AE571C1EFC6C0017C6FE /* serial.cc */,
+				A8E4AE581C1EFC6C0017C6FE /* serial.h */,
+				A8E4AE591C1EFC6C0017C6FE /* v8stdint.h */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		A8E4AE5B1C1EFC6C0017C6FE /* ofxThermalPrinter */ = {
+			isa = PBXGroup;
+			children = (
+				A8E4AE5A1C1EFC6C0017C6FE /* src */,
+			);
+			name = ofxThermalPrinter;
+			path = ../example;
+			sourceTree = "<group>";
+		};
 		AAA97F42C2FE4A31ECFD0585 /* opencv */ = {
 			isa = PBXGroup;
 			children = (
@@ -1053,6 +1099,7 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				A8E4AE5B1C1EFC6C0017C6FE /* ofxThermalPrinter */,
 				A89E3A4E1C1CA47800EBE165 /* ofxGui */,
 				A0B90D3B0ADB9C1716816714 /* ofxOpenCv */,
 				76271A12053DA157D2DB4F78 /* ofxTonic */,
@@ -1336,6 +1383,7 @@
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				522A399BD102FF88E9CEF814 /* ofxCvColorImage.cpp in Sources */,
 				1A02AF0E0CA0774D73DD1AAE /* ofxCvContourFinder.cpp in Sources */,
+				A8E4AE5C1C1EFC6C0017C6FE /* unix.cc in Sources */,
 				FE24FC9FD1A1CDEB813053EA /* ofxCvFloatImage.cpp in Sources */,
 				A90BD1857986C638E780E425 /* ofxCvGrayscaleImage.cpp in Sources */,
 				A89E3A661C1CA47800EBE165 /* ofxSlider.cpp in Sources */,
@@ -1344,9 +1392,11 @@
 				A9D85B9BF0FB5A1B65DD3E34 /* ofxCvShortImage.cpp in Sources */,
 				1FEE51E4353272821CD46B2B /* ofxTonicSynth.cpp in Sources */,
 				98BEBC6CD820CC94C9E1820A /* ADSR.cpp in Sources */,
+				A8E4AE5F1C1EFC6C0017C6FE /* serial.cc in Sources */,
 				0EDB7EAE7D531614F30989B5 /* Arithmetic.cpp in Sources */,
 				8680A19142F714C3FEEC1DE8 /* AudioFileUtils.cpp in Sources */,
 				0EED280DA046B5F1D5D56BD2 /* BasicDelay.cpp in Sources */,
+				A8E4AE5D1C1EFC6C0017C6FE /* win.cc in Sources */,
 				82DDD10F871CB203FB9F7982 /* BitCrusher.cpp in Sources */,
 				EDF99053F7EB8764E3D7938B /* BLEPOscillator.cpp in Sources */,
 				5DE17D831E162440E066C370 /* BufferFiller.cpp in Sources */,
@@ -1382,6 +1432,7 @@
 				A89E3A681C1CA47800EBE165 /* ofxToggle.cpp in Sources */,
 				F7C90FDC03DF91D96EC11E0C /* ControlXYSpeed.cpp in Sources */,
 				DCF18C7622819DA97B1DC4F9 /* DelayUtils.cpp in Sources */,
+				A8E4AE5E1C1EFC6C0017C6FE /* ofxThermalPrinter.cpp in Sources */,
 				48323106D7DAB9FE66C3DDAC /* DSPUtils.cpp in Sources */,
 				8536FE193A1D5F9C8619698C /* Effect.cpp in Sources */,
 				CF121031E7A279229CAB376A /* Filters.cpp in Sources */,
