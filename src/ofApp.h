@@ -228,7 +228,6 @@ public:
 
     
     vector<melody> melodies;
-    void drawPrintScore();
 
     void printScoreMake();
     void checkSameNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scoreCh );
