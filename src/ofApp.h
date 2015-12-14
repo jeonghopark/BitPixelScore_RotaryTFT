@@ -49,8 +49,6 @@ class ofApp : public ofBaseApp{
     ofxTonicSynth synth7;
     ofxTonicSynth synthMain;
     
-    const bool WHITE_VIEW = true;
-
 public:
     void setup();
     void update();
@@ -75,8 +73,6 @@ public:
     
     
     // ofxTonic
-    ofxTonicSynth createSynthVoiceIn();
-    ofxTonicSynth controlSynthParameter;
     void synthSetting();
     ControlGenerator bpm;
     ControlGenerator metro;
@@ -208,7 +204,6 @@ public:
     
     float touchDownDefault;
     
-    vector<ofVec2f> touchPos;
     vector<bool> ctrlSlider;
     
     
