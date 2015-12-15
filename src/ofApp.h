@@ -98,6 +98,16 @@ public:
 
     ofImage edge;
     ofImage printCam;
+    
+    
+    ofImage printImage;
+    
+    
+    ofxCvColorImage downScaleCam;
+    ofImage downScaleCanny;
+    ofImage downScaleEdge;
+    ofPixels downGray;
+    
     ofPixels gray;
     bool camOpen;
     float cannyThreshold1;
@@ -166,7 +176,6 @@ public:
     void drawShape(ofPoint pos, int base, int size);
     void drawPixelAllNoteShape();
     void drawPixelAllNoteShapes( vector<int> _vNote, int _scoreCh );
-    void drawPixelShapeColorSize();
     
     
     int baseSelection;
@@ -212,15 +221,29 @@ public:
     
     void debugInformation();
     
+
+    
     void guiSetting();
     ofxPanel gui;
-    ofxFloatSlider thresholdF;
-    ofxFloatSlider mainVolume;
-    ofxLabel frameRate;
-    ofxLabel noteNum;
-    ofxLabel faceNum;
+    ofParameterGroup parametersMain;
+    ofParameterGroup parameters;
     
+    ofParameter<float> thresholdF;
+    ofParameter<float> mainVolume;
+    ofParameter<int> baseNum;
+    ofParameter<string> frameRate;
+    ofParameter<string> noteNum;
+    ofParameter<string> faceNum;
 
+    void changedBaseNum(int & param);
+    bool bChangedBaseNum;
+    
+    
+    ofParameterGroup parameters2;
+    ofParameter<float> thresholdF2;
+
+    
+    
     
     vector<melody> melodies;
 
@@ -246,7 +269,10 @@ public:
     
     ofxThermalPrinter printer;
 
+    
     void printHeader();
+    void printCamView();
+    void printScore();
     void printFooter();
     
     

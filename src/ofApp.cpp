@@ -45,6 +45,7 @@ void ofApp::setup(){
     screenH = 600;
     
     camColorCV.allocate(cam.getWidth(), cam.getHeight());
+    downScaleCam.allocate(cam.getWidth(), cam.getHeight());
     centerCam.allocate(screenW, screenH);
     cannyInverted.allocate(screenW, screenH, OF_PIXELS_GRAY);
 
@@ -157,10 +158,13 @@ void ofApp::setup(){
 
     printScoreFbo.allocate(384, ofGetWidth() * 2);
     
+
+    
+    baseNum.addListener(this, &ofApp::changedBaseNum);
+    bChangedBaseNum = false;
+
     
 }
-
-
 
 
 
@@ -169,10 +173,11 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
+    baseSelection = baseNum;
+    
     cam.update();
     
     if(cam.isFrameNew()) {
-        
         
         camColorCV.setFromPixels(cam.getPixels().getData(), cam.getWidth(), cam.getHeight());
         camColorCV.setROI(100, 0, 600, 600);
@@ -204,18 +209,32 @@ void ofApp::update(){
         //                erode(gray);
         Canny(gray, edge, cannyThreshold1, cannyThreshold2, 3);
         
-        
-        printCam.setFromPixels(centerCam.getPixels().getData(), 600, 600, OF_IMAGE_COLOR);
-//        invert(printCam);
-        rotate(printCam, printCam, -90);
-        printCam.resize(348, 348);
-
-        
         thin(edge);
         invert(edge);
         
-        
         edge.update();
+
+
+        
+        
+        convertColor(centerCam, downGray, CV_RGB2GRAY);
+        threshold(downGray, downGray, thresholdF);
+        Canny(downGray, downScaleEdge, cannyThreshold1, cannyThreshold2, 3);
+        downScaleEdge.resize(150, 150);
+        invert(downScaleEdge);
+        downScaleEdge.update();
+        
+        printCam = downScaleEdge;
+        printCam.resize(384, 384);
+        
+//        printCam.setFromPixels(downScaleEdge.getPixels().getData(), 200, 200, OF_IMAGE_GRAYSCALE);
+//        //        invert(printCam);
+//        rotate(printCam, printCam, -90);
+//        printCam.resize(348, 348);
+
+        
+        
+        
         
         
         if ( bCameraCapturePlay ) {
@@ -324,6 +343,10 @@ void ofApp::update(){
     }
 
     
+    
+    if (bChangedBaseNum) {
+        printScoreMake();
+    }
     
     
 }
@@ -461,6 +484,8 @@ void ofApp::draw(){
 //    }
 //    ofPopMatrix();
 
+    
+    
 }
 
 
@@ -485,12 +510,12 @@ void ofApp::drawPrintScoreFBO(){
     
     ofRectMode(OF_RECT_CENTER);
     
-    float _stepLine = 10;
-    float _noteSize = 5;
+    float _stepLine = 12;
+    float _noteSize = 4;
     
     float _noteExtraLineSize = 7;
     
-    float _downBaseLine = 260;
+    float _downBaseLine = 320;
     float _upBaseLine = _downBaseLine - _stepLine * 7;
     float _xSizeFactor = _stepLine * 5;
     
@@ -763,10 +788,12 @@ void ofApp::debugInformation(){
     ofPushMatrix();
     
     ofPushStyle();
+
     ofSetColor(255);
-    
-    centerCam.draw(ofGetWidth()-175, 150, 150, 150);
-    printCam.draw(ofGetWidth()-175, 300, 150, 150);
+    printCam.draw(ofGetWidth()-175, 10, 150, 150);
+
+    ofSetColor(255, 20);
+    centerCam.draw(ofGetWidth()-175, 10, 150, 150);
 
     ofPopStyle();
     
@@ -981,65 +1008,6 @@ void ofApp::drawPixelAllNoteShapes( vector<int> _vNote, int _scoreCh ){
     
 }
 
-
-
-
-//--------------------------------------------------------------
-void ofApp::drawPixelShapeColorSize(){
-    
-    ofPushMatrix();
-    ofPushStyle();
-    ofEnableAntiAliasing();
-    
-    ofSetColor( 0, 45 );
-    
-    for (int i=0; i<whitePixels.size(); i++) {
-        
-        vector<int> _bitNumber;
-        _bitNumber.resize(7);
-        int _indexLoop = ((i) % (whitePixels.size()-1))+1;
-        int _pixelNumbers = whitePixels[ _indexLoop ].pixelN;
-        _bitNumber = convertDecimalToNBase( _pixelNumbers, baseSelection, (int)_bitNumber.size() );
-        
-        int _1Note = _bitNumber[0];
-        int _2Note = _bitNumber[1];
-        int _3Note = _bitNumber[2];
-        int _4Note = _bitNumber[3];
-        int _5Note = _bitNumber[4];
-        int _6Note = _bitNumber[5];
-        int _7Note = _bitNumber[6];
-        
-        int _indexPixes = whitePixels[ _indexLoop ].indexPos - _pixelNumbers;
-        
-        float _x = ((_indexPixes) % changedCamSize) * pixelStepS * cameraScreenRatio;
-        float _y = (int)((_indexPixes) / changedCamSize) * pixelStepS * cameraScreenRatio;
-        ofPoint _p = ofPoint( _x, _y );
-        
-        int _min = 10;
-        int _max = 100;
-        
-        float _size1 = ofMap( _1Note, 0, baseSelection-1, _min, _max );
-        drawShape( _p, baseSelection, _size1 );
-        float _size2 = ofMap( _2Note, 0, baseSelection-1, _min, _max );
-        drawShape( _p, baseSelection, _size2 );
-        float _size3 = ofMap( _3Note, 0, baseSelection-1, _min, _max );
-        drawShape( _p, baseSelection, _size3 );
-        float _size4 = ofMap( _4Note, 0, baseSelection-1, _min, _max );
-        drawShape( _p, baseSelection, _size4 );
-        float _size5 = ofMap( _5Note, 0, baseSelection-1, _min, _max );
-        drawShape( _p, baseSelection, _size5 );
-        float _size6 = ofMap( _6Note, 0, baseSelection-1, _min, _max );
-        drawShape( _p, baseSelection, _size6 );
-        float _size7 = ofMap( _7Note, 0, baseSelection-1, _min, _max );
-        drawShape( _p, baseSelection, _size7 );
-        
-        
-    }
-    
-    ofPopStyle();
-    ofPopMatrix();
-    
-}
 
 
 
@@ -1499,6 +1467,7 @@ void ofApp::keyReleased(int key){
     
     
     if (key == ' ') {
+        
         allPlayOnOff = !allPlayOnOff;
         
         if ((whitePixels.size()>2)) {
@@ -1520,36 +1489,42 @@ void ofApp::keyReleased(int key){
             grayThreshold = 120;
             touchDownDefault = 0;
         }
-
+        
+        
     } else if (key == 'g') {
     
         debugView = !debugView;
 
     }  else if (key == 's') {
-        printer.println("------------------------");
-        printer.println(" ");
-        ofPixels _p;
-        printScoreFbo.readToPixels(_p);
-        ofImage _image;
-        float _w = printScoreFbo.getWidth();
-        float _h = printScoreFbo.getHeight();
-        _image.setFromPixels(_p.getData(), _w, _h, OF_IMAGE_COLOR_ALPHA);
-        printer.print(_image, 100);
-        
+
+        printScore();
+
     } else if (key == 'e') {
+    
         printer.close();
         printer.open("/dev/cu.usbserial-A900adIr");
-        
+
     } else if (key == 'i') {
-        printer.print(printCam);
+    
+        printCamView();
+        
     } else if (key == 'h') {
+    
         printHeader();
+
     } else if (key == 'f') {
+    
         printFooter();
+
     }
+    
 
     
 }
+
+
+
+
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y){
@@ -1830,6 +1805,32 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 
 //--------------------------------------------------------------
+void ofApp::printScore(){
+    
+    printer.println("------------------------");
+    printer.println(" ");
+    ofPixels _p;
+    printScoreFbo.readToPixels(_p);
+    ofImage _image;
+    float _w = printScoreFbo.getWidth();
+    float _h = printScoreFbo.getHeight();
+    _image.setFromPixels(_p.getData(), _w, _h, OF_IMAGE_COLOR_ALPHA);
+    printer.print(_image, 100);
+    
+}
+
+
+//--------------------------------------------------------------
+void ofApp::printCamView(){
+    
+    rotate(printCam, printCam, -90);
+    printer.print(printCam, 10);
+
+    
+}
+
+
+//--------------------------------------------------------------
 void ofApp::printHeader(){
  
     string _date = ofGetTimestampString();
@@ -1859,7 +1860,6 @@ void ofApp::printFooter(){
 //--------------------------------------------------------------
 void ofApp::synthSetting(){
     
-    
     float _volume = 0.125;
     
     ControlParameter carrierPitch1 = synth1.addParameter("carrierPitch1");
@@ -1871,7 +1871,6 @@ void ofApp::synthSetting(){
     ControlGenerator envelopTrigger1 = synth1.addParameter("trigger1");
     Generator env1 = ADSR().attack(0.001).decay(0.3).sustain(0).release(0).trigger(envelopTrigger1).legato(false);
     synth1.setOutputGen( tone1 * env1 * _volume );
-    
     
     ControlParameter carrierPitch2 = synth2.addParameter("carrierPitch2");
     float amountMod2 = 1;
@@ -1912,7 +1911,6 @@ void ofApp::synthSetting(){
     ControlGenerator envelopTrigger5 = synth5.addParameter("trigger5");
     Generator env5 = ADSR().attack(0.001).decay(0.1).sustain(0).release(0).trigger(envelopTrigger5).legato(false);
     synth5.setOutputGen( tone5 * env5 * _volume );
-    
     
     ControlParameter carrierPitch6 = synth6.addParameter("carrierPitch6");
     float amountMod6 = 2;
@@ -1982,10 +1980,6 @@ void ofApp::scoreMake(){
 
 
 
-
-
-
-
 //--------------------------------------------------------------
 void ofApp::trigScoreNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scoreCh ){
     
@@ -2019,7 +2013,7 @@ void ofApp::trigScoreNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scor
         }
     }
     
-    
+
 }
 
 
@@ -2063,11 +2057,6 @@ void ofApp::checkSameNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scor
 
 
 
-
-
-
-
-
 //--------------------------------------------------------------
 vector<int> ofApp::convertDecimalToNBase(int n, int base, int size) {
     
@@ -2098,15 +2087,35 @@ vector<int> ofApp::convertDecimalToNBase(int n, int base, int size) {
 //--------------------------------------------------------------
 void ofApp::guiSetting(){
     
-    gui.setup();
-    gui.add(thresholdF.setup("Threshold", 120, 0, 255));
-    gui.add(mainVolume.setup("Volume", 0.5, 0, 1));
-    gui.add(frameRate.setup("fr", ""));
-    gui.add(noteNum.setup("Notes", ""));
-    gui.add(faceNum.setup("face Num", ""));
+
+    parameters.setName("Main");
+    parameters.add(thresholdF.set("Threshold", 120, 0, 255));
+    parameters.add(mainVolume.set("Volume", 0.5, 0, 1));
+    parameters.add(baseNum.set("Base Selection", 7, 4, 9));
+    parameters.add(frameRate.set("fps/s", ""));
+    parameters.add(noteNum.set("Notes", ""));
+    parameters.add(faceNum.set("Face Num", ""));
     
+    parametersMain.add(parameters);
+
+    gui.setup(parametersMain);
+
     
 }
+
+
+
+
+
+//--------------------------------------------------------------
+void ofApp::changedBaseNum(int & param){
+    
+    bChangedBaseNum = true;
+    
+}
+
+
+
 
 
 
