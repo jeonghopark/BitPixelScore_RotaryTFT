@@ -16,8 +16,8 @@ void ofApp::setup(){
 
     ofEnableAntiAliasing();
     
-    // !!! Only Full Screen !!!
-    ofSetFullscreen(true);
+    // !!! Only Full Screen Mode!!!
+//    ofSetFullscreen(true);
     
     ofSetCircleResolution(16);
     
@@ -896,7 +896,7 @@ void ofApp::drawControlElement(){
 void ofApp::drawTrianglePixel(){
     
     int _pixelSize = pixelCircleSize;  // 10
-    float _ellipseSizeR = 1.7;
+    float _triSizeR = 1.7;
     
     ofPushMatrix();
     ofPushStyle();
@@ -912,9 +912,9 @@ void ofApp::drawTrianglePixel(){
             float _x = ((_indexPixes) % changedCamSize) * pixelStepS * cameraScreenRatio - _pixelSize;
             float _y = (int)((_indexPixes) / changedCamSize) * pixelStepS * cameraScreenRatio;
             
-            ofPoint _1P = ofPoint( _x, _y - _pixelSize * _ellipseSizeR * 0.75 );
-            ofPoint _2P = ofPoint( _x - _pixelSize * _ellipseSizeR * 0.55, _y + _pixelSize * _ellipseSizeR * 0.25 );
-            ofPoint _3P = ofPoint( _x + _pixelSize * _ellipseSizeR * 0.55, _y + _pixelSize * _ellipseSizeR * 0.25 );
+            ofPoint _1P = ofPoint( _x, _y - _pixelSize * _triSizeR * 0.75 );
+            ofPoint _2P = ofPoint( _x - _pixelSize * _triSizeR * 0.55, _y + _pixelSize * _triSizeR * 0.25 );
+            ofPoint _3P = ofPoint( _x + _pixelSize * _triSizeR * 0.55, _y + _pixelSize * _triSizeR * 0.25 );
             
             ofDrawTriangle( _1P, _2P, _3P );
             
