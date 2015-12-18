@@ -16,9 +16,6 @@ void ofApp::setup(){
 
     ofEnableAntiAliasing();
     
-    // !!! Only Full Screen Mode!!!
-//    ofSetFullscreen(true);
-    
     ofSetCircleResolution(16);
     
     printer.open("/dev/cu.usbserial-A900adIr");
