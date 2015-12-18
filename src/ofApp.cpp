@@ -153,9 +153,9 @@ void ofApp::setup(){
  
     ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
 
+
     printScoreFbo.allocate(384, ofGetWidth() * 2);
     
-
     
     baseNum.addListener(this, &ofApp::changedBaseNum);
     bChangedBaseNum = false;
@@ -211,26 +211,19 @@ void ofApp::update(){
         
         edge.update();
 
-
-        
-        
-
-
-        
-        
-        
-        
         
         if ( bCameraCapturePlay ) {
             noteIndex = index;
         } else {
             
-            convertColor(centerCam, downGray, CV_RGB2GRAY);
-            threshold(downGray, downGray, thresholdF);
+//            convertColor(centerCam, downGray, CV_RGB2GRAY);
+//            threshold(downGray, downGray, thresholdF);
+            downGray = gray;
             Canny(downGray, downScaleEdge, cannyThreshold1, cannyThreshold2, 3);
             downScaleEdge.resize(150, 150);
             invert(downScaleEdge);
             downScaleEdge.update();
+
             
             printCam = downScaleEdge;
             printCam.resize(384, 384);
@@ -316,8 +309,6 @@ void ofApp::update(){
         
     }
 
-    
-    
     
     // FBO
     printScoreFbo.begin();
