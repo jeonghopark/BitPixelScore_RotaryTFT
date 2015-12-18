@@ -217,20 +217,7 @@ void ofApp::update(){
 
         
         
-        convertColor(centerCam, downGray, CV_RGB2GRAY);
-        threshold(downGray, downGray, thresholdF);
-        Canny(downGray, downScaleEdge, cannyThreshold1, cannyThreshold2, 3);
-        downScaleEdge.resize(150, 150);
-        invert(downScaleEdge);
-        downScaleEdge.update();
-        
-        printCam = downScaleEdge;
-        printCam.resize(384, 384);
-        
-//        printCam.setFromPixels(downScaleEdge.getPixels().getData(), 200, 200, OF_IMAGE_GRAYSCALE);
-//        //        invert(printCam);
-//        rotate(printCam, printCam, -90);
-//        printCam.resize(348, 348);
+
 
         
         
@@ -240,6 +227,17 @@ void ofApp::update(){
         if ( bCameraCapturePlay ) {
             noteIndex = index;
         } else {
+            
+            convertColor(centerCam, downGray, CV_RGB2GRAY);
+            threshold(downGray, downGray, thresholdF);
+            Canny(downGray, downScaleEdge, cannyThreshold1, cannyThreshold2, 3);
+            downScaleEdge.resize(150, 150);
+            invert(downScaleEdge);
+            downScaleEdge.update();
+            
+            printCam = downScaleEdge;
+            printCam.resize(384, 384);
+            
             
             unsigned char * _src = edge.getPixels().getData();
             
@@ -1337,14 +1335,16 @@ void ofApp::drawShapeCeterLine(ofPoint pos, int base, int size, ofColor _c){
 
 
 //--------------------------------------------------------------
-void ofApp::drawShapeCeterLineColorRotation(ofPoint pos, int base, int size, ofColor color){
+void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _b, int _s, ofColor _c){
     
-    ofPoint _pos = pos;
+    ofPoint _pos = _p;
     
     vector<ofPoint> posLine;
     
-    int _base = base;
-    int _size = size;
+    int _base = _b;
+    int _size = _s;
+    
+    ofColor color = _c;
     
     for (int i=0; i<_base; i++) {
         float _sizeDegree = i * 360 / _base + 180.0;
