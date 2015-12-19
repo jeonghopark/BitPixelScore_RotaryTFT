@@ -1466,6 +1466,18 @@ void ofApp::keyReleased(int key){
             if ( !bCameraCapturePlay ) {
                 index = -1;
                 ofRemoveListener(* metroOut, this, &ofApp::triggerReceive);
+                for (int i=0; i<noteLists.size(); i++) {
+                    noteLists[i].noteArray.clear();
+                }
+                for (int i=0; i<melodies.size(); i++) {
+                    melodies[i].melodyLine.clear();
+                }
+                for (int i=0; i<oldScoreNote.size(); i++) {
+                    oldScoreNote[i] = 0;
+                    noteLists[i].noteArray.push_back(0);
+                    melodies[i].melodyLine.push_back(0);
+                }
+
             } else {
                 scoreMake();
                 printScoreMake();
