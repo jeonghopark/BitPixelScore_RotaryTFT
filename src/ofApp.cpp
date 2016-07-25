@@ -451,11 +451,10 @@ void ofApp::draw(){
     
     ofPushMatrix();
     
-    //FIXME: 12 ????
-    ofTranslate(-ofGetWidth()*0.5 + 12, ofGetHeight());
+    ofTranslate(-ofGetWidth()*0.5 + 0, ofGetHeight());
     ofRotateZ(-90);
     
-    printScoreFbo.draw(0, ofGetHeight() - 384 * 0.5, 384 * 0.5, ofGetWidth());
+    printScoreFbo.draw(0, ofGetHeight() - 512 * 0.5, 384 * 0.5, ofGetWidth());
     
     ofPopMatrix();
     
@@ -482,8 +481,7 @@ void ofApp::drawPrintScoreFBO(){
     
     
     ofPushMatrix();
-    //FIXME:: 40 ????
-    ofTranslate(ofGetHeight() * 0.5 - 40, 0);
+    ofTranslate(ofGetHeight() * 0.5 - 0, 0);
     
     ofSetColor(0);
     ofDrawRectangle(0, 0, printScoreFbo.getWidth(), printScoreFbo.getHeight());
