@@ -253,7 +253,7 @@ void ofApp::update(){
                 
                 if ( pixelBright[i] == _whitePixel ) {
                     
-                    if ( _bCounter==0 ) {
+                    if ( _bCounter == 0 ) {
                         blackWhitePixels _bWP;
                         _bWP.indexPos = i;
                         _bWP.pixelN = _wCounter;
@@ -265,17 +265,17 @@ void ofApp::update(){
                     
                 } else {
                     
-                    if ( _wCounter==0 ) {
+                    if ( _wCounter == 0 ) {
                         blackWhitePixels _bWP;
                         _bWP.indexPos = i;
                         _bWP.pixelN = _bCounter;
                         whitePixels.push_back(_bWP);
-                        
                     }
                     
                     _wCounter++;
                     _bCounter = 0;
                 }
+                
             }
             
             
@@ -288,11 +288,7 @@ void ofApp::update(){
                     whitePixels.push_back(_bWP);
                 }
             }
-            
-            
-            
         }
-        
     }
     
     
@@ -348,7 +344,6 @@ void ofApp::draw(){
     ofPushMatrix();
     
     ofTranslate((ofGetWidth() - 600) * 0.5, 0);
-    
     
     ofPushMatrix();
     
@@ -408,16 +403,12 @@ void ofApp::draw(){
     }
     
     
-    
-    
-    
     //    ofPushStyle();
     //    ofRectMode(OF_RECTMODE_CENTER);
     //    ofNoFill();
     //    ofSetColor(0,255,0);
     //    ofDrawRectangle(faceCenter.x, faceCenter.y, 30, 30);
     //    ofPopStyle();
-    
     
     
     ofPopMatrix();
@@ -430,7 +421,6 @@ void ofApp::draw(){
     
     
     ofPushMatrix();
-    
     ofTranslate(-ofGetWidth()*0.5 + 0, ofGetHeight());
     ofRotateZ(-90);
     
@@ -439,9 +429,9 @@ void ofApp::draw(){
     ofPopMatrix();
     
     
-    
     drawBaseInterface();
 
+    
     ofPushMatrix();
     ofTranslate((ofGetWidth() - 600) * 0.5, 0);
     drawControlElement();
