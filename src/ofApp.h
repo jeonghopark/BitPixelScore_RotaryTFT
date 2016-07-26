@@ -142,7 +142,7 @@ public:
     void drawControlElement();
     void debugControlPDraw();
     float ctrlPnX, ctrlPnY, ctrlPnW, ctrlPnH;
-    int guideWidthStepSize, guideHeightStepSize;
+    int guideWidthStep, guideHeightStep;
     int maxSpeed, minSpeed;
     void controlGuide();
     
