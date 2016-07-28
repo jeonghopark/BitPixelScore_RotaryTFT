@@ -139,6 +139,7 @@ void ofApp::setup(){
     
     debugView = true;
     
+    
     ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
     
     
@@ -569,8 +570,8 @@ void ofApp::drawPrintScoreFBO(){
                 //TODO: Fix Score
                 if (i%3==0 || i%3==1) {
                     int _note = melodies[i].melodyLine[j] % 12;
-                    int _octaveFactor = octaveScaleFactor[i];
-                    int _noteOctave = (melodies[i].melodyLine[j] - _octaveFactor) / 12;
+                    int _offsetOctave = octaveScaleFactor[i];
+                    int _noteOctave = (melodies[i].melodyLine[j] - _offsetOctave) / 12;
                     
                     float _posY = notePosition(_note, _stepLine);
                     float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
@@ -590,8 +591,8 @@ void ofApp::drawPrintScoreFBO(){
                 } else {
                     
                     int _note = melodies[i].melodyLine[j] % 12;
-                    int _octaveFactor = octaveScaleFactor[i];
-                    int _noteOctave = (melodies[i].melodyLine[j] - _octaveFactor) / 12 - 2;
+                    int _offsetOctave = octaveScaleFactor[i];
+                    int _noteOctave = (melodies[i].melodyLine[j] - _offsetOctave) / 12 - 2;
                     
                     float _posY = notePosition(_note, _stepLine);
                     float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
@@ -607,8 +608,6 @@ void ofApp::drawPrintScoreFBO(){
                 }
                 
             }
-            
-            
             
         }
     }
@@ -938,13 +937,13 @@ void ofApp::drawPixelAllNoteShapes( vector<int> _vNote, int _scoreCh ){
         int _note = _vNote[_idLoopLine];
         int _noteOld = _vNote[_idLoopLineOld];
         
-        int _noteScaled = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
-        int _noteOldScaled = scaleSetting.noteSelector(baseSelection, _scoreCh, _noteOld);
+        int _scaledNote = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
+        int _scaledNoteOld = scaleSetting.noteSelector(baseSelection, _scoreCh, _noteOld);
         
         
-        if ( abs(_noteOldScaled-_noteScaled) >= intervalDist ) {
+        if ( abs(_scaledNoteOld-_scaledNote) >= intervalDist ) {
             if (_note>0) {
-                float _size = _noteScaled * pixeShapeSize;
+                float _size = _scaledNote * pixeShapeSize;
                 drawShape( _p, baseSelection, _size );
             }
         }
@@ -1057,14 +1056,14 @@ void ofApp::drawPlayingShapeNote( vector<int> _vNote, int _scoreCh ){
         int _note = _vNote[_noteLoopIndex];
         int _noteOld = _vNote[_idLoopLineOld];
         
-        int _noteScaled = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
-        int _noteOldScaled = scaleSetting.noteSelector(baseSelection, _scoreCh, _noteOld);
+        int _scaledNote = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
+        int _scaledNoteOld = scaleSetting.noteSelector(baseSelection, _scoreCh, _noteOld);
         
-        if ( abs(_noteOldScaled-_noteScaled) >= intervalDist ) {
+        if ( abs(_scaledNoteOld-_scaledNote) >= intervalDist ) {
             if (_note>0) {
                 //                drawShapeCeterLine( _p, baseSelection, _pixelNumbers);
                 
-                float _size = _noteScaled * pixeShapeSize;
+                float _size = _scaledNote * pixeShapeSize;
                 drawShapeCeterLineColorRotation( _p, baseSelection, _size, _c );
             }
         }
@@ -1137,13 +1136,13 @@ void ofApp::drawScoreCircleLine( vector<int> _vNote, int _scoreCh ){
             int _note = _scoreNote[_idLoopLine];
             int _noteOld = _scoreNote[_idLoopLineOld];
             
-            int _noteScaled = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
-            int _noteOldScaled = scaleSetting.noteSelector(baseSelection, _scoreCh, _noteOld);
+            int _scaledNote = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
+            int _scaledNoteOld = scaleSetting.noteSelector(baseSelection, _scoreCh, _noteOld);
             
             float _x1 = _xDefaultPos - i * _stepX;
-            float _y1 = _defaultNote - _noteScaled * _stepY;
+            float _y1 = _defaultNote - _scaledNote * _stepY;
             
-            if ( abs(_noteOldScaled-_noteScaled) >= intervalDist ) {
+            if ( abs(_scaledNoteOld-_scaledNote) >= intervalDist ) {
                 ofColor _c;
                 if (i==11) {
                     _c = ofColor::fromHsb( _h, 255, 255, 255 );
@@ -1418,7 +1417,6 @@ void ofApp::keyPressed(int key){
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
     
-    
     if (key == ' ') {
         
         allPlayOnOff = !allPlayOnOff;
@@ -1483,11 +1481,7 @@ void ofApp::keyReleased(int key){
         
     }
     
-    
-    
 }
-
-
 
 
 
@@ -1495,6 +1489,7 @@ void ofApp::keyReleased(int key){
 void ofApp::mouseMoved(int x, int y){
     
 }
+
 
 
 //--------------------------------------------------------------
@@ -1537,9 +1532,7 @@ void ofApp::mouseDragged(int x, int y, int button){
     }
     
     
-    
     //    if ( touch.id==0 ) {
-    
     //        if (bSpeedCtrl) {
     //            float _minY = ctrlPnY + speedCSize * 0.75;
     //            float _maxY = screenH - speedCSize * 0.75;
@@ -1573,10 +1566,8 @@ void ofApp::mouseDragged(int x, int y, int button){
     //                intervalDist = _interval;
     //            }
     //        }
-    
-    
-    
     //    }
+    
     
     if ( (_changedTouch.x>0)&&(_changedTouch.x<ctrlPnW) && (_changedTouch.y<ctrlPnY)&&(_changedTouch.y>0) ) {
         
@@ -1617,9 +1608,6 @@ void ofApp::mousePressed(int x, int y, int button){
         
     }
     
-    
-    
-    
     //    if ( touch.id==0 ) {
     
     //        float _distS = ofDist( speedCPos.x, speedCPos.y , _changedTouch.x, _changedTouch.y );
@@ -1659,37 +1647,31 @@ void ofApp::mousePressed(int x, int y, int button){
     
     float _4BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base4Pos.x, base4Pos.y );
     if ( _4BaseDist < baseSize ) {
-        //        index = 0;
         baseSelection = 4;
     }
     
     float _5BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base5Pos.x, base5Pos.y );
     if ( _5BaseDist < baseSize ) {
-        //        index = 0;
         baseSelection = 5;
     }
     
     float _6BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base6Pos.x, base6Pos.y );
     if ( _6BaseDist < baseSize ) {
-        //        index = 0;
         baseSelection = 6;
     }
     
     float _7BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base7Pos.x, base7Pos.y );
     if ( _7BaseDist < baseSize ) {
-        //        index = 0;
         baseSelection = 7;
     }
     
     float _8BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base8Pos.x, base8Pos.y );
     if ( _8BaseDist < baseSize ) {
-        //        index = 0;
         baseSelection = 8;
     }
     
     float _9BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base9Pos.x, base9Pos.y );
     if ( _9BaseDist < baseSize ) {
-        //        index = 0;
         baseSelection = 9;
     }
     
@@ -1915,18 +1897,16 @@ void ofApp::scoreMake(){
     
     for (int i=0; i<whitePixels.size(); i++) {
         
-        
         vector<int> _bitNumber;
         _bitNumber.resize(7);
         
         int _idLoop = ((i) % (whitePixels.size()-1))+1;
-        int _pixelNumbers = whitePixels[ _idLoop ].pixelN;
-        _bitNumber = convertDecimalToNBase( _pixelNumbers, baseSelection, (int)_bitNumber.size() );
-        
+        int _pixelNrs = whitePixels[ _idLoop ].pixelN;
+        _bitNumber = convertDecimalToNBase( _pixelNrs, baseSelection, (int)_bitNumber.size());
         
         for (int j=0; j<noteLists.size(); j++) {
             
-            if (abs(_bitNumber[j] - oldScoreNote[j]) >= _intervalDist) {
+            if ( abs(_bitNumber[j] - oldScoreNote[j]) >= _intervalDist ) {
                 noteLists[j].noteArray.push_back(_bitNumber[j]);
             } else {
                 noteLists[j].noteArray.push_back(-1);
@@ -1935,10 +1915,7 @@ void ofApp::scoreMake(){
             
         }
         
-        
     }
-    
-    
     
 }
 
@@ -1952,33 +1929,25 @@ void ofApp::trigScoreNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scor
     int _idLoop = ((noteIndex) % (whitePixels.size()-1))+1;
     int _idLoopOld = ((noteIndex + 1) % (whitePixels.size()-1))+1;
     
-    
     vector<int> _scoreNote = _vNote;
     ofxTonicSynth _synth = _synthIn;
     
     int _note = _scoreNote[_idLoop];
     int _noteOld = _scoreNote[_idLoopOld];
     
-    int _noteScaled = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
-    int _noteOldScaled = scaleSetting.noteSelector(baseSelection, _scoreCh, _noteOld);
-    
+    int _scaledNote = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
+    int _scaledNoteOld = scaleSetting.noteSelector(baseSelection, _scoreCh, _noteOld);
     
     string tName = "trigger" + ofToString(_scoreCh);
     string tPitch = "carrierPitch" + ofToString(_scoreCh);
     
-    
-    
-    if ( abs(_noteOldScaled - _noteScaled) >= intervalDist ) {
+    if ( abs(_scaledNoteOld - _scaledNote) >= intervalDist ) {
         if (_note>0) {
-            
-            int _noteScaled = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
-            
+            int _scaledNoteE = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
             _synth.setParameter( tName, 1);
-            _synth.setParameter( tPitch, _noteScaled);
-            
+            _synth.setParameter( tPitch, _scaledNoteE);
         }
     }
-    
     
 }
 
@@ -1990,30 +1959,23 @@ void ofApp::checkSameNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scor
     int _idLoop = ((noteIndex) % (whitePixels.size()-1))+1;
     int _idLoopOld = ((noteIndex + 1) % (whitePixels.size()-1))+1;
     
-    
     vector<int> _scoreNote = _vNote;
     ofxTonicSynth _synth = _synthIn;
     
     int _note = _scoreNote[_idLoop];
     int _noteOld = _scoreNote[_idLoopOld];
     
-    int _noteScaled = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
-    int _noteOldScaled = scaleSetting.noteSelector(baseSelection, _scoreCh, _noteOld);
-    
+    int _scaledNote = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
+    int _scaledNoteOld = scaleSetting.noteSelector(baseSelection, _scoreCh, _noteOld);
     
     string tName = "trigger" + ofToString(_scoreCh);
     string tPitch = "carrierPitch" + ofToString(_scoreCh);
     
-    
-    
-    if ( abs(_noteOldScaled - _noteScaled) >= intervalDist ) {
+    if ( abs(_scaledNoteOld - _scaledNote) >= intervalDist ) {
         if (_note>0) {
-            
-            int _noteScaled = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
-            
+            int _scaledNoteE = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
             _synth.setParameter( tName, 1);
-            _synth.setParameter( tPitch, _noteScaled);
-            
+            _synth.setParameter( tPitch, _scaledNoteE);
         }
     }
     
