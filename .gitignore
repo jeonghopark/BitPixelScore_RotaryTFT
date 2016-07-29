@@ -11,3 +11,5 @@ project.xcworkspace
 !/src/*
 
 haarcascade_frontalface_default.xml
+BitPixelScore_iPadDual.xcodeproj
+openFrameworks-Info.plist
