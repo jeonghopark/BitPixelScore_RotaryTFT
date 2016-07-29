@@ -1,6 +1,5 @@
-ofxOpenCv
-ofxFontStash
-ofxTonic
-addons
 ofxCv
 ofxGui
+ofxOpenCv
+ofxThermalPrinter
+ofxTonic

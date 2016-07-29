@@ -14,3 +14,16 @@ haarcascade_frontalface_default.xml
 BitPixelScore_iPadDual.xcodeproj
 openFrameworks-Info.plist
 Project.xcconfig
+obj/
+*.dll
+BitPixelScore-iPad.VC
+BitPixelScore-iPad.VC.*
+BitPixelScore-iPad.sln
+*.vcxproj
+BitPixelScore-iPad.vcxproj.*
+*.exe
+*.exp
+*.ilk
+*.lib
+*.pdb
+icon.rc
