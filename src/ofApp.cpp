@@ -1731,22 +1731,26 @@ void ofApp::mouseReleased(int x, int y, int button){
     }
     
     
-    
 }
+
+
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
     
 }
 
+
+
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg){
     
 }
 
+
+
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){
-    
     
 }
 
@@ -1768,6 +1772,7 @@ void ofApp::printScore(){
 }
 
 
+
 //--------------------------------------------------------------
 void ofApp::printCamView(){
     
@@ -1776,6 +1781,7 @@ void ofApp::printCamView(){
     
     
 }
+
 
 
 //--------------------------------------------------------------
@@ -1884,7 +1890,6 @@ void ofApp::synthSetting(){
 
 
 
-
 //--------------------------------------------------------------
 void ofApp::scoreMake(){
     
@@ -1901,7 +1906,7 @@ void ofApp::scoreMake(){
         _bitNumber.resize(7);
         
         int _idLoop = ((i) % (whitePixels.size()-1))+1;
-        int _pixelNrs = whitePixels[ _idLoop ].pixelN;
+        int _pixelNrs = whitePixels[ _idLoop ].pixelN;
         _bitNumber = convertDecimalToNBase( _pixelNrs, baseSelection, (int)_bitNumber.size());
         
         for (int j=0; j<noteLists.size(); j++) {
@@ -1918,8 +1923,6 @@ void ofApp::scoreMake(){
     }
     
 }
-
-
 
 
 
