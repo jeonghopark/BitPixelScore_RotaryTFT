@@ -8,6 +8,6 @@ xcuserdata/
 DerivedData/
 project.xcworkspace
 
-
+!/src/*
 
 haarcascade_frontalface_default.xml
