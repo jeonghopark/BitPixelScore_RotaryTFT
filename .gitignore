@@ -27,3 +27,4 @@ BitPixelScore-iPad.vcxproj.*
 *.lib
 *.pdb
 icon.rc
+.vs/
