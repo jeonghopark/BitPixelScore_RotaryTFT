@@ -16,7 +16,7 @@ void ofApp::setup(){
     ofEnableAntiAliasing();
     ofSetCircleResolution(16);
     
-    printer.open("/dev/cu.usbserial-A900adIr");
+    printer.open("/dev/cu.usbserial");
     
     gclef.load("GClef.png");
     fclef.load("FClef.png");
