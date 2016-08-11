@@ -104,14 +104,14 @@ void ofApp::setup(){
     
     
     float _posIndexRight = 13.5;
-    float _posIndexLeft = 2.5;
+    float _posIndexLeft = (ofGetWidth() - screenW) * 0.25;
     float _baseCtrlPosY = 0;
-    base4Pos = ofPoint( guideWidthStep * _posIndexLeft, _baseCtrlPosY + stepBasePos * 1 );
-    base5Pos = ofPoint( guideWidthStep * _posIndexLeft, _baseCtrlPosY + stepBasePos * 2.5 );
-    base6Pos = ofPoint( guideWidthStep * _posIndexLeft, _baseCtrlPosY + stepBasePos * 4 );
-    base7Pos = ofPoint( guideWidthStep * _posIndexRight, _baseCtrlPosY + stepBasePos * 5.5 );
-    base8Pos = ofPoint( guideWidthStep * _posIndexRight, _baseCtrlPosY + stepBasePos * 7 );
-    base9Pos = ofPoint( guideWidthStep * _posIndexRight, _baseCtrlPosY + stepBasePos * 8.5 );
+    base4Pos = ofPoint( _posIndexLeft, _baseCtrlPosY + stepBasePos * 1 );
+    base5Pos = ofPoint( _posIndexLeft, _baseCtrlPosY + stepBasePos * 2.5 );
+    base6Pos = ofPoint( _posIndexLeft, _baseCtrlPosY + stepBasePos * 4 );
+    base7Pos = ofPoint( _posIndexRight,, _baseCtrlPosY + stepBasePos * 5.5 );
+    base8Pos = ofPoint( _posIndexRight, _baseCtrlPosY + stepBasePos * 7 );
+    base9Pos = ofPoint( _posIndexRight, _baseCtrlPosY + stepBasePos * 8.5 );
     baseSize = ctrlRectS * 0.55;
     
     bPlayNote = false;
@@ -395,7 +395,6 @@ void ofApp::draw(){
     
     
     if (bCameraCapturePlay) {
-        
         drawPixelNumbersCircleNotes();
         //                drawPlayingShapeNotes();
         //                drawPixelAllNoteShape();
@@ -410,7 +409,6 @@ void ofApp::draw(){
         
     }
     
-    
     //    ofPushStyle();
     //    ofRectMode(OF_RECTMODE_CENTER);
     //    ofNoFill();
@@ -418,9 +416,7 @@ void ofApp::draw(){
     //    ofDrawRectangle(faceCenter.x, faceCenter.y, 30, 30);
     //    ofPopStyle();
     
-    
     ofPopMatrix();
-    
     
     if (debugView ) {
         debugInformation();
@@ -428,7 +424,6 @@ void ofApp::draw(){
     }
 
     
-
 
     drawBaseInterface();
 
