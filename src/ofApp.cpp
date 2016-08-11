@@ -63,6 +63,7 @@ void ofApp::setup(){
     lineScoreStepY = 5 / _widthDefault * _sizeF;
     pixeShapeSize = 1 / _widthDefault * _sizeF;
     
+    screenPos = ofVec2f( (ofGetWidth()-screenW) * 0.5, 0 );
     
     synthSetting();
     maxSpeed = 200;
@@ -99,7 +100,7 @@ void ofApp::setup(){
     
     cannyThreshold1 = 120;
     cannyThreshold2 = 120;
-    grayThreshold = 120;
+    grayThresholdTouch = 120;
     
     
     float _posIndexRight = 13.5;
@@ -191,7 +192,7 @@ void ofApp::update(){
         
         
         convertColor(centerCam, gray, CV_RGB2GRAY);
-        threshold(gray, gray, thresholdF);
+        threshold(gray, gray, grayThresholdTouch);
         //                erode(gray);
         Canny(gray, edge, cannyThreshold1, cannyThreshold2, 3);
         
@@ -206,7 +207,7 @@ void ofApp::update(){
         } else {
             
             //            convertColor(centerCam, downGray, CV_RGB2GRAY);
-            //            threshold(downGray, downGray, thresholdF);
+            //            threshold(downGray, downGray, thresholdGui);
             downGray = gray;
             Canny(downGray, downScaleEdge, cannyThreshold1, cannyThreshold2, 3);
             downScaleEdge.resize(150, 150);
@@ -774,6 +775,7 @@ void ofApp::drawControlElement(){
     ofSetColor( 0, 10 );
     ofPopStyle();
     
+
     ofPushMatrix();
     ofPushStyle();
     
@@ -781,10 +783,8 @@ void ofApp::drawControlElement(){
     
     float _speedX = guideWidthStep;
     float _yD = 20;
-    
-    ofDrawLine( _speedX, ctrlPnY + _yD, _speedX, screenH - _yD);
-    
     float _thresholdX = guideWidthStep * 15;
+    ofDrawLine( _speedX, ctrlPnY + _yD, _speedX, screenH - _yD);
     ofDrawLine( _thresholdX, ctrlPnY + _yD, _thresholdX, screenH - _yD);
     
     //    float _intervalX = guideWidthStep * 2.5;
@@ -1096,7 +1096,6 @@ void ofApp::drawLineScore(){
     ofTranslate((ofGetWidth() - 600) * 0.5, 0);
     
     if (bCameraCapturePlay) {
-        
         
         int _xNumber = lineScoreNumber;
         int _stepX = lineScoreStepX;
@@ -1431,6 +1430,46 @@ void ofApp::audioRequested (float * output, int bufferSize, int nChannels){
 
 
 //--------------------------------------------------------------
+void ofApp::mainCaptureOnOff(){
+    
+//    allPlayOnOff = !allPlayOnOff;
+    
+    if ((whitePixels.size()>2)) {
+        bCameraCapturePlay = !bCameraCapturePlay;
+        //            blur(edge, 3);
+        bufferImg = edge;
+        
+        if ( !bCameraCapturePlay ) {
+            index = -1;
+            ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
+            for (int i=0; i<noteLists.size(); i++) {
+                noteLists[i].noteArray.clear();
+            }
+            for (int i=0; i<melodies.size(); i++) {
+                melodies[i].melodyLine.clear();
+            }
+            for (int i=0; i<oldScoreNote.size(); i++) {
+                oldScoreNote[i] = 0;
+                noteLists[i].noteArray.push_back(0);
+                melodies[i].melodyLine.push_back(0);
+            }
+            
+        } else {
+            scoreMake();
+            printScoreMake();
+            //                noteIndex = index;
+            ofAddListener(*metroOut, this, &ofApp::triggerReceive);
+            bPlayNote = true;
+        }
+        
+        grayThresholdTouch = 120;
+        touchDownDefault = 0;
+    }
+
+}
+
+
+//--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     
 }
@@ -1442,40 +1481,7 @@ void ofApp::keyReleased(int key){
     
     if (key == ' ') {
         
-        allPlayOnOff = !allPlayOnOff;
-        
-        if ((whitePixels.size()>2)) {
-            bCameraCapturePlay = !bCameraCapturePlay;
-            //            blur(edge, 3);
-            bufferImg = edge;
-            
-            if ( !bCameraCapturePlay ) {
-                index = -1;
-                ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
-                for (int i=0; i<noteLists.size(); i++) {
-                    noteLists[i].noteArray.clear();
-                }
-                for (int i=0; i<melodies.size(); i++) {
-                    melodies[i].melodyLine.clear();
-                }
-                for (int i=0; i<oldScoreNote.size(); i++) {
-                    oldScoreNote[i] = 0;
-                    noteLists[i].noteArray.push_back(0);
-                    melodies[i].melodyLine.push_back(0);
-                }
-                
-            } else {
-                scoreMake();
-                printScoreMake();
-                //                noteIndex = index;
-                ofAddListener(*metroOut, this, &ofApp::triggerReceive);
-                bPlayNote = true;
-            }
-            
-            grayThreshold = 120;
-            touchDownDefault = 0;
-        }
-        
+        mainCaptureOnOff();
         
     } else if (key == 'g') {
         
@@ -1518,14 +1524,14 @@ void ofApp::mouseMoved(int x, int y){
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
     
-    ofPoint _changedTouch = ofPoint(x, y);
-    
+    ofPoint _adjustTouchPos = ofPoint(x, y);
+  
     if (bSpeedCtrl) {
         float _minY = ctrlPnY + speedCSize * 0.75;
         float _maxY = screenH - speedCSize * 0.75;
         
-        if ( (_changedTouch.y>_minY) && (_changedTouch.y<_maxY) && _changedTouch.x>speedCPos.x - (ctrlPnW-speedCPos.x) ) {
-            speedCPos.y = _changedTouch.y;
+        if ( (_adjustTouchPos.y>_minY) && (_adjustTouchPos.y<_maxY) && _adjustTouchPos.x>speedCPos.x - (ctrlPnW-speedCPos.x) ) {
+            speedCPos.y = _adjustTouchPos.y;
             float _tempo = ofMap( speedCPos.y, _minY, _maxY, maxSpeed, minSpeed );
             synthMain.setParameter("tempo", _tempo);
         }
@@ -1539,7 +1545,7 @@ void ofApp::mouseDragged(int x, int y, int button){
     //            if ((_changedTouch.y>_minY)&&(_changedTouch.y<_maxY)) {
     //                thresholdCPos.y = _changedTouch.y;
     //                float _threshold = ofMap(thresholdCPos.y, _minY, _maxY, 255, 0);
-    //                grayThreshold = _threshold;
+    //                grayThresholdTouch = _threshold;
     //            }
     //        }
     
@@ -1547,8 +1553,8 @@ void ofApp::mouseDragged(int x, int y, int button){
     if (bInterval) {
         float _minY = ctrlPnY + speedCSize * 0.75;
         float _maxY = screenH - speedCSize * 0.75;
-        if ((_changedTouch.y>_minY)&&(_changedTouch.y<_maxY) && _changedTouch.x<intervalPos.x * 2 ) {
-            intervalPos.y = _changedTouch.y;
+        if ((_adjustTouchPos.y>_minY)&&(_adjustTouchPos.y<_maxY) && _adjustTouchPos.x<intervalPos.x * 2 ) {
+            intervalPos.y = _adjustTouchPos.y;
             float _interval = ofMap(intervalPos.y, _minY, _maxY, 0, 20);
             intervalDist = _interval;
         }
@@ -1575,7 +1581,7 @@ void ofApp::mouseDragged(int x, int y, int button){
     ////            if ((_changedTouch.y>_minY)&&(_changedTouch.y<_maxY)) {
     ////                thresholdCPos.y = _changedTouch.y;
     ////                float _threshold = ofMap(thresholdCPos.y, _minY, _maxY, 255, 0);
-    ////                grayThreshold = _threshold;
+    ////                grayThresholdTouch = _threshold;
     ////            }
     ////        }
     //
@@ -1592,12 +1598,35 @@ void ofApp::mouseDragged(int x, int y, int button){
     //    }
     
     
-    if ( (_changedTouch.x>0)&&(_changedTouch.x<ctrlPnW) && (_changedTouch.y<ctrlPnY)&&(_changedTouch.y>0) ) {
+    if ( (_adjustTouchPos.x>screenPos.x)&&(_adjustTouchPos.x<(screenPos.x+screenW)) &&
+        (_adjustTouchPos.y<screenH)&&(_adjustTouchPos.y>0) ) {
+        grayThresholdTouch = 120 + (_adjustTouchPos.y - touchDownDefault);
         
-        grayThreshold = 120 + (_changedTouch.y - touchDownDefault);
-        
+        if ((whitePixels.size()>2)) {
+            bCameraCapturePlay = false;
+            //            blur(edge, 3);
+            bufferImg = edge;
+            
+            if ( !bCameraCapturePlay ) {
+                index = -1;
+                ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
+                for (int i=0; i<noteLists.size(); i++) {
+                    noteLists[i].noteArray.clear();
+                }
+                for (int i=0; i<melodies.size(); i++) {
+                    melodies[i].melodyLine.clear();
+                }
+                for (int i=0; i<oldScoreNote.size(); i++) {
+                    oldScoreNote[i] = 0;
+                    noteLists[i].noteArray.push_back(0);
+                    melodies[i].melodyLine.push_back(0);
+                }
+                
+            }
+        }
     }
     
+
     
 }
 
@@ -1606,29 +1635,18 @@ void ofApp::mousePressed(int x, int y, int button){
     
     float _tolerance = 3;
     
-    ofPoint _changedTouch = ofPoint(x, y);
+    ofPoint _adjustTouchPos = ofPoint(x, y);
+
     
-    
-    float _distS = ofDist( speedCPos.x, speedCPos.y , _changedTouch.x, _changedTouch.y );
-    
-    for (int i=0; i<2; i++) {
-        
-        float _distS = ofDist( speedCPos.x, speedCPos.y , _changedTouch.x, _changedTouch.y );
-        if ( (_distS < thresholdCSize * _tolerance) && bSpeedCtrl == false) {
-            bSpeedCtrl = true;
-        }
-        
+    float _distSpeed = ofDist( speedCPos.x, speedCPos.y, _adjustTouchPos.x, _adjustTouchPos.y );
+    if ( (_distSpeed < thresholdCSize * _tolerance) && bSpeedCtrl == false) {
+        bSpeedCtrl = true;
     }
     
     
-    float _distI = ofDist( intervalPos.x, intervalPos.y , _changedTouch.x, _changedTouch.y );
-    
-    for (int i=0; i<2; i++) {
-        float _distI = ofDist( intervalPos.x, intervalPos.y , _changedTouch.x, _changedTouch.y );
-        if ( (_distI < intervalSize * _tolerance) && bInterval == false) {
-            bInterval = true;
-        }
-        
+    float _distInterval = ofDist( intervalPos.x, intervalPos.y, _adjustTouchPos.x, _adjustTouchPos.y );
+    if ( (_distInterval < intervalSize * _tolerance) && bInterval == false) {
+        bInterval = true;
     }
     
     //    if ( touch.id==0 ) {
@@ -1660,95 +1678,107 @@ void ofApp::mousePressed(int x, int y, int button){
     
     //    }
     
-    if ( (_changedTouch.x>0)&&(_changedTouch.x<ctrlPnW) && (_changedTouch.y<ctrlPnY)&&(_changedTouch.y>0) ) {
-        
-        grayThreshold = 120;
-        touchDownDefault = _changedTouch.y;
-        
-    }
-    
-    
-    float _4BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base4Pos.x, base4Pos.y );
-    if ( _4BaseDist < baseSize ) {
-        baseSelection = 4;
-    }
-    
-    float _5BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base5Pos.x, base5Pos.y );
-    if ( _5BaseDist < baseSize ) {
-        baseSelection = 5;
-    }
-    
-    float _6BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base6Pos.x, base6Pos.y );
-    if ( _6BaseDist < baseSize ) {
-        baseSelection = 6;
-    }
-    
-    float _7BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base7Pos.x, base7Pos.y );
-    if ( _7BaseDist < baseSize ) {
-        baseSelection = 7;
-    }
-    
-    float _8BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base8Pos.x, base8Pos.y );
-    if ( _8BaseDist < baseSize ) {
-        baseSelection = 8;
-    }
-    
-    float _9BaseDist = ofDist( _changedTouch.x, _changedTouch.y, base9Pos.x, base9Pos.y );
-    if ( _9BaseDist < baseSize ) {
-        baseSelection = 9;
-    }
-    
-    
-}
+    if ( (_adjustTouchPos.x>screenPos.x)&&(_adjustTouchPos.x<(screenPos.x+screenW)) &&
+        (_adjustTouchPos.y<screenH)&&(_adjustTouchPos.y>0) ) {
 
-//--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
-    
-    ofPoint _changedTouch = ofPoint(x, y);
-    
-    if ( (_changedTouch.x>0)&&(_changedTouch.x<ctrlPnW) && (_changedTouch.y<ctrlPnY)&&(_changedTouch.y>0) ) {
         if ((whitePixels.size()>2)) {
-            bCameraCapturePlay = !bCameraCapturePlay;
+            bCameraCapturePlay = false;
             //            blur(edge, 3);
             bufferImg = edge;
             
             if ( !bCameraCapturePlay ) {
-                index = 0;
+                index = -1;
                 ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
-            } else {
-                scoreMake();
-                //                noteIndex = index;
-                ofAddListener(*metroOut, this, &ofApp::triggerReceive);
-                bPlayNote = true;
+                for (int i=0; i<noteLists.size(); i++) {
+                    noteLists[i].noteArray.clear();
+                }
+                for (int i=0; i<melodies.size(); i++) {
+                    melodies[i].melodyLine.clear();
+                }
+                for (int i=0; i<oldScoreNote.size(); i++) {
+                    oldScoreNote[i] = 0;
+                    noteLists[i].noteArray.push_back(0);
+                    melodies[i].melodyLine.push_back(0);
+                }
+                
             }
-            
-            grayThreshold = 120;
-            touchDownDefault = 0;
         }
         
+        grayThresholdTouch = 120;
+        touchDownDefault = _adjustTouchPos.y;
     }
     
     
-    if ( (_changedTouch.x<guideWidthStep * 11) && (_changedTouch.x>guideWidthStep * 4) && (_changedTouch.y>ctrlPnY) && (_changedTouch.y<screenH) && bCameraCapturePlay ) {
-        
-        bPlayNote = !bPlayNote;
-        
-        if ( !bPlayNote ) {
-            ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
-        } else {
-            ofAddListener(*metroOut, this, &ofApp::triggerReceive);
-        }
-        
+    float _4BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base4Pos.x, base4Pos.y );
+    if ( _4BaseDist < baseSize ) {
+        baseSelection = 4;
     }
+    
+    float _5BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base5Pos.x, base5Pos.y );
+    if ( _5BaseDist < baseSize ) {
+        baseSelection = 5;
+    }
+    
+    float _6BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base6Pos.x, base6Pos.y );
+    if ( _6BaseDist < baseSize ) {
+        baseSelection = 6;
+    }
+    
+    float _7BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base7Pos.x, base7Pos.y );
+    if ( _7BaseDist < baseSize ) {
+        baseSelection = 7;
+    }
+    
+    float _8BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base8Pos.x, base8Pos.y );
+    if ( _8BaseDist < baseSize ) {
+        baseSelection = 8;
+    }
+    
+    float _9BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base9Pos.x, base9Pos.y );
+    if ( _9BaseDist < baseSize ) {
+        baseSelection = 9;
+    }
+    
+    touchOnOffCheck = true;
+    
+}
+
+
+
+
+//--------------------------------------------------------------
+void ofApp::mouseReleased(int x, int y, int button){
+    
+    ofPoint _adjustTouchPos = ofPoint(x, y);
+
+    
+    if ( (_adjustTouchPos.x>screenPos.x)&&(_adjustTouchPos.x<(screenPos.x+screenW)) &&
+        (_adjustTouchPos.y<screenH)&&(_adjustTouchPos.y>0) && touchOnOffCheck) {
+        mainCaptureOnOff();
+        touchOnOffCheck = false;
+    }
+    
+    
+//    if ( (_adjustTouchPos.x<guideWidthStep * 11) && (_adjustTouchPos.x>guideWidthStep * 4) && (_adjustTouchPos.y>ctrlPnY) && (_adjustTouchPos.y<screenH) && bCameraCapturePlay ) {
+//        
+//        bPlayNote = !bPlayNote;
+//        
+//        if ( !bPlayNote ) {
+//            ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
+//        } else {
+//            ofAddListener(*metroOut, this, &ofApp::triggerReceive);
+//        }
+//        
+//    }
     
     float _tolerance = 2;
     
-    float _distS = ofDist( speedCPos.x, speedCPos.y , _changedTouch.x, _changedTouch.y );
+    float _distS = ofDist( speedCPos.x, speedCPos.y , _adjustTouchPos.x, _adjustTouchPos.y );
     if (_distS < (thresholdCSize * _tolerance) && bSpeedCtrl==true) {
         bSpeedCtrl = false;
     }
     
-    float _distI = ofDist( intervalPos.x, intervalPos.y , _changedTouch.x, _changedTouch.y );
+    float _distI = ofDist( intervalPos.x, intervalPos.y , _adjustTouchPos.x, _adjustTouchPos.y );
     if (_distI < (intervalSize * _tolerance) && bInterval == true) {
         bInterval = false;
     }
@@ -2043,7 +2073,7 @@ void ofApp::guiSetting(){
     
     
     parameters.setName("Main");
-    parameters.add(thresholdF.set("Threshold", 120, 0, 255));
+    parameters.add(thresholdGui.set("Threshold", 120, 0, 255));
     parameters.add(mainVolume.set("Volume", 0.5, 0, 1));
     parameters.add(baseNum.set("Base Selection", 7, 4, 9));
     parameters.add(frameRate.set("fps/s", ""));

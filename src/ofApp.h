@@ -112,7 +112,7 @@ public:
     bool camOpen;
     float cannyThreshold1;
     float cannyThreshold2;
-    float grayThreshold;
+    float grayThresholdTouch;
     
     ofImage bufferImg;
     
@@ -226,7 +226,7 @@ public:
     ofParameterGroup parametersMain;
     ofParameterGroup parameters;
     
-    ofParameter<float> thresholdF;
+    ofParameter<float> thresholdGui;
     ofParameter<float> mainVolume;
     ofParameter<int> baseNum;
     ofParameter<string> frameRate;
@@ -276,5 +276,11 @@ public:
     void drawScoreBaseElement();
     
     void layoutLines();
+    
+    ofVec2f screenPos;
+    
+    void mainCaptureOnOff();
+    
+    bool touchOnOffCheck;
     
 };
