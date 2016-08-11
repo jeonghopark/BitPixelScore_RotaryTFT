@@ -146,8 +146,6 @@ public:
     int maxSpeed, minSpeed;
     void controlGuide();
     
-    float stepBasePos;
-    
     float ctrlRectS;
     
     ofPoint speedCPos;
