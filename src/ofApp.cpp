@@ -105,12 +105,13 @@ void ofApp::setup(){
     
     float _posIndexRight = 13.5;
     float _posIndexLeft = 2.5;
-    base4Pos = ofPoint( guideWidthStep * _posIndexLeft, ctrlPnY + stepBasePos * 1 );
-    base5Pos = ofPoint( guideWidthStep * _posIndexLeft, ctrlPnY + stepBasePos * 2.5 );
-    base6Pos = ofPoint( guideWidthStep * _posIndexLeft, ctrlPnY + stepBasePos * 4 );
-    base7Pos = ofPoint( guideWidthStep * _posIndexRight, ctrlPnY + stepBasePos * 1 );
-    base8Pos = ofPoint( guideWidthStep * _posIndexRight, ctrlPnY + stepBasePos * 2.5 );
-    base9Pos = ofPoint( guideWidthStep * _posIndexRight, ctrlPnY + stepBasePos * 4 );
+    float _baseCtrlPosY = 0;
+    base4Pos = ofPoint( guideWidthStep * _posIndexLeft, _baseCtrlPosY + stepBasePos * 1 );
+    base5Pos = ofPoint( guideWidthStep * _posIndexLeft, _baseCtrlPosY + stepBasePos * 2.5 );
+    base6Pos = ofPoint( guideWidthStep * _posIndexLeft, _baseCtrlPosY + stepBasePos * 4 );
+    base7Pos = ofPoint( guideWidthStep * _posIndexRight, _baseCtrlPosY + stepBasePos * 5.5 );
+    base8Pos = ofPoint( guideWidthStep * _posIndexRight, _baseCtrlPosY + stepBasePos * 7 );
+    base9Pos = ofPoint( guideWidthStep * _posIndexRight, _baseCtrlPosY + stepBasePos * 8.5 );
     baseSize = ctrlRectS * 0.55;
     
     bPlayNote = false;
@@ -137,7 +138,7 @@ void ofApp::setup(){
     faceFind.setPreset(ObjectFinder::Fast);
     faceFind.setFindBiggestObject(true);
     
-    debugView = true;
+    debugView = false;
     
     
     ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
@@ -164,7 +165,7 @@ void ofApp::update(){
     if(cam.isFrameNew()) {
         
         camColorCV.setFromPixels(cam.getPixels().getData(), cam.getWidth(), cam.getHeight());
-        camColorCV.setROI(100, 0, 600, 600);
+        camColorCV.setROI(0, 0, 600, 600);
         centerCam.setFromPixels(camColorCV.getRoiPixels());
         
         
@@ -280,15 +281,16 @@ void ofApp::update(){
             }
             
             
-            if (whitePixels.size()%8 !=0) {
-                int _restNum = whitePixels.size() % 8;
-                for (int j=0; j<=(8-_restNum); j++) {
-                    blackWhitePixels _bWP;
-                    _bWP.indexPos = j;
-                    _bWP.pixelN = _bCounter;
-                    whitePixels.push_back(_bWP);
-                }
-            }
+//            if (whitePixels.size()%8 !=0) {
+//                int _restNum = whitePixels.size() % 8;
+//                for (int j=0; j<=(8-_restNum); j++) {
+//                    blackWhitePixels _bWP;
+//                    _bWP.indexPos = j;
+//                    _bWP.pixelN = _bCounter;
+//                    whitePixels.push_back(_bWP);
+//                }
+//            }
+
         }
     }
     
@@ -343,30 +345,35 @@ void ofApp::draw(){
     
     
     ofPushMatrix();
+    ofTranslate(-ofGetWidth()*0.5 + 0, ofGetHeight());
+    ofRotateZ(-90);
+    printScoreFbo.draw(0, ofGetHeight() - 512 * 0.5, 384 * 0.5, ofGetWidth());
+    ofPopMatrix();
+
     
-    ofTranslate((ofGetWidth() - 600) * 0.5, 0);
+    ofPushMatrix();
+    ofTranslate((ofGetWidth() - screenW) * 0.5, 0);
     
     ofPushMatrix();
     
-    ofPushStyle();
     if (!bCameraCapturePlay) {
-        ofSetColor( 255, 255 );
         if (edge.isAllocated()) {
+            ofPushStyle();
+            ofSetColor( 255, 255 );
             edge.draw( 0, 0, screenW, screenH);
+            ofPopStyle();
         }
     }
-    ofPopStyle();
     
-    
-    ofPushStyle();
     if (bCameraCapturePlay) {
+        ofPushStyle();
         ofSetColor( 255, 255 );
         ofDrawRectangle(0, 0, screenW, screenH);
         
         ofSetColor( 255, 180 );
         bufferImg.draw( 0, 0, screenW, screenH);
+        ofPopStyle();
     }
-    ofPopStyle();
     
     ofPopMatrix();
     
@@ -419,20 +426,12 @@ void ofApp::draw(){
         debugInformation();
         gui.draw();
     }
-    
-    
-    ofPushMatrix();
-    ofTranslate(-ofGetWidth()*0.5 + 0, ofGetHeight());
-    ofRotateZ(-90);
-    
-    printScoreFbo.draw(0, ofGetHeight() - 512 * 0.5, 384 * 0.5, ofGetWidth());
-    
-    ofPopMatrix();
-    
-    
-    drawBaseInterface();
 
     
+
+
+    drawBaseInterface();
+
     ofPushMatrix();
     ofTranslate((ofGetWidth() - 600) * 0.5, 0);
     drawControlElement();
@@ -440,9 +439,27 @@ void ofApp::draw(){
         drawLineScore();
     }
     ofPopMatrix();
+
+    layoutLines();
     
+}
+
+
+
+//--------------------------------------------------------------
+void ofApp::layoutLines(){
+
+    ofPushMatrix();
+    ofPushStyle();
+    ofSetColor(255, 0, 0);
     
-    
+    ofDrawLine((ofGetWidth() - screenW) * 0.5, 0, (ofGetWidth() - screenW) * 0.5, ofGetHeight());
+    ofDrawLine((ofGetWidth() + screenW) * 0.5, 0, (ofGetWidth() + screenW) * 0.5, ofGetHeight());
+
+    ofDrawLine(0, screenH, ofGetWidth(), screenH);
+
+    ofPopStyle();
+    ofPopMatrix();
 }
 
 
@@ -486,9 +503,7 @@ void ofApp::drawPrintScoreFBO(){
     ofPushMatrix();
     
     ofPushStyle();
-    
     ofSetColor(0, 255);
-    
     
     ofPushMatrix();
     ofTranslate(0, _upBaseLine);
@@ -498,8 +513,6 @@ void ofApp::drawPrintScoreFBO(){
     }
     ofPopMatrix();
     
-    
-    
     ofPushMatrix();
     ofTranslate(0, _downBaseLine);
     for (int i=0; i<5; i++) {
@@ -507,8 +520,6 @@ void ofApp::drawPrintScoreFBO(){
         fclef.draw(0, -_stepLine * 2.7, _stepLine * 2.7, _stepLine * 2.7);
     }
     ofPopMatrix();
-    
-    
     
     ofPushMatrix();
     ofTranslate(0, _downBaseLine);
@@ -524,7 +535,6 @@ void ofApp::drawPrintScoreFBO(){
         
     }
     ofPopMatrix();
-    
     
     
     ofPopStyle();
@@ -621,6 +631,12 @@ void ofApp::drawPrintScoreFBO(){
     
     ofPopMatrix();
     
+    
+}
+
+
+//--------------------------------------------------------------
+void ofApp::drawScoreBaseElement(){
     
 }
 

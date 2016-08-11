@@ -275,5 +275,8 @@ public:
     void printScore();
     void printFooter();
     
+    void drawScoreBaseElement();
+    
+    void layoutLines();
     
 };
