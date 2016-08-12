@@ -1470,6 +1470,36 @@ void ofApp::mainCaptureOnOff(){
 
 
 //--------------------------------------------------------------
+void ofApp::mainCaptureOff(){
+
+    if ((whitePixels.size()>2)) {
+        bCameraCapturePlay = false;
+        //            blur(edge, 3);
+        bufferImg = edge;
+        
+        if ( !bCameraCapturePlay ) {
+            index = -1;
+            ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
+            for (int i=0; i<noteLists.size(); i++) {
+                noteLists[i].noteArray.clear();
+            }
+            for (int i=0; i<melodies.size(); i++) {
+                melodies[i].melodyLine.clear();
+            }
+            for (int i=0; i<oldScoreNote.size(); i++) {
+                oldScoreNote[i] = 0;
+                noteLists[i].noteArray.push_back(0);
+                melodies[i].melodyLine.push_back(0);
+            }
+            
+        }
+    }
+
+}
+
+
+
+//--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     
 }
@@ -1602,28 +1632,7 @@ void ofApp::mouseDragged(int x, int y, int button){
         (_adjustTouchPos.y<screenH)&&(_adjustTouchPos.y>0) ) {
         grayThresholdTouch = 120 + (_adjustTouchPos.y - touchDownDefault);
         
-        if ((whitePixels.size()>2)) {
-            bCameraCapturePlay = false;
-            //            blur(edge, 3);
-            bufferImg = edge;
-            
-            if ( !bCameraCapturePlay ) {
-                index = -1;
-                ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
-                for (int i=0; i<noteLists.size(); i++) {
-                    noteLists[i].noteArray.clear();
-                }
-                for (int i=0; i<melodies.size(); i++) {
-                    melodies[i].melodyLine.clear();
-                }
-                for (int i=0; i<oldScoreNote.size(); i++) {
-                    oldScoreNote[i] = 0;
-                    noteLists[i].noteArray.push_back(0);
-                    melodies[i].melodyLine.push_back(0);
-                }
-                
-            }
-        }
+        mainCaptureOff();
     }
     
 
@@ -1681,28 +1690,7 @@ void ofApp::mousePressed(int x, int y, int button){
     if ( (_adjustTouchPos.x>screenPos.x)&&(_adjustTouchPos.x<(screenPos.x+screenW)) &&
         (_adjustTouchPos.y<screenH)&&(_adjustTouchPos.y>0) ) {
 
-        if ((whitePixels.size()>2)) {
-            bCameraCapturePlay = false;
-            //            blur(edge, 3);
-            bufferImg = edge;
-            
-            if ( !bCameraCapturePlay ) {
-                index = -1;
-                ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
-                for (int i=0; i<noteLists.size(); i++) {
-                    noteLists[i].noteArray.clear();
-                }
-                for (int i=0; i<melodies.size(); i++) {
-                    melodies[i].melodyLine.clear();
-                }
-                for (int i=0; i<oldScoreNote.size(); i++) {
-                    oldScoreNote[i] = 0;
-                    noteLists[i].noteArray.push_back(0);
-                    melodies[i].melodyLine.push_back(0);
-                }
-                
-            }
-        }
+        mainCaptureOff();
         
         grayThresholdTouch = 120;
         touchDownDefault = _adjustTouchPos.y;
@@ -1751,7 +1739,6 @@ void ofApp::mouseReleased(int x, int y, int button){
     
     ofPoint _adjustTouchPos = ofPoint(x, y);
 
-    
     if ( (_adjustTouchPos.x>screenPos.x)&&(_adjustTouchPos.x<(screenPos.x+screenW)) &&
         (_adjustTouchPos.y<screenH)&&(_adjustTouchPos.y>0) && touchOnOffCheck) {
         mainCaptureOnOff();
@@ -2068,9 +2055,9 @@ vector<int> ofApp::convertDecimalToNBase(int n, int base, int size) {
 }
 
 
+
 //--------------------------------------------------------------
 void ofApp::guiSetting(){
-    
     
     parameters.setName("Main");
     parameters.add(thresholdGui.set("Threshold", 120, 0, 255));
@@ -2084,10 +2071,7 @@ void ofApp::guiSetting(){
     
     gui.setup(parametersMain);
     
-    
 }
-
-
 
 
 
@@ -2097,9 +2081,6 @@ void ofApp::changedBaseNum(int & param){
     bChangedBaseNum = true;
     
 }
-
-
-
 
 
 
