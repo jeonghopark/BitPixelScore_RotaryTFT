@@ -277,4 +277,11 @@ public:
     
     bool touchOnOffCheck;
     
+    
+    ofPoint controlPos;
+    
+    float speedLineYMax, speedLineYMin;
+    float intervalLineYMax, intervalLineYMin;
+    
+    
 };

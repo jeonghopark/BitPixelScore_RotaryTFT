@@ -85,28 +85,36 @@ void ofApp::setup(){
     index = -1;
     noteIndex = -1;
     
+    
+    float _posIndexLeft = (ofGetWidth() - screenW) * 0.25;
+    float _posIndexRight = (ofGetWidth() + screenW) * 0.5 + (ofGetWidth() - screenW) * 0.25;
+    float _baseCtrlPosY = 0;
+    float _stepBasePos = 105 / _widthDefault * _sizeF;
+    
+    speedLineYMin = 350 - 20;
+    speedLineYMax = 450 + 20;
+    intervalLineYMin = 50 - 20;
+    intervalLineYMax = 150 + 20;
+
+
+    controlPos = ofPoint( _posIndexRight, 0 );
+    
     speedCSize = ctrlRectS;
-    speedCPos = ofPoint( 15 * guideWidthStep, ctrlPnY + ctrlPnH * 0.5 );
+    speedCPos = ofPoint( controlPos.x, (speedLineYMin + speedLineYMax) * 0.5 );
     bSpeedCtrl = false;
     
     thresholdCSize = ctrlRectS * 0.5;
-    thresholdCPos = ofPoint( 1 * guideWidthStep, ctrlPnY + ctrlPnH * 0.5 );
+    thresholdCPos = ofPoint( controlPos.x, ctrlPnY + ctrlPnH * 0.5 );
     bthresholdCtrl = false;
     
     intervalSize = ctrlRectS * 0.5;
-    intervalPos = ofPoint( 1 * guideWidthStep, ctrlPnY + ctrlPnH * 0.5 );
+    intervalPos = ofPoint( controlPos.x, (intervalLineYMin + intervalLineYMax) * 0.5 );
     bthresholdCtrl = false;
     intervalDist = 1;
     
     cannyThreshold1 = 120;
     cannyThreshold2 = 120;
     grayThresholdTouch = 120;
-    
-    
-    float _posIndexRight = 13.5;
-    float _posIndexLeft = (ofGetWidth() - screenW) * 0.25;
-    float _baseCtrlPosY = 0;
-    float _stepBasePos = 105 / _widthDefault * _sizeF;
     
     base4Pos = ofPoint( _posIndexLeft, _baseCtrlPosY + _stepBasePos * 1 );
     base5Pos = ofPoint( _posIndexLeft, _baseCtrlPosY + _stepBasePos * 2.5 );
@@ -159,7 +167,7 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    
+    cout << bSpeedCtrl << endl;
     baseSelection = baseNum;
     
     cam.update();
@@ -765,7 +773,7 @@ void ofApp::debugInformation(){
 void ofApp::drawControlElement(){
     
     ofPushMatrix();
-    ofTranslate((ofGetWidth() - 600) * 0.5, 0);
+//    ofTranslate((ofGetWidth() - 600) * 0.5, 0);
     
     ofPushStyle();
     ofSetColor( 255 );
@@ -779,14 +787,15 @@ void ofApp::drawControlElement(){
     
     ofSetColor( 0, 80 );
     
-    float _speedX = guideWidthStep;
+    float _speedX = controlPos.x;
     float _yD = 20;
-    float _thresholdX = guideWidthStep * 15;
-    ofDrawLine( _speedX, ctrlPnY + _yD, _speedX, screenH - _yD);
-    ofDrawLine( _thresholdX, ctrlPnY + _yD, _thresholdX, screenH - _yD);
+    float _thresholdX = controlPos.x;
     
-    //    float _intervalX = guideWidthStep * 2.5;
-    //    ofDrawLine( _intervalX, ctrlPnY + _yD, _intervalX, screenH - _yD);
+    ofDrawLine( _speedX, speedLineYMin, _speedX, speedLineYMax);
+//    ofDrawLine( _thresholdX, ctrlPnY + _yD, _thresholdX, screenH - _yD);
+    
+    float _intervalX = controlPos.x;
+    ofDrawLine( _intervalX, intervalLineYMin, _intervalX, intervalLineYMax);
     
     ofPopStyle();
     ofPopMatrix();
@@ -1555,15 +1564,16 @@ void ofApp::mouseDragged(int x, int y, int button){
     ofPoint _adjustTouchPos = ofPoint(x, y);
   
     if (bSpeedCtrl) {
-        float _minY = ctrlPnY + speedCSize * 0.75;
-        float _maxY = screenH - speedCSize * 0.75;
+        float _minY = speedLineYMin - 0;
+        float _maxY = speedLineYMax + 0;
         
-        if ( (_adjustTouchPos.y>_minY) && (_adjustTouchPos.y<_maxY) && _adjustTouchPos.x>speedCPos.x - (ctrlPnW-speedCPos.x) ) {
-            speedCPos.y = _adjustTouchPos.y;
-            float _tempo = ofMap( speedCPos.y, _minY, _maxY, maxSpeed, minSpeed );
-            synthMain.setParameter("tempo", _tempo);
+        speedCPos.y = min(max(_adjustTouchPos.y, _minY), _maxY);
+        float _tempo = ofMap( speedCPos.y, _minY, _maxY, maxSpeed, minSpeed );
+        synthMain.setParameter("tempo", _tempo);
+        
+        if ( (_adjustTouchPos.y > _minY) && (_adjustTouchPos.y < _maxY) &&
+            (_adjustTouchPos.x > controlPos.x - 30) && (_adjustTouchPos.x < controlPos.x + 30) ) {
         }
-        
     }
     
     //        if (bthresholdCtrl) {
@@ -1579,12 +1589,15 @@ void ofApp::mouseDragged(int x, int y, int button){
     
     
     if (bInterval) {
-        float _minY = ctrlPnY + speedCSize * 0.75;
-        float _maxY = screenH - speedCSize * 0.75;
-        if ((_adjustTouchPos.y>_minY)&&(_adjustTouchPos.y<_maxY) && _adjustTouchPos.x<intervalPos.x * 2 ) {
-            intervalPos.y = _adjustTouchPos.y;
-            float _interval = ofMap(intervalPos.y, _minY, _maxY, 0, 20);
-            intervalDist = _interval;
+        float _minY = intervalLineYMin;
+        float _maxY = intervalLineYMax;
+        
+        intervalPos.y = min(max(_adjustTouchPos.y, _minY), _maxY);
+        float _interval = ofMap(intervalPos.y, _minY, _maxY, 0, 20);
+        intervalDist = _interval;
+        
+        if ((_adjustTouchPos.y>_minY)&&(_adjustTouchPos.y<_maxY) &&
+            _adjustTouchPos.x<intervalPos.x * 2 ) {
         }
     }
     
