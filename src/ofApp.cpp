@@ -1337,7 +1337,7 @@ void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _b, int _s, ofColor 
     
     
     ofTranslate( _pos );
-    ofRotateZ( 45 );
+    ofRotateZDeg( 45 );
     
     ofSetLineWidth( 3 );
     
@@ -1564,8 +1564,8 @@ void ofApp::mouseDragged(int x, int y, int button){
     ofPoint _adjustTouchPos = ofPoint(x, y);
   
     if (bSpeedCtrl) {
-        float _minY = speedLineYMin - 0;
-        float _maxY = speedLineYMax + 0;
+        float _minY = speedLineYMin;
+        float _maxY = speedLineYMax;
         
         speedCPos.y = min(max(_adjustTouchPos.y, _minY), _maxY);
         float _tempo = ofMap( speedCPos.y, _minY, _maxY, maxSpeed, minSpeed );
@@ -1593,7 +1593,7 @@ void ofApp::mouseDragged(int x, int y, int button){
         float _maxY = intervalLineYMax;
         
         intervalPos.y = min(max(_adjustTouchPos.y, _minY), _maxY);
-        float _interval = ofMap(intervalPos.y, _minY, _maxY, 0, 20);
+        float _interval = ofMap(intervalPos.y, _minY, _maxY, 0, 4);
         intervalDist = _interval;
         
         if ((_adjustTouchPos.y>_minY)&&(_adjustTouchPos.y<_maxY) &&
@@ -1779,6 +1779,8 @@ void ofApp::mouseReleased(int x, int y, int button){
     float _distI = ofDist( intervalPos.x, intervalPos.y , _adjustTouchPos.x, _adjustTouchPos.y );
     if (_distI < (intervalSize * _tolerance) && bInterval == true) {
         bInterval = false;
+        scoreMake();
+        printScoreMake();
     }
     
     
@@ -1951,7 +1953,7 @@ void ofApp::scoreMake(){
         noteLists[i].noteArray.clear();
     }
     
-    int _intervalDist = 1;
+    int _intervalDist = intervalDist;
     
     for (int i=0; i<whitePixels.size(); i++) {
         
