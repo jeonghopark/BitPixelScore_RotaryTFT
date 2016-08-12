@@ -196,7 +196,7 @@ void ofApp::update(){
         //                erode(gray);
         Canny(gray, edge, cannyThreshold1, cannyThreshold2, 3);
         
-        thin(edge);
+//        thin(edge);
         invert(edge);
         
         edge.update();
@@ -214,9 +214,8 @@ void ofApp::update(){
             invert(downScaleEdge);
             downScaleEdge.update();
             
-            
-            printCam = downScaleEdge;
-            printCam.resize(384, 384);
+//            printCam = downScaleEdge;
+//            printCam.resize(384, 384);
             
             
             unsigned char * _src = edge.getPixels().getData();
@@ -348,7 +347,7 @@ void ofApp::draw(){
     
     ofPushMatrix();
     ofTranslate(-ofGetWidth()*0.5 + 0, ofGetHeight());
-    ofRotateZ(-90);
+    ofRotateZDeg(-90);
     printScoreFbo.draw(0, ofGetHeight() - 512 * 0.5, 384 * 0.5, ofGetWidth());
     ofPopMatrix();
     
@@ -444,8 +443,8 @@ void ofApp::layoutLines(){
     ofPushStyle();
     ofSetColor(255, 0, 0);
     
-    ofDrawLine((ofGetWidth() - screenW) * 0.5, 0, (ofGetWidth() - screenW) * 0.5, ofGetHeight());
-    ofDrawLine((ofGetWidth() + screenW) * 0.5, 0, (ofGetWidth() + screenW) * 0.5, ofGetHeight());
+    ofDrawLine((ofGetWidth() - screenW) * 0.5, 0, (ofGetWidth() - screenW) * 0.5, screenH);
+    ofDrawLine((ofGetWidth() + screenW) * 0.5, 0, (ofGetWidth() + screenW) * 0.5, screenH);
     
     ofDrawLine(0, screenH, ofGetWidth(), screenH);
     
@@ -468,7 +467,7 @@ void ofApp::drawPrintScoreFBO(){
     ofSetColor(255);
     ofDrawRectangle(10, 10, printScoreFbo.getWidth()-20, printScoreFbo.getHeight()-20);
     
-    ofRotateZ(90);
+    ofRotateZDeg(90);
     
     
     ofRectMode(OF_RECT_CENTER);
@@ -539,19 +538,18 @@ void ofApp::drawPrintScoreFBO(){
     
     ofPushStyle();
     ofTranslate(0, _upBaseLine);
-    
-    ofSetColor(255, 0, 0, 255);
+    ofSetLineWidth(4);
+    ofSetColor(255, 0, 0, 180);
     if (_melodyNoteNum>0) {
         int _index = noteIndex % _melodyNoteNum;
         float _x1 = ofMap(_index, 0, _melodyNoteNum, _xSizeFactor, ofGetWidth() * 3 - _xSizeFactor);
         float _y1 = 0;
-        ofDrawLine(_x1, _y1 + 100, _x1, _y1 - 100);
+        ofDrawLine(_x1, _y1 + 200, _x1, _y1 - 200);
     }
     ofPopStyle();
     
     
     ofPushStyle();
-    
     ofSetColor(0, 255);
     
     float _stempLength = 37;
@@ -564,7 +562,6 @@ void ofApp::drawPrintScoreFBO(){
         for (int j=0; j<melodies[i].melodyLine.size(); j++) {
             
             float _x1 = ofMap(j, 0, melodies[i].melodyLine.size(), _xSizeFactor, ofGetWidth() * 3 -_xSizeFactor);
-            
             
             if (melodies[i].melodyLine[j]>0) {
                 
@@ -1816,10 +1813,12 @@ void ofApp::printScore(){
 
 //--------------------------------------------------------------
 void ofApp::printCamView(){
-    
+
+    printCam = bufferImg;
+    printCam.resize(384, 384);
+
     rotate(printCam, printCam, -90);
     printer.print(printCam, 10);
-    
     
 }
 
