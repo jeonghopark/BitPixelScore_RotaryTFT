@@ -112,7 +112,7 @@ public:
     bool camOpen;
     float cannyThreshold1;
     float cannyThreshold2;
-    float grayThreshold;
+    float grayThresholdTouch;
     
     ofImage bufferImg;
     
@@ -219,14 +219,12 @@ public:
     
     void debugInformation();
     
-
-    
     void guiSetting();
     ofxPanel gui;
     ofParameterGroup parametersMain;
     ofParameterGroup parameters;
     
-    ofParameter<float> thresholdF;
+    ofParameter<float> thresholdGui;
     ofParameter<float> mainVolume;
     ofParameter<int> baseNum;
     ofParameter<string> frameRate;
@@ -236,20 +234,15 @@ public:
     void changedBaseNum(int & param);
     bool bChangedBaseNum;
     
-    
     ofParameterGroup parameters2;
     ofParameter<float> thresholdF2;
 
-    
-    
-    
     vector<melody> melodies;
 
     void printScoreMake();
     void checkSameNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scoreCh );
     
     int notePosition(int _note, int _stepLine);
-    
     
     ofxCv::ObjectFinder faceFind;
   
@@ -276,5 +269,12 @@ public:
     void drawScoreBaseElement();
     
     void layoutLines();
+    
+    ofVec2f screenPos;
+    
+    void mainCaptureOnOff();
+    void mainCaptureOff();
+    
+    bool touchOnOffCheck;
     
 };
