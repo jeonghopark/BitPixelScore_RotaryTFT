@@ -284,4 +284,10 @@ public:
     float intervalLineYMax, intervalLineYMin;
     
     
+    ofRectangle printButton;
+    ofRectangle speedArea;
+    ofRectangle intervalArea;
+    
+    void controlBackground();
+    
 };

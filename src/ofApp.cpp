@@ -161,14 +161,17 @@ void ofApp::setup(){
     bChangedBaseNum = false;
     
     
+    printButton.set((ofGetWidth() + screenW) * 0.5, 500, 212, 100);
+    speedArea.set((ofGetWidth() + screenW) * 0.5, 0, 212, 200);
+    intervalArea.set((ofGetWidth() + screenW) * 0.5, 300, 212, 200);
+    
 }
 
 
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    cout << bSpeedCtrl << endl;
-    baseSelection = baseNum;
+
     
     cam.update();
     
@@ -321,7 +324,9 @@ void ofApp::update(){
     
     
     if (bChangedBaseNum) {
+        scoreMake();
         printScoreMake();
+        bChangedBaseNum = false;
     }
     
     
@@ -768,9 +773,37 @@ void ofApp::debugInformation(){
 }
 
 
+//--------------------------------------------------------------
+void ofApp::controlBackground(){
+    
+    ofPushMatrix();
+    
+    ofPushStyle();
+    ofSetColor(255,180,180);
+    ofDrawRectangle(printButton);
+    ofPopStyle();
+    
+    ofPushStyle();
+    ofSetColor(180,255,180);
+    ofDrawRectangle(speedArea);
+    ofPopStyle();
+    
+    ofPushStyle();
+    ofSetColor(180,180,255);
+    ofDrawRectangle(intervalArea);
+    ofPopStyle();
+    
+    ofPopMatrix();
+    
+}
+
+
 
 //--------------------------------------------------------------
 void ofApp::drawControlElement(){
+    
+    controlBackground();
+    
     
     ofPushMatrix();
 //    ofTranslate((ofGetWidth() - 600) * 0.5, 0);
@@ -811,15 +844,16 @@ void ofApp::drawControlElement(){
     ofDrawCircle( _sX, _sY, speedCSize * 0.5 );
     ofPopStyle();
     
-    ofPushStyle();
-    ofSetColor( 255, _alpha );
-    ofNoFill();
-    float _sizeF = 1.1;
-    ofPoint _p1 = ofPoint(thresholdCPos.x, thresholdCPos.y - thresholdCSize * _sizeF);
-    ofPoint _p2 = ofPoint(thresholdCPos.x - cos(ofDegToRad(30)) * thresholdCSize * _sizeF, thresholdCPos.y + sin(ofDegToRad(30)) * thresholdCSize * _sizeF);
-    ofPoint _p3 = ofPoint(thresholdCPos.x + cos(ofDegToRad(30)) * thresholdCSize * _sizeF, thresholdCPos.y + sin(ofDegToRad(30)) * thresholdCSize * _sizeF);
-    ofDrawTriangle( _p1, _p2, _p3 );
-    ofPopStyle();
+    
+//    ofPushStyle();
+//    ofSetColor( 255, _alpha );
+//    ofNoFill();
+//    float _sizeF = 1.1;
+//    ofPoint _p1 = ofPoint(thresholdCPos.x, thresholdCPos.y - thresholdCSize * _sizeF);
+//    ofPoint _p2 = ofPoint(thresholdCPos.x - cos(ofDegToRad(30)) * thresholdCSize * _sizeF, thresholdCPos.y + sin(ofDegToRad(30)) * thresholdCSize * _sizeF);
+//    ofPoint _p3 = ofPoint(thresholdCPos.x + cos(ofDegToRad(30)) * thresholdCSize * _sizeF, thresholdCPos.y + sin(ofDegToRad(30)) * thresholdCSize * _sizeF);
+//    ofDrawTriangle( _p1, _p2, _p3 );
+//    ofPopStyle();
     
     
     ofPushStyle();
@@ -836,26 +870,24 @@ void ofApp::drawControlElement(){
     ofPushMatrix();
     ofPushStyle();
     
-    ofSetColor( 0, 160 );
-    
+    ofSetColor( 255, 0, 0, 160 );
     int _xDefaultPos = lineScoreStepX * (lineScoreNumber-1);
-    
     float _xL1 = ctrlPnW * 0.5 - _xDefaultPos * 0.5;
-    ofDrawLine( _xL1, ctrlPnY + _yD, _xL1, ofGetHeight() - _yD);
+//    ofDrawLine( _xL1, ctrlPnY + _yD, _xL1, ofGetHeight() - _yD);
     
     float _xL2 = ctrlPnW * 0.5 + _xDefaultPos * 0.5;
-    ofDrawLine( _xL2, ctrlPnY + _yD, _xL2, ofGetHeight() - _yD);
+//    ofDrawLine( _xL2, ctrlPnY + _yD, _xL2, ofGetHeight() - _yD);
     
     float _xM = ctrlPnW * 0.5;
-    
     ofSetColor( 0, 40 );
-    
-    ofDrawLine( _xM, ctrlPnY + _yD, _xM, screenH - _yD);
+//    ofDrawLine( _xM, ctrlPnY + _yD, _xM, screenH - _yD);
     
     ofPopStyle();
     ofPopMatrix();
     
     ofPopMatrix();
+    
+    
     
     
 }
@@ -1708,35 +1740,6 @@ void ofApp::mousePressed(int x, int y, int button){
     }
     
     
-    float _4BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base4Pos.x, base4Pos.y );
-    if ( _4BaseDist < baseSize ) {
-        baseSelection = 4;
-    }
-    
-    float _5BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base5Pos.x, base5Pos.y );
-    if ( _5BaseDist < baseSize ) {
-        baseSelection = 5;
-    }
-    
-    float _6BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base6Pos.x, base6Pos.y );
-    if ( _6BaseDist < baseSize ) {
-        baseSelection = 6;
-    }
-    
-    float _7BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base7Pos.x, base7Pos.y );
-    if ( _7BaseDist < baseSize ) {
-        baseSelection = 7;
-    }
-    
-    float _8BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base8Pos.x, base8Pos.y );
-    if ( _8BaseDist < baseSize ) {
-        baseSelection = 8;
-    }
-    
-    float _9BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base9Pos.x, base9Pos.y );
-    if ( _9BaseDist < baseSize ) {
-        baseSelection = 9;
-    }
     
     touchOnOffCheck = true;
     
@@ -1783,6 +1786,48 @@ void ofApp::mouseReleased(int x, int y, int button){
         printScoreMake();
     }
     
+    
+    if (printButton.inside( _adjustTouchPos )) {
+        printScore();
+    }
+    
+    
+    float _4BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base4Pos.x, base4Pos.y );
+    if ( _4BaseDist < baseSize ) {
+        baseSelection = 4;
+        bChangedBaseNum = true;
+    }
+    
+    float _5BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base5Pos.x, base5Pos.y );
+    if ( _5BaseDist < baseSize ) {
+        baseSelection = 5;
+        bChangedBaseNum = true;
+    }
+    
+    float _6BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base6Pos.x, base6Pos.y );
+    if ( _6BaseDist < baseSize ) {
+        baseSelection = 6;
+        bChangedBaseNum = true;
+    }
+    
+    float _7BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base7Pos.x, base7Pos.y );
+    if ( _7BaseDist < baseSize ) {
+        baseSelection = 7;
+        bChangedBaseNum = true;
+    }
+    
+    float _8BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base8Pos.x, base8Pos.y );
+    if ( _8BaseDist < baseSize ) {
+        baseSelection = 8;
+        bChangedBaseNum = true;
+    }
+    
+    float _9BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base9Pos.x, base9Pos.y );
+    if ( _9BaseDist < baseSize ) {
+        baseSelection = 9;
+        bChangedBaseNum = true;
+    }
+
     
 }
 
