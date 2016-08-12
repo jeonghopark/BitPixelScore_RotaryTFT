@@ -472,22 +472,22 @@ void ofApp::drawPrintScoreFBO(){
     
     ofRectMode(OF_RECT_CENTER);
     
-    float _stepLine = 12;
-    float _noteSize = 4;
+    float _stepLine = 15;
+    float _noteSize = 5;
     
-    float _noteExtraLineSize = 7;
+    float _noteExtraLineSize = 10;
     
     float _downBaseLine = 320;
     float _upBaseLine = _downBaseLine - _stepLine * 7;
-    float _xSizeFactor = _stepLine * 5;
+    float _xSizeFactor = _stepLine * 8;
     
     int _melodyNoteNum = melodies[0].melodyLine.size();
     
     float _scoreXStart = 0;
-    float _scoreXEnd = ofGetWidth() * 2-_xSizeFactor - (ofGetWidth() * 2 - 20.0) / _melodyNoteNum * 0.5;
+    float _scoreXEnd = ofGetWidth() * 3 - _xSizeFactor - (ofGetWidth() * 3 - 20.0) / _melodyNoteNum * 0.5;
     
     ofPushMatrix();
-    ofTranslate( (ofGetWidth() * 2 - (_scoreXEnd - _scoreXStart)) * 0.5, 0 );
+    ofTranslate( (ofGetWidth() * 3 - (_scoreXEnd - _scoreXStart)) * 0.5, 0 );
     
     
     ofPushMatrix();
@@ -516,10 +516,10 @@ void ofApp::drawPrintScoreFBO(){
     
     for (int j=1; j<=_melodyNoteNum; j++) {
         
-        float _xStep = (ofGetWidth() * 2 - 20.0) / _melodyNoteNum;
+        float _xStep = (ofGetWidth() * 3 - 20.0) / _melodyNoteNum;
         
         if (j % 8 == 0) {
-            float _x1 = ofMap(j, 0, _melodyNoteNum, _xSizeFactor, ofGetWidth() * 2-_xSizeFactor);
+            float _x1 = ofMap(j, 0, _melodyNoteNum, _xSizeFactor, ofGetWidth() * 3 - _xSizeFactor);
             ofDrawLine(_x1 - _xStep * 0.5, 0, _x1 - _xStep * 0.5, -_stepLine * 11);
         }
         
@@ -542,7 +542,7 @@ void ofApp::drawPrintScoreFBO(){
     ofSetColor(255, 0, 0, 255);
     if (_melodyNoteNum>0) {
         int _index = noteIndex % _melodyNoteNum;
-        float _x1 = ofMap(_index, 0, _melodyNoteNum, _xSizeFactor, ofGetWidth() * 2-_xSizeFactor);
+        float _x1 = ofMap(_index, 0, _melodyNoteNum, _xSizeFactor, ofGetWidth() * 3 - _xSizeFactor);
         float _y1 = 0;
         ofDrawLine(_x1, _y1 + 100, _x1, _y1 - 100);
     }
@@ -553,16 +553,16 @@ void ofApp::drawPrintScoreFBO(){
     
     ofSetColor(0, 255);
     
-    float _stempLength = 27;
-    float _teilWidth = 2;
-    float _teilLength = 10;
-    float _teilEndX = _teilLength * 0.75;
+    float _stempLength = 37;
+    float _teilWidth = 3;
+    float _teilLength = 15;
+    float _teilEndX = _teilLength * 0.8;
     
     for (int i=0; i<melodies.size(); i++) {
         
         for (int j=0; j<melodies[i].melodyLine.size(); j++) {
             
-            float _x1 = ofMap(j, 0, melodies[i].melodyLine.size(), _xSizeFactor, ofGetWidth() * 2-_xSizeFactor);
+            float _x1 = ofMap(j, 0, melodies[i].melodyLine.size(), _xSizeFactor, ofGetWidth() * 3 -_xSizeFactor);
             
             
             if (melodies[i].melodyLine[j]>0) {
@@ -582,11 +582,12 @@ void ofApp::drawPrintScoreFBO(){
                     
                     ofDrawCircle(_x1, _yOutput, _noteSize);
                     
+                    float _offsetLine = 4;
                     ofSetLineWidth(1);
-                    ofDrawLine(_x1+2, _yOutput, _x1+2, _yOutput - _stempLength);
+                    ofDrawLine(_x1+_offsetLine, _yOutput, _x1+_offsetLine, _yOutput - _stempLength);
                     
                     ofSetLineWidth(_teilWidth);
-                    ofDrawLine(_x1+2, _yOutput-_stempLength, _x1+_teilEndX, _yOutput - _teilLength);
+                    ofDrawLine(_x1+_offsetLine, _yOutput-_stempLength, _x1+_teilEndX, _yOutput - _teilLength);
                     
                 } else {
                     
