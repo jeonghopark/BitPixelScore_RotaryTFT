@@ -34,7 +34,7 @@ void ofApp::setup(){
     cam.setDeviceID(0);
     cam.setup( 800, 600 );
     cam.setDesiredFrameRate(30);
-    
+    cout << cam.getWidth() << endl;
     screenW = 600;
     screenH = 600;
     
@@ -178,7 +178,7 @@ void ofApp::update(){
     if(cam.isFrameNew()) {
         
         camColorCV.setFromPixels(cam.getPixels().getData(), cam.getWidth(), cam.getHeight());
-        camColorCV.setROI(0, 0, 600, 600);
+        camColorCV.setROI(200, 0, 600, 600);
         centerCam.setFromPixels(camColorCV.getRoiPixels());
         
         
