@@ -34,7 +34,6 @@ void ofApp::setup(){
     cam.setDeviceID(0);
     cam.setup( 800, 600 );
     cam.setDesiredFrameRate(30);
-    cout << cam.getWidth() << endl;
     screenW = 600;
     screenH = 600;
     
@@ -95,8 +94,8 @@ void ofApp::setup(){
     speedLineYMax = 450 + 20;
     intervalLineYMin = 50 - 20;
     intervalLineYMax = 150 + 20;
-
-
+    
+    
     controlPos = ofPoint( _posIndexRight, 0 );
     
     speedCSize = ctrlRectS;
@@ -171,7 +170,7 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
+    
     
     cam.update();
     
@@ -207,7 +206,7 @@ void ofApp::update(){
         //                erode(gray);
         Canny(gray, edge, cannyThreshold1, cannyThreshold2, 3);
         
-//        thin(edge);
+        //        thin(edge);
         invert(edge);
         
         edge.update();
@@ -225,8 +224,8 @@ void ofApp::update(){
             invert(downScaleEdge);
             downScaleEdge.update();
             
-//            printCam = downScaleEdge;
-//            printCam.resize(384, 384);
+            //            printCam = downScaleEdge;
+            //            printCam.resize(384, 384);
             
             
             unsigned char * _src = edge.getPixels().getData();
@@ -363,19 +362,19 @@ void ofApp::draw(){
     float _stepLine = 15;
     float _xSizeFactor = _stepLine * 8;
     int _melodyNoteNum = melodies[0].melodyLine.size();
-
+    
     if (_melodyNoteNum>0) {
         int _index = noteIndex % _melodyNoteNum;
         float _x1 = ofMap(_index, 0, _melodyNoteNum, -ofGetWidth()*0.5,  -ofGetWidth());
         float _y1 = 0;
-//        ofDrawLine(_x1, _y1 + 200, _x1, _y1 - 200);
-    
-    ofTranslate( _x1, ofGetHeight());
-    ofRotateZDeg(-90);
-    printScoreFbo.draw(0, ofGetHeight() - 512 * 0.5, 384 * 0.5, ofGetWidth() * 1.5);
+        //        ofDrawLine(_x1, _y1 + 200, _x1, _y1 - 200);
+        
+        ofTranslate( _x1, ofGetHeight());
+        ofRotateZDeg(-90);
+        printScoreFbo.draw(0, ofGetHeight() - 512 * 0.5, 384 * 0.5, ofGetWidth() * 1.5);
     }
     ofPopMatrix();
-
+    
     ofPushMatrix();
     ofTranslate((ofGetWidth() - screenW) * 0.5, 0);
     
@@ -452,7 +451,7 @@ void ofApp::draw(){
     
     drawBaseInterface();
     drawControlElement();
-//    drawLineScore();
+    //    drawLineScore();
     layoutLines();
     
     
@@ -537,11 +536,8 @@ void ofApp::drawPrintScoreFBO(){
     
     ofPushMatrix();
     ofTranslate(0, _downBaseLine);
-    
     for (int j=1; j<=_melodyNoteNum; j++) {
-        
         float _xStep = (ofGetWidth() * 3 - 20.0) / _melodyNoteNum;
-        
         if (j % 8 == 0) {
             float _x1 = ofMap(j, 0, _melodyNoteNum, _xSizeFactor, ofGetWidth() * 3 - _xSizeFactor);
             ofDrawLine(_x1 - _xStep * 0.5, 0, _x1 - _xStep * 0.5, -_stepLine * 11);
@@ -556,8 +552,6 @@ void ofApp::drawPrintScoreFBO(){
     ofPopMatrix();
     
     
-    
-    
     ofPushMatrix();
     
     ofPushStyle();
@@ -568,7 +562,7 @@ void ofApp::drawPrintScoreFBO(){
         int _index = noteIndex % _melodyNoteNum;
         float _x1 = ofMap(_index, 0, _melodyNoteNum, _xSizeFactor, ofGetWidth() * 3 - _xSizeFactor);
         float _y1 = 0;
-        ofDrawLine(_x1, _y1 + 200, _x1, _y1 - 200);
+        ofDrawLine(_x1, 600, _x1, _y1 - ofGetHeight());
     }
     ofPopStyle();
     
@@ -765,21 +759,21 @@ void ofApp::printScoreMake(){
 void ofApp::debugInformation(){
     
     if (debugView ) {
-    
-    ofPushMatrix();
-    ofPushStyle();
-    
-    ofSetColor(255);
-    printCam.draw(ofGetWidth()-175, 10, 150, 150);
-    
-    ofSetColor(255, 20);
-    centerCam.draw(ofGetWidth()-175, 10, 150, 150);
-    
-    ofPopStyle();
-    ofPopMatrix();
+        
+        ofPushMatrix();
+        ofPushStyle();
+        
+        ofSetColor(255);
+        printCam.draw(ofGetWidth()-175, 10, 150, 150);
+        
+        ofSetColor(255, 20);
+        centerCam.draw(ofGetWidth()-175, 10, 150, 150);
+        
+        ofPopStyle();
+        ofPopMatrix();
         
     }
-
+    
     
 }
 
@@ -817,7 +811,7 @@ void ofApp::drawControlElement(){
     
     
     ofPushMatrix();
-//    ofTranslate((ofGetWidth() - 600) * 0.5, 0);
+    //    ofTranslate((ofGetWidth() - 600) * 0.5, 0);
     
     ofPushStyle();
     ofSetColor( 255 );
@@ -825,7 +819,7 @@ void ofApp::drawControlElement(){
     ofSetColor( 0, 10 );
     ofPopStyle();
     
-
+    
     ofPushMatrix();
     ofPushStyle();
     
@@ -836,7 +830,7 @@ void ofApp::drawControlElement(){
     float _thresholdX = controlPos.x;
     
     ofDrawLine( _speedX, speedLineYMin, _speedX, speedLineYMax);
-//    ofDrawLine( _thresholdX, ctrlPnY + _yD, _thresholdX, screenH - _yD);
+    //    ofDrawLine( _thresholdX, ctrlPnY + _yD, _thresholdX, screenH - _yD);
     
     float _intervalX = controlPos.x;
     ofDrawLine( _intervalX, intervalLineYMin, _intervalX, intervalLineYMax);
@@ -856,15 +850,15 @@ void ofApp::drawControlElement(){
     ofPopStyle();
     
     
-//    ofPushStyle();
-//    ofSetColor( 255, _alpha );
-//    ofNoFill();
-//    float _sizeF = 1.1;
-//    ofPoint _p1 = ofPoint(thresholdCPos.x, thresholdCPos.y - thresholdCSize * _sizeF);
-//    ofPoint _p2 = ofPoint(thresholdCPos.x - cos(ofDegToRad(30)) * thresholdCSize * _sizeF, thresholdCPos.y + sin(ofDegToRad(30)) * thresholdCSize * _sizeF);
-//    ofPoint _p3 = ofPoint(thresholdCPos.x + cos(ofDegToRad(30)) * thresholdCSize * _sizeF, thresholdCPos.y + sin(ofDegToRad(30)) * thresholdCSize * _sizeF);
-//    ofDrawTriangle( _p1, _p2, _p3 );
-//    ofPopStyle();
+    //    ofPushStyle();
+    //    ofSetColor( 255, _alpha );
+    //    ofNoFill();
+    //    float _sizeF = 1.1;
+    //    ofPoint _p1 = ofPoint(thresholdCPos.x, thresholdCPos.y - thresholdCSize * _sizeF);
+    //    ofPoint _p2 = ofPoint(thresholdCPos.x - cos(ofDegToRad(30)) * thresholdCSize * _sizeF, thresholdCPos.y + sin(ofDegToRad(30)) * thresholdCSize * _sizeF);
+    //    ofPoint _p3 = ofPoint(thresholdCPos.x + cos(ofDegToRad(30)) * thresholdCSize * _sizeF, thresholdCPos.y + sin(ofDegToRad(30)) * thresholdCSize * _sizeF);
+    //    ofDrawTriangle( _p1, _p2, _p3 );
+    //    ofPopStyle();
     
     
     ofPushStyle();
@@ -884,14 +878,14 @@ void ofApp::drawControlElement(){
     ofSetColor( 255, 0, 0, 160 );
     int _xDefaultPos = lineScoreStepX * (lineScoreNumber-1);
     float _xL1 = ctrlPnW * 0.5 - _xDefaultPos * 0.5;
-//    ofDrawLine( _xL1, ctrlPnY + _yD, _xL1, ofGetHeight() - _yD);
+    //    ofDrawLine( _xL1, ctrlPnY + _yD, _xL1, ofGetHeight() - _yD);
     
     float _xL2 = ctrlPnW * 0.5 + _xDefaultPos * 0.5;
-//    ofDrawLine( _xL2, ctrlPnY + _yD, _xL2, ofGetHeight() - _yD);
+    //    ofDrawLine( _xL2, ctrlPnY + _yD, _xL2, ofGetHeight() - _yD);
     
     float _xM = ctrlPnW * 0.5;
     ofSetColor( 0, 40 );
-//    ofDrawLine( _xM, ctrlPnY + _yD, _xM, screenH - _yD);
+    //    ofDrawLine( _xM, ctrlPnY + _yD, _xM, screenH - _yD);
     
     ofPopStyle();
     ofPopMatrix();
@@ -1482,7 +1476,7 @@ void ofApp::audioRequested (float * output, int bufferSize, int nChannels){
 //--------------------------------------------------------------
 void ofApp::mainCaptureOnOff(){
     
-//    allPlayOnOff = !allPlayOnOff;
+    //    allPlayOnOff = !allPlayOnOff;
     
     if ((whitePixels.size()>2)) {
         bCameraCapturePlay = !bCameraCapturePlay;
@@ -1515,13 +1509,13 @@ void ofApp::mainCaptureOnOff(){
         grayThresholdTouch = 120;
         touchDownDefault = 0;
     }
-
+    
 }
 
 
 //--------------------------------------------------------------
 void ofApp::mainCaptureOff(){
-
+    
     if ((whitePixels.size()>2)) {
         bCameraCapturePlay = false;
         //            blur(edge, 3);
@@ -1544,7 +1538,7 @@ void ofApp::mainCaptureOff(){
             
         }
     }
-
+    
 }
 
 
@@ -1605,7 +1599,7 @@ void ofApp::mouseMoved(int x, int y){
 void ofApp::mouseDragged(int x, int y, int button){
     
     ofPoint _adjustTouchPos = ofPoint(x, y);
-  
+    
     if (bSpeedCtrl) {
         float _minY = speedLineYMin;
         float _maxY = speedLineYMax;
@@ -1689,7 +1683,7 @@ void ofApp::mouseDragged(int x, int y, int button){
         mainCaptureOff();
     }
     
-
+    
     
 }
 
@@ -1699,7 +1693,7 @@ void ofApp::mousePressed(int x, int y, int button){
     float _tolerance = 3;
     
     ofPoint _adjustTouchPos = ofPoint(x, y);
-
+    
     
     float _distSpeed = ofDist( speedCPos.x, speedCPos.y, _adjustTouchPos.x, _adjustTouchPos.y );
     if ( (_distSpeed < thresholdCSize * _tolerance) && bSpeedCtrl == false) {
@@ -1743,7 +1737,7 @@ void ofApp::mousePressed(int x, int y, int button){
     
     if ( (_adjustTouchPos.x>screenPos.x)&&(_adjustTouchPos.x<(screenPos.x+screenW)) &&
         (_adjustTouchPos.y<screenH)&&(_adjustTouchPos.y>0) ) {
-
+        
         mainCaptureOff();
         
         grayThresholdTouch = 120;
@@ -1763,7 +1757,7 @@ void ofApp::mousePressed(int x, int y, int button){
 void ofApp::mouseReleased(int x, int y, int button){
     
     ofPoint _adjustTouchPos = ofPoint(x, y);
-
+    
     if ( (_adjustTouchPos.x>screenPos.x)&&(_adjustTouchPos.x<(screenPos.x+screenW)) &&
         (_adjustTouchPos.y<screenH)&&(_adjustTouchPos.y>0) && touchOnOffCheck) {
         mainCaptureOnOff();
@@ -1771,17 +1765,17 @@ void ofApp::mouseReleased(int x, int y, int button){
     }
     
     
-//    if ( (_adjustTouchPos.x<guideWidthStep * 11) && (_adjustTouchPos.x>guideWidthStep * 4) && (_adjustTouchPos.y>ctrlPnY) && (_adjustTouchPos.y<screenH) && bCameraCapturePlay ) {
-//        
-//        bPlayNote = !bPlayNote;
-//        
-//        if ( !bPlayNote ) {
-//            ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
-//        } else {
-//            ofAddListener(*metroOut, this, &ofApp::triggerReceive);
-//        }
-//        
-//    }
+    //    if ( (_adjustTouchPos.x<guideWidthStep * 11) && (_adjustTouchPos.x>guideWidthStep * 4) && (_adjustTouchPos.y>ctrlPnY) && (_adjustTouchPos.y<screenH) && bCameraCapturePlay ) {
+    //
+    //        bPlayNote = !bPlayNote;
+    //
+    //        if ( !bPlayNote ) {
+    //            ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
+    //        } else {
+    //            ofAddListener(*metroOut, this, &ofApp::triggerReceive);
+    //        }
+    //
+    //    }
     
     float _tolerance = 2;
     
@@ -1838,7 +1832,7 @@ void ofApp::mouseReleased(int x, int y, int button){
         baseSelection = 9;
         bChangedBaseNum = true;
     }
-
+    
     
 }
 
@@ -1884,10 +1878,10 @@ void ofApp::printScore(){
 
 //--------------------------------------------------------------
 void ofApp::printCamView(){
-
+    
     printCam = bufferImg;
     printCam.resize(384, 384);
-
+    
     rotate(printCam, printCam, -90);
     printer.print(printCam, 10);
     
