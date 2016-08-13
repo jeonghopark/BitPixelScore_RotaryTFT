@@ -154,7 +154,7 @@ void ofApp::setup(){
     ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
     
     
-    printScoreFbo.allocate(384, ofGetWidth() * 2);
+    printScoreFbo.allocate(384, ofGetWidth() * 3);
     
     
     baseNum.addListener(this, &ofApp::changedBaseNum);
@@ -359,12 +359,23 @@ void ofApp::draw(){
     
     
     ofPushMatrix();
-    ofTranslate(-ofGetWidth()*0.5 + 0, ofGetHeight());
+    
+    float _stepLine = 15;
+    float _xSizeFactor = _stepLine * 8;
+    int _melodyNoteNum = melodies[0].melodyLine.size();
+
+    if (_melodyNoteNum>0) {
+        int _index = noteIndex % _melodyNoteNum;
+        float _x1 = ofMap(_index, 0, _melodyNoteNum, -ofGetWidth()*0.5,  -ofGetWidth());
+        float _y1 = 0;
+//        ofDrawLine(_x1, _y1 + 200, _x1, _y1 - 200);
+    
+    ofTranslate( _x1, ofGetHeight());
     ofRotateZDeg(-90);
-    printScoreFbo.draw(0, ofGetHeight() - 512 * 0.5, 384 * 0.5, ofGetWidth());
+    printScoreFbo.draw(0, ofGetHeight() - 512 * 0.5, 384 * 0.5, ofGetWidth() * 1.5);
+    }
     ofPopMatrix();
-    
-    
+
     ofPushMatrix();
     ofTranslate((ofGetWidth() - screenW) * 0.5, 0);
     
