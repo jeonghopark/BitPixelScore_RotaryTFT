@@ -164,6 +164,9 @@ void ofApp::setup(){
     speedArea.set((ofGetWidth() + screenW) * 0.5, 0, 212, 200);
     intervalArea.set((ofGetWidth() + screenW) * 0.5, 300, 212, 200);
     
+    
+    ofHideCursor();
+    
 }
 
 
