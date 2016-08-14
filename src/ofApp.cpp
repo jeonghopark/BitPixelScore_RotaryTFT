@@ -459,6 +459,16 @@ void ofApp::draw(){
     layoutLines();
     
     
+    ofPushMatrix();
+    ofPushStyle();
+    ofSetColor(120, 70);
+    ofSetLineWidth(4);
+    ofDrawLine(mouseX, 0, mouseX, ofGetHeight());
+    ofDrawLine(0, mouseY, ofGetWidth(), mouseY);
+    ofPopStyle();
+    ofPopMatrix();
+    
+    
 }
 
 
@@ -842,7 +852,7 @@ void ofApp::drawControlElement(){
     ofPopStyle();
     ofPopMatrix();
     
-    int _alpha = 180;
+    int _alpha = 255;
     
     ofPushStyle();
     ofSetColor( 0, _alpha );
@@ -1099,7 +1109,7 @@ void ofApp::drawPlayingShapeNote( vector<int> _vNote, int _scoreCh ){
     ofPushStyle();
     
     float _h = ofMap( _scoreCh, 1, 7, 0, 255 );
-    ofColor _c = ofColor::fromHsb( _h, 180, 255, 180 );
+    ofColor _c = ofColor::fromHsb( _h, 180, 255, 255 );
     
     if (whitePixels.size()>0) {
         
@@ -1286,7 +1296,7 @@ void ofApp::drawBaseInterface(){
     
     for (int i=0; i<6; i++) {
         if ( baseSelection == (4 + i) ) {
-            _c[i] = ofColor::fromHsb( i*40, 180, 180 );
+            _c[i] = ofColor::fromHsb( i*40, 255, 255 );
         } else {
             _c[i] = ofColor(0, 0, 0);
         }
