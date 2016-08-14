@@ -177,7 +177,8 @@ void ofApp::update(){
     if(cam.isFrameNew()) {
         
         camColorCV.setFromPixels(cam.getPixels().getData(), cam.getWidth(), cam.getHeight());
-        camColorCV.setROI(200, 0, 600, 600);
+        camColorCV.setROI(150, 0, 600, 600);
+        camColorCV.mirror(false, true);
         centerCam.setFromPixels(camColorCV.getRoiPixels());
         
         
@@ -370,7 +371,7 @@ void ofApp::draw(){
         //        ofDrawLine(_x1, _y1 + 200, _x1, _y1 - 200);
         
         ofTranslate( _x1, ofGetHeight());
-        ofRotateZDeg(-90);
+        ofRotateZ(-90);
         printScoreFbo.draw(0, ofGetHeight() - 512 * 0.5, 384 * 0.5, ofGetWidth() * 1.5);
     }
     ofPopMatrix();
@@ -490,7 +491,7 @@ void ofApp::drawPrintScoreFBO(){
     ofSetColor(255);
     ofDrawRectangle(10, 10, printScoreFbo.getWidth()-20, printScoreFbo.getHeight()-20);
     
-    ofRotateZDeg(90);
+    ofRotateZ(90);
     
     
     ofRectMode(OF_RECT_CENTER);
@@ -562,7 +563,7 @@ void ofApp::drawPrintScoreFBO(){
         int _index = noteIndex % _melodyNoteNum;
         float _x1 = ofMap(_index, 0, _melodyNoteNum, _xSizeFactor, ofGetWidth() * 3 - _xSizeFactor);
         float _y1 = 0;
-        ofDrawLine(_x1, 600, _x1, _y1 - ofGetHeight());
+        ofDrawLine(_x1, 600, _x1, 600 - ofGetHeight());
     }
     ofPopStyle();
     
@@ -1374,7 +1375,7 @@ void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _b, int _s, ofColor 
     
     
     ofTranslate( _pos );
-    ofRotateZDeg( 45 );
+    ofRotateZ( 45 );
     
     ofSetLineWidth( 3 );
     
