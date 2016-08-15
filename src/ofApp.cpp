@@ -350,7 +350,7 @@ void ofApp::update(){
  
     
     if (bCameraCapturePlay) {
-        if (printAll) {
+        if (!printer.isThreadRunning() && printAll) {
             string _date = ofGetTimestampString();
             printer.println("------------------------");
             printer.println("------------------------");
@@ -364,14 +364,11 @@ void ofApp::update(){
             printFooterOnOff = true;
         }
         
-        if (printer.isThreadRunning()) {
-        }
-        
-        
         if (!printer.isThreadRunning() && printFooterOnOff) {
             printFooter();
             printFooterOnOff = false;
-            printImgOnOff = true;
+            bCameraCapturePlay = false;
+            mainCaptureOff();
         }
     }
     
@@ -2019,6 +2016,12 @@ void ofApp::printHeader(){
 void ofApp::printFooter(){
     
     string _date = ofGetTimestampString();
+    printer.println("------------------------");
+    printer.println(" ");
+    printer.println("Thanks !!!");
+    printer.println(" ");
+    printer.println(" ");
+    printer.println(" ");
     printer.println("------------------------");
     printer.println(" ");
     printer.println(" ");
