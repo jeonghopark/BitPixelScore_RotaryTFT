@@ -290,4 +290,13 @@ public:
     
     void controlBackground();
     
+    void printAllElement();
+    bool printImgOnOff;
+    bool printHeaderOnOff;
+    bool printFooterOnOff;
+    bool printAll;
+    
+    ofTrueTypeFont printText;
+
+    
 };

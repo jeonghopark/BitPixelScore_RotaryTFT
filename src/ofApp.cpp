@@ -16,8 +16,17 @@ void ofApp::setup(){
     ofEnableAntiAliasing();
     ofSetCircleResolution(16);
     
-    printer.open("/dev/cu.usbserial");
     
+    printText.load("vera.ttf", 48);
+    
+    printer.open("/dev/cu.usbserial");
+    string _date = ofGetTimestampString();
+    printer.println("------------------------");
+    printer.println("------------------------");
+    printer.println(_date);
+    printer.println("------------------------");
+    printer.println(" ");
+
     gclef.load("GClef.png");
     fclef.load("FClef.png");
     
@@ -65,7 +74,7 @@ void ofApp::setup(){
     screenPos = ofVec2f( (ofGetWidth()-screenW) * 0.5, 0 );
     
     synthSetting();
-    maxSpeed = 200;
+    maxSpeed = 180;
     minSpeed = 30;
     bpm = synthMain.addParameter("tempo", 100).min(minSpeed).max(maxSpeed);
     metro = ControlMetro().bpm(4 * bpm);
@@ -166,6 +175,12 @@ void ofApp::setup(){
     
     
     ofHideCursor();
+    
+    printAll = false;
+    printHeaderOnOff = false;
+    printFooterOnOff = false;
+    printImgOnOff = false;
+
     
 }
 
@@ -332,6 +347,34 @@ void ofApp::update(){
         bChangedBaseNum = false;
     }
     
+ 
+    
+    if (bCameraCapturePlay) {
+        if (printAll) {
+            string _date = ofGetTimestampString();
+            printer.println("------------------------");
+            printer.println("------------------------");
+            printer.println(_date);
+            printer.println("------------------------");
+            printer.println(" ");
+            printCamView();
+            printScore();
+            printAll = false;
+            printHeaderOnOff = true;
+            printFooterOnOff = true;
+        }
+        
+        if (printer.isThreadRunning()) {
+        }
+        
+        
+        if (!printer.isThreadRunning() && printFooterOnOff) {
+            printFooter();
+            printFooterOnOff = false;
+            printImgOnOff = true;
+        }
+    }
+    
     
 }
 
@@ -469,6 +512,13 @@ void ofApp::draw(){
     ofPopMatrix();
     
     
+    if (bCameraCapturePlay) {
+        ofPushStyle();
+        ofSetColor(ofColor::fireBrick);
+        printText.drawString("PRINT", printButton.x + 12, printButton.y + 70);
+        ofPopStyle();
+    }
+    
 }
 
 
@@ -478,7 +528,7 @@ void ofApp::layoutLines(){
     
     ofPushMatrix();
     ofPushStyle();
-    ofSetColor(255, 0, 0);
+    ofSetColor(ofColor::peru);
     
     ofDrawLine((ofGetWidth() - screenW) * 0.5, 0, (ofGetWidth() - screenW) * 0.5, screenH);
     ofDrawLine((ofGetWidth() + screenW) * 0.5, 0, (ofGetWidth() + screenW) * 0.5, screenH);
@@ -798,17 +848,17 @@ void ofApp::controlBackground(){
     ofPushMatrix();
     
     ofPushStyle();
-    ofSetColor(255,180,180);
+    ofSetColor(ofColor::azure);
     ofDrawRectangle(printButton);
     ofPopStyle();
     
     ofPushStyle();
-    ofSetColor(180,255,180);
+    ofSetColor(ofColor::honeyDew);
     ofDrawRectangle(speedArea);
     ofPopStyle();
     
     ofPushStyle();
-    ofSetColor(180,180,255);
+    ofSetColor(ofColor::navajoWhite);
     ofDrawRectangle(intervalArea);
     ofPopStyle();
     
@@ -1582,7 +1632,7 @@ void ofApp::keyReleased(int key){
     } else if (key == 'e') {
         
         printer.close();
-        printer.open("/dev/cu.usbserial-A900adIr");
+        printer.open("/dev/cu.usbserial");
         
     } else if (key == 'i') {
         
@@ -1596,6 +1646,17 @@ void ofApp::keyReleased(int key){
         
         printFooter();
         
+    } else if (key == 'r') {
+        
+        printer.reset();
+        printer.open("/dev/cu.usbserial");
+        string _date = ofGetTimestampString();
+        printer.println("@RESET");
+        printer.println("------------------------");
+        printer.println(_date);
+        printer.println("------------------------");
+        printer.println(" ");
+
     }
     
 }
@@ -1807,7 +1868,8 @@ void ofApp::mouseReleased(int x, int y, int button){
     
     
     if (printButton.inside( _adjustTouchPos )) {
-        printScore();
+//        printScore();
+        printAll = true;
     }
     
     
@@ -1870,6 +1932,43 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){
     
 }
+
+
+
+//--------------------------------------------------------------
+void ofApp::printAllElement(){
+    
+//    if (printAll) {
+//        string _date = ofGetTimestampString();
+//        printer.println("------------------------");
+//        printer.println(_date);
+//        printer.println("------------------------");
+//        printer.println(" ");
+//        printCamView();
+//        printScore();
+//        printAll = false;
+//        printHeaderOnOff = true;
+//        printFooterOnOff = true;
+//    }
+//    
+//    if (printer.isThreadRunning()) {
+//    }
+//    
+//    if (!printer.isThreadRunning() && printHeaderOnOff) {
+//        printer.println("");
+//        printer.printBarcode("12345678", EAN8);
+//        printHeaderOnOff = false;
+//    }
+//    
+//    if (!printer.isThreadRunning() && printFooterOnOff) {
+//        printFooter();
+//        printFooterOnOff = false;
+//        printImgOnOff = true;
+//    }
+    
+    
+}
+
 
 
 
