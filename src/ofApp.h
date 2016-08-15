@@ -287,6 +287,7 @@ public:
     ofRectangle printButton;
     ofRectangle speedArea;
     ofRectangle intervalArea;
+    ofRectangle playStopArea;
     
     void controlBackground();
     
@@ -297,6 +298,12 @@ public:
     bool printAll;
     
     ofTrueTypeFont printText;
+    ofTrueTypeFont uiText;
 
+    ofImage ctrl12;
+    bool ctrl12OnOff;
+    
+    
+    bool stopOnOn;
     
 };

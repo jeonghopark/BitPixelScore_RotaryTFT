@@ -17,7 +17,8 @@ void ofApp::setup(){
     ofSetCircleResolution(16);
     
     
-    printText.load("vera.ttf", 48);
+    printText.load("vera.ttf", 28);
+    uiText.load("vera.ttf", 18);
     
     printer.open("/dev/cu.usbserial");
     string _date = ofGetTimestampString();
@@ -29,6 +30,8 @@ void ofApp::setup(){
 
     gclef.load("GClef.png");
     fclef.load("FClef.png");
+    
+    ctrl12.load("1-2.png");
     
     baseSelection = 7;
     
@@ -172,6 +175,7 @@ void ofApp::setup(){
     printButton.set((ofGetWidth() + screenW) * 0.5, 500, 212, 100);
     speedArea.set((ofGetWidth() + screenW) * 0.5, 0, 212, 200);
     intervalArea.set((ofGetWidth() + screenW) * 0.5, 300, 212, 200);
+    playStopArea.set((ofGetWidth() + screenW) * 0.5, 200, 212, 100);
     
     
     ofHideCursor();
@@ -181,6 +185,9 @@ void ofApp::setup(){
     printFooterOnOff = false;
     printImgOnOff = false;
 
+    
+    ctrl12OnOff = false;
+    
     
 }
 
@@ -348,7 +355,7 @@ void ofApp::update(){
     }
     
  
-    
+    // MARK: Printer
     if (bCameraCapturePlay) {
         if (!printer.isThreadRunning() && printAll) {
             string _date = ofGetTimestampString();
@@ -370,6 +377,10 @@ void ofApp::update(){
             bCameraCapturePlay = false;
             mainCaptureOff();
         }
+    } else {
+        
+        
+        
     }
     
     
@@ -509,12 +520,57 @@ void ofApp::draw(){
     ofPopMatrix();
     
     
+    // MARK: Interface
     if (bCameraCapturePlay) {
         ofPushStyle();
-        ofSetColor(ofColor::fireBrick);
-        printText.drawString("PRINT", printButton.x + 12, printButton.y + 70);
+        ofSetColor(ofColor::skyBlue);
+        printText.drawString("PRINT", printButton.x + 48, printButton.y + 64);
         ofPopStyle();
+        
+        ofPushStyle();
+        ofSetColor(ofColor::indianRed);
+        printText.drawString("STOP", playStopArea.x + 56, playStopArea.y + 64);
+        ofPopStyle();
+
+        ofPushStyle();
+        ofSetColor(ofColor::cadetBlue);
+        uiText.drawString("Interval", playStopArea.x + 62, 200 - 7);
+        ofPopStyle();
+
+        ofPushStyle();
+        ofSetColor(ofColor::cadetBlue);
+        uiText.drawString("Tempo", playStopArea.x + 62, 500 - 7);
+        ofPopStyle();
+
+        ofPushStyle();
+        ofSetColor(ofColor::cadetBlue);
+        uiText.drawString("Scale", 0 + 72, 600 - 11);
+        ofPopStyle();
+
+        ctrl12OnOff = false;
+        
+    } else {
+        ctrl12OnOff = true;
+        
+        ofPushStyle();
+        ofSetColor(255, 200);
+        ofDrawRectangle(0, 0, 212, 600);
+        ofDrawRectangle(812, 0, 212, 600);
+        ofDrawRectangle(0, 600, 1024, 168);
+        ofPopStyle();
+
     }
+    
+    if ( ctrl12OnOff ) {
+        
+        ofPushStyle();
+        ofSetColor(255, 120);
+        ofDrawRectangle(212, 0, 600, 600);
+        ofPopStyle();
+        ctrl12.draw(212, 0);
+
+    }
+
     
 }
 
@@ -1751,7 +1807,10 @@ void ofApp::mouseDragged(int x, int y, int button){
     if ( (_adjustTouchPos.x>screenPos.x)&&(_adjustTouchPos.x<(screenPos.x+screenW)) &&
         (_adjustTouchPos.y<screenH)&&(_adjustTouchPos.y>0) ) {
         grayThresholdTouch = 120 + (_adjustTouchPos.y - touchDownDefault);
-        
+
+        cout << ctrl12OnOff << endl;
+        ctrl12OnOff = false;
+    
         mainCaptureOff();
     }
     
@@ -1811,7 +1870,7 @@ void ofApp::mousePressed(int x, int y, int button){
         (_adjustTouchPos.y<screenH)&&(_adjustTouchPos.y>0) ) {
         
         mainCaptureOff();
-        
+        ctrl12OnOff = false;
         grayThresholdTouch = 120;
         touchDownDefault = _adjustTouchPos.y;
     }
@@ -1868,6 +1927,13 @@ void ofApp::mouseReleased(int x, int y, int button){
 //        printScore();
         printAll = true;
     }
+    
+    
+    if (playStopArea.inside( _adjustTouchPos )) {
+        mainCaptureOnOff();
+    }
+
+    
     
     
     float _4BaseDist = ofDist( _adjustTouchPos.x, _adjustTouchPos.y, base4Pos.x, base4Pos.y );
