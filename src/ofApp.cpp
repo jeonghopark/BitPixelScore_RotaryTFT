@@ -6,7 +6,7 @@
 using namespace ofxCv;
 using namespace cv;
 
-int octaveScaleFactor[7] = {60, 86, 36, 48, 72, 36, 36};
+int octaveScaleFactor[NOTE_SIZE] = {60, 86, 36, 48, 72, 36, 36};
 
 
 //--------------------------------------------------------------
@@ -144,14 +144,12 @@ void ofApp::setup(){
     
     allPlayOnOff = false;
     
-    melodies.resize(7);
-//    noteLists.resize(7);
-    oldScoreNote.resize(7);
+//    melodies.resize(NOTE_SIZE);
+    oldScoreNote.resize(NOTE_SIZE);
     
-    for (int i=0; i<oldScoreNote.size(); i++) {
+    for (int i=0; i<NOTE_SIZE; i++) {
         oldScoreNote[i] = 0;
-//        noteLists[i].noteArray.push_back(0);
-        melodies[i].melodyLine.push_back(0);
+//        melodies[i].melodyLine.push_back(0);
     }
     
     
@@ -349,8 +347,8 @@ void ofApp::update(){
     
     
     if (bChangedBaseNum) {
-        scoreMake();
-        printScoreMake();
+//        scoreMake();
+//        printScoreMake();
         bChangedBaseNum = false;
     }
     
@@ -418,7 +416,13 @@ void ofApp::draw(){
     
     float _stepLine = 15;
     float _xSizeFactor = _stepLine * 8;
-    int _melodyNoteNum = melodies[0].melodyLine.size();
+    
+    vector<melody> _melody = melodyOutput();
+    int _melodyNoteNum;
+    
+    if (_melody.size()>0) {
+        _melodyNoteNum = _melody[0].melodyLine.size();
+    }
     
     if (_melodyNoteNum>0) {
         int _index = noteIndex % _melodyNoteNum;
@@ -629,7 +633,12 @@ void ofApp::drawPrintScoreFBO(){
     float _upBaseLine = _downBaseLine - _stepLine * 7;
     float _xSizeFactor = _stepLine * 8;
     
-    int _melodyNoteNum = melodies[0].melodyLine.size();
+    vector<melody> _melody = melodyOutput();
+    int _melodyNoteNum;
+    
+    if (_melody.size()>0) {
+        _melodyNoteNum = _melody[0].melodyLine.size();
+    }
     
     float _scoreXStart = 0;
     float _scoreXEnd = ofGetWidth() * 3 - _xSizeFactor - (ofGetWidth() * 3 - 20.0) / _melodyNoteNum * 0.5;
@@ -700,19 +709,20 @@ void ofApp::drawPrintScoreFBO(){
     float _teilLength = 15;
     float _teilEndX = _teilLength * 0.8;
     
-    for (int i=0; i<melodies.size(); i++) {
+    
+    for (int i=0; i<_melody.size(); i++) {
         
-        for (int j=0; j<melodies[i].melodyLine.size(); j++) {
+        for (int j=0; j<_melody[i].melodyLine.size(); j++) {
             
-            float _x1 = ofMap(j, 0, melodies[i].melodyLine.size(), _xSizeFactor, ofGetWidth() * 3 -_xSizeFactor);
+            float _x1 = ofMap(j, 0, _melody[i].melodyLine.size(), _xSizeFactor, ofGetWidth() * 3 -_xSizeFactor);
             
-            if (melodies[i].melodyLine[j]>0) {
+            if (_melody[i].melodyLine[j]>0) {
                 
                 //TODO: Fix Score
                 if (i%3==0 || i%3==1) {
-                    int _note = melodies[i].melodyLine[j] % 12;
+                    int _note = _melody[i].melodyLine[j] % 12;
                     int _offsetOctave = octaveScaleFactor[i];
-                    int _noteOctave = (melodies[i].melodyLine[j] - _offsetOctave) / 12;
+                    int _noteOctave = (_melody[i].melodyLine[j] - _offsetOctave) / 12;
                     
                     float _posY = notePosition(_note, _stepLine);
                     float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
@@ -732,9 +742,9 @@ void ofApp::drawPrintScoreFBO(){
                     
                 } else {
                     
-                    int _note = melodies[i].melodyLine[j] % 12;
+                    int _note = _melody[i].melodyLine[j] % 12;
                     int _offsetOctave = octaveScaleFactor[i];
-                    int _noteOctave = (melodies[i].melodyLine[j] - _offsetOctave) / 12 - 2;
+                    int _noteOctave = (_melody[i].melodyLine[j] - _offsetOctave) / 12 - 2;
                     
                     float _posY = notePosition(_note, _stepLine);
                     float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
@@ -843,41 +853,87 @@ int ofApp::notePosition(int _note, int _stepLine){
 //--------------------------------------------------------------
 void ofApp::printScoreMake(){
     
-    vector<noteList> _list = scoreMakeOutput();
+//    vector<noteList> _noteList = scoreMakeOutput();
+//
+//    for (int i=0; i<melodies.size(); i++) {
+//        melodies[i].melodyLine.clear();
+//    }
+//    
+//    
+//    for (int j=0; j<_noteList.size(); j++) {
+//        
+//        for (int i=1; i<_noteList[j].noteArray.size(); i++) {
+//            
+//            int _note = _noteList[j].noteArray[i];
+//            int _noteOld = _noteList[j].noteArray[i-1];
+//            
+//            int _outputNote;
+//            if ( abs(_noteOld - _note) >= intervalDist ) {
+//                
+//                if (_note>0) {
+//                    _outputNote = scaleSetting.noteSelector(baseSelection, j+1, _note);
+//                    melodies[j].melodyLine.push_back(_outputNote);
+//                } else {
+//                    melodies[j].melodyLine.push_back(0);
+//                }
+//                
+//            } else {
+//                melodies[j].melodyLine.push_back(0);
+//            }
+//            
+//        }
+//        
+//    }
+//    
+    
+    
+}
 
-    for (int i=0; i<melodies.size(); i++) {
-        melodies[i].melodyLine.clear();
-    }
+
+
+//--------------------------------------------------------------
+vector<melody> ofApp::melodyOutput(){
+    
+    vector<melody> _melody;
+    
+    vector<noteList> _noteList = scoreMakeOutput();
+    
+    _melody.resize(NOTE_SIZE);
+    
+//    for (int i=0; i<melodies.size(); i++) {
+//        melodies[i].melodyLine.clear();
+//    }
     
     
-    for (int j=0; j<_list.size(); j++) {
+    for (int j=0; j<_noteList.size(); j++) {
         
-        for (int i=1; i<_list[j].noteArray.size(); i++) {
+        for (int i=1; i<_noteList[j].noteArray.size(); i++) {
             
-            int _note = _list[j].noteArray[i];
-            int _noteOld = _list[j].noteArray[i-1];
+            int _note = _noteList[j].noteArray[i];
+            int _noteOld = _noteList[j].noteArray[i-1];
             
             int _outputNote;
             if ( abs(_noteOld - _note) >= intervalDist ) {
                 
                 if (_note>0) {
                     _outputNote = scaleSetting.noteSelector(baseSelection, j+1, _note);
-                    melodies[j].melodyLine.push_back(_outputNote);
+                    _melody[j].melodyLine.push_back(_outputNote);
                 } else {
-                    melodies[j].melodyLine.push_back(0);
+                    _melody[j].melodyLine.push_back(0);
                 }
                 
             } else {
-                melodies[j].melodyLine.push_back(0);
+                _melody[j].melodyLine.push_back(0);
             }
             
         }
         
     }
     
-    
+    return _melody;
     
 }
+
 
 
 
@@ -1623,19 +1679,21 @@ void ofApp::mainCaptureOnOff(){
                 _list[i].noteArray.clear();
             }
             
-            for (int i=0; i<melodies.size(); i++) {
-                melodies[i].melodyLine.clear();
+            
+            vector<melody> _melody = melodyOutput();
+            for (int i=0; i<_melody.size(); i++) {
+                _melody[i].melodyLine.clear();
             }
             
             for (int i=0; i<oldScoreNote.size(); i++) {
                 oldScoreNote[i] = 0;
                 _list[i].noteArray.push_back(0);
-                melodies[i].melodyLine.push_back(0);
+                _melody[i].melodyLine.push_back(0);
             }
             
         } else {
             scoreMake();
-            printScoreMake();
+//            printScoreMake();
             //                noteIndex = index;
             ofAddListener(*metroOut, this, &ofApp::triggerReceive);
             bPlayNote = true;
@@ -1665,14 +1723,15 @@ void ofApp::mainCaptureOff(){
                 _list[i].noteArray.clear();
             }
             
-            for (int i=0; i<melodies.size(); i++) {
-                melodies[i].melodyLine.clear();
+            vector<melody> _melody = melodyOutput();
+            for (int i=0; i<_melody.size(); i++) {
+                _melody[i].melodyLine.clear();
             }
             
             for (int i=0; i<oldScoreNote.size(); i++) {
                 oldScoreNote[i] = 0;
                 _list[i].noteArray.push_back(0);
-                melodies[i].melodyLine.push_back(0);
+                _melody[i].melodyLine.push_back(0);
             }
             
         }
@@ -1941,7 +2000,7 @@ void ofApp::mouseReleased(int x, int y, int button){
     if (_distI < (intervalSize * _tolerance) && bInterval == true) {
         bInterval = false;
         scoreMake();
-        printScoreMake();
+//        printScoreMake();
     }
     
     
@@ -2239,20 +2298,21 @@ void ofApp::scoreMake(){
 vector<noteList> ofApp::scoreMakeOutput(){
     
     vector<noteList> _noteList;
-    _noteList.resize(7);
+    _noteList.resize(NOTE_SIZE);
     
     int _intervalDist = intervalDist;
     
+    if (whitePixels.size()>1) {
     for (int i=0; i<whitePixels.size(); i++) {
         
         vector<int> _bitNumber;
-        _bitNumber.resize(7);
+        _bitNumber.resize(NOTE_SIZE);
         
         int _idLoop = ((i) % (whitePixels.size()-1))+1;
         int _pixelNrs = whitePixels[ _idLoop ].pixelN;
         _bitNumber = convertDecimalToNBase( _pixelNrs, baseSelection, (int)_bitNumber.size());
         
-        for (int j=0; j<7; j++) {
+        for (int j=0; j<NOTE_SIZE; j++) {
             
             if ( abs(_bitNumber[j] - oldScoreNote[j]) >= _intervalDist ) {
                 _noteList[j].noteArray.push_back(_bitNumber[j]);
@@ -2264,7 +2324,8 @@ vector<noteList> ofApp::scoreMakeOutput(){
         }
         
     }
-        
+    }
+    
     return _noteList;
     
 }

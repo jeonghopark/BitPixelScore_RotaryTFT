@@ -9,6 +9,7 @@
 
 #include "ScaleSetting.h"
 
+#define NOTE_SIZE 7
 
 struct blackWhitePixels{
     int indexPos;
@@ -189,7 +190,6 @@ public:
     void drawLineScore();
     
     vector<int> oldScoreNote;
-//    vector<noteList> noteLists;
     
     int lineScoreStepX, lineScoreStepY;
     void scoreMake();
@@ -308,6 +308,7 @@ public:
     
     
     vector<noteList> scoreMakeOutput();
+    vector<melody> melodyOutput();
     
     
 };
