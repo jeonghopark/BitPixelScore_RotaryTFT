@@ -189,7 +189,7 @@ public:
     // Line Score
     void drawLineScore();
     
-    vector<int> oldScoreNote;
+//    vector<int> oldScoreNote;
     
     int lineScoreStepX, lineScoreStepY;
     void scoreMake();

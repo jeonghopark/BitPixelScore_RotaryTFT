@@ -145,12 +145,12 @@ void ofApp::setup(){
     allPlayOnOff = false;
     
 //    melodies.resize(NOTE_SIZE);
-    oldScoreNote.resize(NOTE_SIZE);
+//    oldScoreNote.resize(NOTE_SIZE);
     
-    for (int i=0; i<NOTE_SIZE; i++) {
-        oldScoreNote[i] = 0;
+//    for (int i=0; i<NOTE_SIZE; i++) {
+//        oldScoreNote[i] = 0;
 //        melodies[i].melodyLine.push_back(0);
-    }
+//    }
     
     
     faceFind.setup("haarcascade_frontalface_default.xml");
@@ -431,7 +431,7 @@ void ofApp::draw(){
         //        ofDrawLine(_x1, _y1 + 200, _x1, _y1 - 200);
         
         ofTranslate( _x1, ofGetHeight());
-        ofRotateZ(-90);
+        ofRotateZDeg(-90);
         printScoreFbo.draw(0, ofGetHeight() - 512 * 0.5, 384 * 0.5, ofGetWidth() * 1.5);
     }
     ofPopMatrix();
@@ -619,7 +619,7 @@ void ofApp::drawPrintScoreFBO(){
     ofSetColor(255);
     ofDrawRectangle(10, 10, printScoreFbo.getWidth()-20, printScoreFbo.getHeight()-20);
     
-    ofRotateZ(90);
+    ofRotateZDeg(90);
     
     
     ofRectMode(OF_RECT_CENTER);
@@ -1561,7 +1561,7 @@ void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _b, int _s, ofColor 
     
     
     ofTranslate( _pos );
-    ofRotateZ( 45 );
+    ofRotateZDeg( 45 );
     
     ofSetLineWidth( 3 );
     
@@ -1685,11 +1685,11 @@ void ofApp::mainCaptureOnOff(){
                 _melody[i].melodyLine.clear();
             }
             
-            for (int i=0; i<oldScoreNote.size(); i++) {
-                oldScoreNote[i] = 0;
+//            for (int i=0; i<oldScoreNote.size(); i++) {
+//                oldScoreNote[i] = 0;
 //                _list[i].noteArray.push_back(0);
 //                _melody[i].melodyLine.push_back(0);
-            }
+//            }
             
         } else {
             scoreMake();
@@ -1728,11 +1728,11 @@ void ofApp::mainCaptureOff(){
                 _melody[i].melodyLine.clear();
             }
             
-            for (int i=0; i<oldScoreNote.size(); i++) {
-                oldScoreNote[i] = 0;
+//            for (int i=0; i<oldScoreNote.size(); i++) {
+//                oldScoreNote[i] = 0;
 //                _list[i].noteArray.push_back(0);
 //                _melody[i].melodyLine.push_back(0);
-            }
+//            }
             
         }
     }
@@ -2299,31 +2299,38 @@ vector<noteList> ofApp::scoreMakeOutput(){
     
     vector<noteList> _noteList;
     _noteList.resize(NOTE_SIZE);
+
+    
+    vector<int> _bufferScoreNote;
+    _bufferScoreNote.resize(NOTE_SIZE);
+    for (int i=0; i<NOTE_SIZE; i++){
+        _bufferScoreNote[i] = 0;
+    }
     
     int _intervalDist = intervalDist;
     
     if (whitePixels.size()>1) {
-    for (int i=0; i<whitePixels.size(); i++) {
-        
-        vector<int> _bitNumber;
-        _bitNumber.resize(NOTE_SIZE);
-        
-        int _idLoop = ((i) % (whitePixels.size()-1))+1;
-        int _pixelNrs = whitePixels[ _idLoop ].pixelN;
-        _bitNumber = convertDecimalToNBase( _pixelNrs, baseSelection, (int)_bitNumber.size());
-        
-        for (int j=0; j<NOTE_SIZE; j++) {
+        for (int i=0; i<whitePixels.size(); i++) {
             
-            if ( abs(_bitNumber[j] - oldScoreNote[j]) >= _intervalDist ) {
-                _noteList[j].noteArray.push_back(_bitNumber[j]);
-            } else {
-                _noteList[j].noteArray.push_back(-1);
+            vector<int> _bitNumber;
+            _bitNumber.resize(NOTE_SIZE);
+            
+            int _idLoop = ((i) % (whitePixels.size()-1))+1;
+            int _pixelNrs = whitePixels[ _idLoop ].pixelN;
+            _bitNumber = convertDecimalToNBase( _pixelNrs, baseSelection, (int)_bitNumber.size());
+            
+            for (int j=0; j<NOTE_SIZE; j++) {
+                
+                if ( abs(_bitNumber[j] - _bufferScoreNote[j]) >= _intervalDist ) {
+                    _noteList[j].noteArray.push_back(_bitNumber[j]);
+                } else {
+                    _noteList[j].noteArray.push_back(-1);
+                }
+                _bufferScoreNote[j] = _bitNumber[j];
+                
             }
-            oldScoreNote[j] = _bitNumber[j];
             
         }
-        
-    }
     }
     
     return _noteList;
