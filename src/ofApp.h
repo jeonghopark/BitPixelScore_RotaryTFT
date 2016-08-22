@@ -237,7 +237,7 @@ public:
     ofParameterGroup parameters2;
     ofParameter<float> thresholdF2;
 
-    vector<melody> melodies;
+//    vector<melody> melodies;
 
     void printScoreMake();
     void checkSameNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scoreCh );
@@ -309,6 +309,7 @@ public:
     
     vector<noteList> scoreMakeOutput();
     vector<melody> melodyOutput();
+    vector<int> oldNoteOutput();
     
     
 };

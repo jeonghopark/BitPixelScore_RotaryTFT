@@ -418,12 +418,7 @@ void ofApp::draw(){
     float _xSizeFactor = _stepLine * 8;
     
     vector<melody> _melody = melodyOutput();
-    int _melodyNoteNum;
-    
-    if (_melody.size()>0) {
-        _melodyNoteNum = _melody[0].melodyLine.size();
-    }
-    
+    int _melodyNoteNum = _melody.data()->melodyLine.size();
     if (_melodyNoteNum>0) {
         int _index = noteIndex % _melodyNoteNum;
         float _x1 = ofMap(_index, 0, _melodyNoteNum, -ofGetWidth()*0.5,  -ofGetWidth());
@@ -634,11 +629,7 @@ void ofApp::drawPrintScoreFBO(){
     float _xSizeFactor = _stepLine * 8;
     
     vector<melody> _melody = melodyOutput();
-    int _melodyNoteNum;
-    
-    if (_melody.size()>0) {
-        _melodyNoteNum = _melody[0].melodyLine.size();
-    }
+    int _melodyNoteNum = _melody.data()->melodyLine.size();
     
     float _scoreXStart = 0;
     float _scoreXEnd = ofGetWidth() * 3 - _xSizeFactor - (ofGetWidth() * 3 - 20.0) / _melodyNoteNum * 0.5;
@@ -1665,6 +1656,7 @@ void ofApp::mainCaptureOnOff(){
     
     //    allPlayOnOff = !allPlayOnOff;
     
+    
     if ((whitePixels.size()>2)) {
         bCameraCapturePlay = !bCameraCapturePlay;
         //            blur(edge, 3);
@@ -1685,8 +1677,9 @@ void ofApp::mainCaptureOnOff(){
                 _melody[i].melodyLine.clear();
             }
             
-            for (int i=0; i<oldScoreNote.size(); i++) {
-                oldScoreNote[i] = 0;
+            vector<int> _oldNote = oldNoteOutput();
+            for (int i=0; i<_oldNote.size(); i++) {
+                _oldNote[i] = 0;
                 _list[i].noteArray.push_back(0);
                 _melody[i].melodyLine.push_back(0);
             }
@@ -1709,6 +1702,8 @@ void ofApp::mainCaptureOnOff(){
 //--------------------------------------------------------------
 void ofApp::mainCaptureOff(){
     
+//    vector<int> oldScoreNote;
+    
     if ((whitePixels.size()>2)) {
         bCameraCapturePlay = false;
         //            blur(edge, 3);
@@ -1728,8 +1723,9 @@ void ofApp::mainCaptureOff(){
                 _melody[i].melodyLine.clear();
             }
             
-            for (int i=0; i<oldScoreNote.size(); i++) {
-                oldScoreNote[i] = 0;
+            vector<int> _oldNote = oldNoteOutput();
+            for (int i=0; i<_oldNote.size(); i++) {
+                _oldNote[i] = 0;
                 _list[i].noteArray.push_back(0);
                 _melody[i].melodyLine.push_back(0);
             }
@@ -2300,7 +2296,13 @@ vector<noteList> ofApp::scoreMakeOutput(){
     vector<noteList> _noteList;
     _noteList.resize(NOTE_SIZE);
     
+//    vector<int> oldScoreNote;
+//    oldScoreNote.resize(NOTE_SIZE);
+    
     int _intervalDist = intervalDist;
+    
+    vector<int> _oldNote = oldNoteOutput();
+
     
     if (whitePixels.size()>1) {
     for (int i=0; i<whitePixels.size(); i++) {
@@ -2312,14 +2314,15 @@ vector<noteList> ofApp::scoreMakeOutput(){
         int _pixelNrs = whitePixels[ _idLoop ].pixelN;
         _bitNumber = convertDecimalToNBase( _pixelNrs, baseSelection, (int)_bitNumber.size());
         
+        
         for (int j=0; j<NOTE_SIZE; j++) {
             
-            if ( abs(_bitNumber[j] - oldScoreNote[j]) >= _intervalDist ) {
+            if ( abs(_bitNumber[j] - _oldNote[j]) >= _intervalDist ) {
                 _noteList[j].noteArray.push_back(_bitNumber[j]);
             } else {
                 _noteList[j].noteArray.push_back(-1);
             }
-            oldScoreNote[j] = _bitNumber[j];
+//            oldScoreNote[j] = _bitNumber[j];
             
         }
         
@@ -2327,6 +2330,38 @@ vector<noteList> ofApp::scoreMakeOutput(){
     }
     
     return _noteList;
+    
+}
+
+
+//--------------------------------------------------------------
+vector<int> ofApp::oldNoteOutput(){
+    
+    vector<int> _oldNote;
+    _oldNote.resize(NOTE_SIZE);
+    
+    int _intervalDist = intervalDist;
+    
+    if (whitePixels.size()>1) {
+        for (int i=0; i<whitePixels.size(); i++) {
+            
+            vector<int> _bitNumber;
+            _bitNumber.resize(NOTE_SIZE);
+            
+            int _idLoop = ((i) % (whitePixels.size()-1))+1;
+            int _pixelNrs = whitePixels[ _idLoop ].pixelN;
+            _bitNumber = convertDecimalToNBase( _pixelNrs, baseSelection, (int)_bitNumber.size());
+            
+            for (int j=0; j<NOTE_SIZE; j++) {
+                
+                _oldNote[j] = _bitNumber[j];
+                
+            }
+            
+        }
+    }
+    
+    return _oldNote;
     
 }
 
