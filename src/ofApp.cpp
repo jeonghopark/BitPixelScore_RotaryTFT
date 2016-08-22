@@ -145,12 +145,12 @@ void ofApp::setup(){
     allPlayOnOff = false;
     
     melodies.resize(7);
-    noteLists.resize(7);
+//    noteLists.resize(7);
     oldScoreNote.resize(7);
     
     for (int i=0; i<oldScoreNote.size(); i++) {
         oldScoreNote[i] = 0;
-        noteLists[i].noteArray.push_back(0);
+//        noteLists[i].noteArray.push_back(0);
         melodies[i].melodyLine.push_back(0);
     }
     
@@ -395,13 +395,15 @@ void ofApp::triggerReceive(float & metro){
     index++;
     noteIndex = index;
     
-    trigScoreNote( noteLists[0].noteArray, synth1, 1 );
-    trigScoreNote( noteLists[1].noteArray, synth2, 2 );
-    trigScoreNote( noteLists[2].noteArray, synth3, 3 );
-    trigScoreNote( noteLists[3].noteArray, synth4, 4 );
-    trigScoreNote( noteLists[4].noteArray, synth5, 5 );
-    trigScoreNote( noteLists[5].noteArray, synth6, 6 );
-    trigScoreNote( noteLists[6].noteArray, synth7, 7 );
+    vector<noteList> _list = scoreMakeOutput();
+    
+    trigScoreNote( _list[0].noteArray, synth1, 1 );
+    trigScoreNote( _list[1].noteArray, synth2, 2 );
+    trigScoreNote( _list[2].noteArray, synth3, 3 );
+    trigScoreNote( _list[3].noteArray, synth4, 4 );
+    trigScoreNote( _list[4].noteArray, synth5, 5 );
+    trigScoreNote( _list[5].noteArray, synth6, 6 );
+    trigScoreNote( _list[6].noteArray, synth7, 7 );
     
 }
 
@@ -478,14 +480,20 @@ void ofApp::draw(){
         //                drawPlayingShapeNotes();
         //                drawPixelAllNoteShape();
         
-        for (int i=0; i<noteLists.size(); i++) {
-            drawPixelAllNoteShapes( noteLists[i].noteArray, i );
+//        for (int i=0; i<noteLists.size(); i++) {
+//            drawPixelAllNoteShapes( noteLists[i].noteArray, i );
+//        }
+//        
+//        for (int i=0; i<noteLists.size(); i++) {
+//            drawPlayingShapeNote( noteLists[i].noteArray, i );
+//        }
+
+        vector<noteList> _list = scoreMakeOutput();
+        for (int i=0; i<_list.size(); i++) {
+            drawPixelAllNoteShapes( _list[i].noteArray, i );
+            drawPlayingShapeNote( _list[i].noteArray, i );
         }
-        
-        for (int i=0; i<noteLists.size(); i++) {
-            drawPlayingShapeNote( noteLists[i].noteArray, i );
-        }
-        
+
     }
     
     //    ofPushStyle();
@@ -835,18 +843,19 @@ int ofApp::notePosition(int _note, int _stepLine){
 //--------------------------------------------------------------
 void ofApp::printScoreMake(){
     
-    
+    vector<noteList> _list = scoreMakeOutput();
+
     for (int i=0; i<melodies.size(); i++) {
         melodies[i].melodyLine.clear();
     }
     
     
-    for (int j=0; j<noteLists.size(); j++) {
+    for (int j=0; j<_list.size(); j++) {
         
-        for (int i=1; i<noteLists[j].noteArray.size(); i++) {
+        for (int i=1; i<_list[j].noteArray.size(); i++) {
             
-            int _note = noteLists[j].noteArray[i];
-            int _noteOld = noteLists[j].noteArray[i-1];
+            int _note = _list[j].noteArray[i];
+            int _noteOld = _list[j].noteArray[i-1];
             
             int _outputNote;
             if ( abs(_noteOld - _note) >= intervalDist ) {
@@ -1273,9 +1282,14 @@ void ofApp::drawLineScore(){
         ofSetColor( 0, 120 );
         
         
-        for (int i=0; i<noteLists.size(); i++) {
-            drawScoreCircleLine( noteLists[i].noteArray, i );
+        vector<noteList> _list = scoreMakeOutput();
+        for (int i=0; i<_list.size(); i++) {
+            drawScoreCircleLine( _list[i].noteArray, i );
         }
+
+//        for (int i=0; i<noteLists.size(); i++) {
+//            drawScoreCircleLine( noteLists[i].noteArray, i );
+//        }
         
     }
     
@@ -1603,15 +1617,19 @@ void ofApp::mainCaptureOnOff(){
         if ( !bCameraCapturePlay ) {
             index = -1;
             ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
-            for (int i=0; i<noteLists.size(); i++) {
-                noteLists[i].noteArray.clear();
+            
+            vector<noteList> _list = scoreMakeOutput();
+            for (int i=0; i<_list.size(); i++) {
+                _list[i].noteArray.clear();
             }
+            
             for (int i=0; i<melodies.size(); i++) {
                 melodies[i].melodyLine.clear();
             }
+            
             for (int i=0; i<oldScoreNote.size(); i++) {
                 oldScoreNote[i] = 0;
-                noteLists[i].noteArray.push_back(0);
+                _list[i].noteArray.push_back(0);
                 melodies[i].melodyLine.push_back(0);
             }
             
@@ -1641,15 +1659,19 @@ void ofApp::mainCaptureOff(){
         if ( !bCameraCapturePlay ) {
             index = -1;
             ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
-            for (int i=0; i<noteLists.size(); i++) {
-                noteLists[i].noteArray.clear();
+
+            vector<noteList> _list = scoreMakeOutput();
+            for (int i=0; i<_list.size(); i++) {
+                _list[i].noteArray.clear();
             }
+            
             for (int i=0; i<melodies.size(); i++) {
                 melodies[i].melodyLine.clear();
             }
+            
             for (int i=0; i<oldScoreNote.size(); i++) {
                 oldScoreNote[i] = 0;
-                noteLists[i].noteArray.push_back(0);
+                _list[i].noteArray.push_back(0);
                 melodies[i].melodyLine.push_back(0);
             }
             
@@ -2181,9 +2203,43 @@ void ofApp::synthSetting(){
 void ofApp::scoreMake(){
     
     
-    for (int i=0; i<noteLists.size(); i++) {
-        noteLists[i].noteArray.clear();
-    }
+//    for (int i=0; i<noteLists.size(); i++) {
+//        noteLists[i].noteArray.clear();
+//    }
+//    
+//    int _intervalDist = intervalDist;
+//    
+//    for (int i=0; i<whitePixels.size(); i++) {
+//        
+//        vector<int> _bitNumber;
+//        _bitNumber.resize(7);
+//        
+//        int _idLoop = ((i) % (whitePixels.size()-1))+1;
+//        int _pixelNrs = whitePixels[ _idLoop ].pixelN;
+//        _bitNumber = convertDecimalToNBase( _pixelNrs, baseSelection, (int)_bitNumber.size());
+//        
+//        for (int j=0; j<noteLists.size(); j++) {
+//            
+//            if ( abs(_bitNumber[j] - oldScoreNote[j]) >= _intervalDist ) {
+//                noteLists[j].noteArray.push_back(_bitNumber[j]);
+//            } else {
+//                noteLists[j].noteArray.push_back(-1);
+//            }
+//            oldScoreNote[j] = _bitNumber[j];
+//            
+//        }
+//        
+//    }
+    
+}
+
+
+
+//--------------------------------------------------------------
+vector<noteList> ofApp::scoreMakeOutput(){
+    
+    vector<noteList> _noteList;
+    _noteList.resize(7);
     
     int _intervalDist = intervalDist;
     
@@ -2196,18 +2252,20 @@ void ofApp::scoreMake(){
         int _pixelNrs = whitePixels[ _idLoop ].pixelN;
         _bitNumber = convertDecimalToNBase( _pixelNrs, baseSelection, (int)_bitNumber.size());
         
-        for (int j=0; j<noteLists.size(); j++) {
+        for (int j=0; j<7; j++) {
             
             if ( abs(_bitNumber[j] - oldScoreNote[j]) >= _intervalDist ) {
-                noteLists[j].noteArray.push_back(_bitNumber[j]);
+                _noteList[j].noteArray.push_back(_bitNumber[j]);
             } else {
-                noteLists[j].noteArray.push_back(-1);
+                _noteList[j].noteArray.push_back(-1);
             }
             oldScoreNote[j] = _bitNumber[j];
             
         }
         
     }
+        
+    return _noteList;
     
 }
 

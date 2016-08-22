@@ -189,7 +189,7 @@ public:
     void drawLineScore();
     
     vector<int> oldScoreNote;
-    vector<noteList> noteLists;
+//    vector<noteList> noteLists;
     
     int lineScoreStepX, lineScoreStepY;
     void scoreMake();
@@ -306,4 +306,13 @@ public:
     
     bool stopOnOn;
     
+    
+    vector<noteList> scoreMakeOutput();
+    
+    
 };
+
+
+
+
+
