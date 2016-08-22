@@ -144,14 +144,6 @@ void ofApp::setup(){
     
     allPlayOnOff = false;
     
-//    melodies.resize(NOTE_SIZE);
-//    oldScoreNote.resize(NOTE_SIZE);
-    
-//    for (int i=0; i<NOTE_SIZE; i++) {
-//        oldScoreNote[i] = 0;
-//        melodies[i].melodyLine.push_back(0);
-//    }
-    
     
     faceFind.setup("haarcascade_frontalface_default.xml");
     faceFind.setPreset(ObjectFinder::Fast);
@@ -393,15 +385,15 @@ void ofApp::triggerReceive(float & metro){
     index++;
     noteIndex = index;
     
-    vector<noteList> _list = scoreMakeOutput();
+    vector< vector<int> > _list = scoreMakeOutput();
     
-    trigScoreNote( _list[0].noteArray, synth1, 1 );
-    trigScoreNote( _list[1].noteArray, synth2, 2 );
-    trigScoreNote( _list[2].noteArray, synth3, 3 );
-    trigScoreNote( _list[3].noteArray, synth4, 4 );
-    trigScoreNote( _list[4].noteArray, synth5, 5 );
-    trigScoreNote( _list[5].noteArray, synth6, 6 );
-    trigScoreNote( _list[6].noteArray, synth7, 7 );
+    trigScoreNote( _list[0], synth1, 1 );
+    trigScoreNote( _list[1], synth2, 2 );
+    trigScoreNote( _list[2], synth3, 3 );
+    trigScoreNote( _list[3], synth4, 4 );
+    trigScoreNote( _list[4], synth5, 5 );
+    trigScoreNote( _list[5], synth6, 6 );
+    trigScoreNote( _list[6], synth7, 7 );
     
 }
 
@@ -417,11 +409,11 @@ void ofApp::draw(){
     float _stepLine = 15;
     float _xSizeFactor = _stepLine * 8;
     
-    vector<melody> _melody = melodyOutput();
+    vector< vector<int> > _melody = melodyOutput();
     int _melodyNoteNum;
     
     if (_melody.size()>0) {
-        _melodyNoteNum = _melody[0].melodyLine.size();
+        _melodyNoteNum = _melody[0].size();
     }
     
     if (_melodyNoteNum>0) {
@@ -492,10 +484,10 @@ void ofApp::draw(){
 //            drawPlayingShapeNote( noteLists[i].noteArray, i );
 //        }
 
-        vector<noteList> _list = scoreMakeOutput();
+        vector< vector<int> > _list = scoreMakeOutput();
         for (int i=0; i<_list.size(); i++) {
-            drawPixelAllNoteShapes( _list[i].noteArray, i );
-            drawPlayingShapeNote( _list[i].noteArray, i );
+            drawPixelAllNoteShapes( _list[i], i );
+            drawPlayingShapeNote( _list[i], i );
         }
 
     }
@@ -633,11 +625,11 @@ void ofApp::drawPrintScoreFBO(){
     float _upBaseLine = _downBaseLine - _stepLine * 7;
     float _xSizeFactor = _stepLine * 8;
     
-    vector<melody> _melody = melodyOutput();
+    vector< vector<int> > _melody = melodyOutput();
     int _melodyNoteNum;
     
     if (_melody.size()>0) {
-        _melodyNoteNum = _melody[0].melodyLine.size();
+        _melodyNoteNum = _melody[0].size();
     }
     
     float _scoreXStart = 0;
@@ -712,17 +704,17 @@ void ofApp::drawPrintScoreFBO(){
     
     for (int i=0; i<_melody.size(); i++) {
         
-        for (int j=0; j<_melody[i].melodyLine.size(); j++) {
+        for (int j=0; j<_melody[i].size(); j++) {
             
-            float _x1 = ofMap(j, 0, _melody[i].melodyLine.size(), _xSizeFactor, ofGetWidth() * 3 -_xSizeFactor);
+            float _x1 = ofMap(j, 0, _melody[i].size(), _xSizeFactor, ofGetWidth() * 3 -_xSizeFactor);
             
-            if (_melody[i].melodyLine[j]>0) {
+            if (_melody[i][j]>0) {
                 
                 //TODO: Fix Score
                 if (i%3==0 || i%3==1) {
-                    int _note = _melody[i].melodyLine[j] % 12;
+                    int _note = _melody[i][j] % 12;
                     int _offsetOctave = octaveScaleFactor[i];
-                    int _noteOctave = (_melody[i].melodyLine[j] - _offsetOctave) / 12;
+                    int _noteOctave = (_melody[i][j] - _offsetOctave) / 12;
                     
                     float _posY = notePosition(_note, _stepLine);
                     float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
@@ -742,9 +734,9 @@ void ofApp::drawPrintScoreFBO(){
                     
                 } else {
                     
-                    int _note = _melody[i].melodyLine[j] % 12;
+                    int _note = _melody[i][j] % 12;
                     int _offsetOctave = octaveScaleFactor[i];
-                    int _noteOctave = (_melody[i].melodyLine[j] - _offsetOctave) / 12 - 2;
+                    int _noteOctave = (_melody[i][j] - _offsetOctave) / 12 - 2;
                     
                     float _posY = notePosition(_note, _stepLine);
                     float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
@@ -892,11 +884,11 @@ void ofApp::printScoreMake(){
 
 
 //--------------------------------------------------------------
-vector<melody> ofApp::melodyOutput(){
+vector< vector<int> > ofApp::melodyOutput(){
     
-    vector<melody> _melody;
+    vector< vector<int> > _melody;
     
-    vector<noteList> _noteList = scoreMakeOutput();
+    vector< vector<int> > _noteList = scoreMakeOutput();
     
     _melody.resize(NOTE_SIZE);
     
@@ -907,23 +899,23 @@ vector<melody> ofApp::melodyOutput(){
     
     for (int j=0; j<_noteList.size(); j++) {
         
-        for (int i=1; i<_noteList[j].noteArray.size(); i++) {
+        for (int i=1; i<_noteList[j].size(); i++) {
             
-            int _note = _noteList[j].noteArray[i];
-            int _noteOld = _noteList[j].noteArray[i-1];
+            int _note = _noteList[j][i];
+            int _noteOld = _noteList[j][i-1];
             
             int _outputNote;
             if ( abs(_noteOld - _note) >= intervalDist ) {
                 
                 if (_note>0) {
                     _outputNote = scaleSetting.noteSelector(baseSelection, j+1, _note);
-                    _melody[j].melodyLine.push_back(_outputNote);
+                    _melody[j].push_back(_outputNote);
                 } else {
-                    _melody[j].melodyLine.push_back(0);
+                    _melody[j].push_back(0);
                 }
                 
             } else {
-                _melody[j].melodyLine.push_back(0);
+                _melody[j].push_back(0);
             }
             
         }
@@ -1338,9 +1330,9 @@ void ofApp::drawLineScore(){
         ofSetColor( 0, 120 );
         
         
-        vector<noteList> _list = scoreMakeOutput();
+        vector< vector<int> > _list = scoreMakeOutput();
         for (int i=0; i<_list.size(); i++) {
-            drawScoreCircleLine( _list[i].noteArray, i );
+            drawScoreCircleLine( _list[i], i );
         }
 
 //        for (int i=0; i<noteLists.size(); i++) {
@@ -1674,15 +1666,15 @@ void ofApp::mainCaptureOnOff(){
             index = -1;
             ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
             
-            vector<noteList> _list = scoreMakeOutput();
+            vector< vector<int> > _list = scoreMakeOutput();
             for (int i=0; i<_list.size(); i++) {
-                _list[i].noteArray.clear();
+                _list[i].clear();
             }
             
             
-            vector<melody> _melody = melodyOutput();
+            vector< vector<int> > _melody = melodyOutput();
             for (int i=0; i<_melody.size(); i++) {
-                _melody[i].melodyLine.clear();
+                _melody[i].clear();
             }
             
 //            for (int i=0; i<oldScoreNote.size(); i++) {
@@ -1718,14 +1710,14 @@ void ofApp::mainCaptureOff(){
             index = -1;
             ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
 
-            vector<noteList> _list = scoreMakeOutput();
+            vector< vector<int> > _list = scoreMakeOutput();
             for (int i=0; i<_list.size(); i++) {
-                _list[i].noteArray.clear();
+                _list[i].clear();
             }
             
-            vector<melody> _melody = melodyOutput();
+            vector< vector<int> > _melody = melodyOutput();
             for (int i=0; i<_melody.size(); i++) {
-                _melody[i].melodyLine.clear();
+                _melody[i].clear();
             }
             
 //            for (int i=0; i<oldScoreNote.size(); i++) {
@@ -2295,9 +2287,9 @@ void ofApp::scoreMake(){
 
 
 //--------------------------------------------------------------
-vector<noteList> ofApp::scoreMakeOutput(){
+vector< vector<int> > ofApp::scoreMakeOutput(){
     
-    vector<noteList> _noteList;
+    vector< vector<int> > _noteList;
     _noteList.resize(NOTE_SIZE);
 
     
@@ -2322,9 +2314,9 @@ vector<noteList> ofApp::scoreMakeOutput(){
             for (int j=0; j<NOTE_SIZE; j++) {
                 
                 if ( abs(_bitNumber[j] - _bufferScoreNote[j]) >= _intervalDist ) {
-                    _noteList[j].noteArray.push_back(_bitNumber[j]);
+                    _noteList[j].push_back(_bitNumber[j]);
                 } else {
-                    _noteList[j].noteArray.push_back(-1);
+                    _noteList[j].push_back(-1);
                 }
                 _bufferScoreNote[j] = _bitNumber[j];
                 

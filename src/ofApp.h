@@ -26,16 +26,6 @@ struct colorPixels{
 };
 
 
-struct melody{
-    vector<int> melodyLine;
-};
-
-
-struct noteList{
-    vector<int> noteArray;
-};
-
-
 using namespace Tonic;
 
 
@@ -189,8 +179,6 @@ public:
     // Line Score
     void drawLineScore();
     
-//    vector<int> oldScoreNote;
-    
     int lineScoreStepX, lineScoreStepY;
     void scoreMake();
     
@@ -237,7 +225,6 @@ public:
     ofParameterGroup parameters2;
     ofParameter<float> thresholdF2;
 
-    vector<melody> melodies;
 
     void printScoreMake();
     void checkSameNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scoreCh );
@@ -307,8 +294,8 @@ public:
     bool stopOnOn;
     
     
-    vector<noteList> scoreMakeOutput();
-    vector<melody> melodyOutput();
+    vector< vector<int> > scoreMakeOutput();
+    vector< vector<int> > melodyOutput();
     
     
 };
