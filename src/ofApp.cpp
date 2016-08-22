@@ -1687,8 +1687,8 @@ void ofApp::mainCaptureOnOff(){
             
             for (int i=0; i<oldScoreNote.size(); i++) {
                 oldScoreNote[i] = 0;
-                _list[i].noteArray.push_back(0);
-                _melody[i].melodyLine.push_back(0);
+//                _list[i].noteArray.push_back(0);
+//                _melody[i].melodyLine.push_back(0);
             }
             
         } else {
@@ -1730,8 +1730,8 @@ void ofApp::mainCaptureOff(){
             
             for (int i=0; i<oldScoreNote.size(); i++) {
                 oldScoreNote[i] = 0;
-                _list[i].noteArray.push_back(0);
-                _melody[i].melodyLine.push_back(0);
+//                _list[i].noteArray.push_back(0);
+//                _melody[i].melodyLine.push_back(0);
             }
             
         }
