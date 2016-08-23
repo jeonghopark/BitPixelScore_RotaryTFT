@@ -59,7 +59,6 @@ public:
     void audioRequested (float * output, int bufferSize, int nChannels);
 
     
-    bool bPlayNote;
     bool bCameraCapturePlay;
     
     
@@ -227,7 +226,6 @@ public:
 
 
     void printScoreMake();
-    void checkSameNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scoreCh );
     
     int notePosition(int _note, int _stepLine);
     

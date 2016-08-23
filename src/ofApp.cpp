@@ -135,7 +135,6 @@ void ofApp::setup(){
     base9Pos = ofPoint( _posIndexLeft, _baseCtrlPosY + _stepBasePos * 8.5 );
     baseSize = ctrlRectS * 0.55;
     
-    bPlayNote = false;
     bCameraCapturePlay = false;
     
     scaleSetting.setup();
@@ -369,10 +368,9 @@ void ofApp::update(){
         }
     } else {
         
-        
-        
     }
     
+
     
 }
 
@@ -1352,7 +1350,7 @@ void ofApp::drawLineScore(){
 
 
 //--------------------------------------------------------------
-void ofApp::drawScoreCircleLine( vector<int> _vNote, int _scoreCh ){
+void ofApp::drawScoreCircleLine( vector<int> _scoreNote, int _scoreCh ){
     
     
     int _xNumber = lineScoreNumber;
@@ -1362,8 +1360,6 @@ void ofApp::drawScoreCircleLine( vector<int> _vNote, int _scoreCh ){
     int _defaultNote = 56;
     int _size = 3;
     int _xDefaultPos = _stepX * (_xNumber-1);
-    
-    vector<int> _scoreNote = _vNote;
     
     float _h = ofMap( _scoreCh, 1, 7, 0, 255 );
     ofColor _c = ofColor::fromHsb( _h, 180, 255, 180 );
@@ -1482,14 +1478,9 @@ void ofApp::drawBaseInterface(){
 
 
 //--------------------------------------------------------------
-void ofApp::drawShapeCeterLine(ofPoint pos, int base, int size, ofColor _c){
+void ofApp::drawShapeCeterLine(ofPoint _pos, int _base, int _size, ofColor _c){
     
-    ofPoint _pos = pos;
-    
-    vector<ofPoint> posLine;
-    
-    int _base = base;
-    int _size = size;
+    vector<ofPoint> _posLine;
     
     for (int i=0; i<_base; i++) {
         float _sizeDegree = i * 360 / _base + 180.0;
@@ -1497,7 +1488,7 @@ void ofApp::drawShapeCeterLine(ofPoint pos, int base, int size, ofColor _c){
         float _y = cos(ofDegToRad( _sizeDegree )) * _size;
         
         ofPoint _p = ofPoint( _x, _y );
-        posLine.push_back( _p );
+        _posLine.push_back( _p );
     }
     
     
@@ -1508,16 +1499,16 @@ void ofApp::drawShapeCeterLine(ofPoint pos, int base, int size, ofColor _c){
     
     ofSetColor( _c, 60 );
     
-    for (int i=0; i<posLine.size(); i++){
-        ofDrawLine( 0, 0, posLine[i].x, posLine[i].y );
+    for (int i=0; i<_posLine.size(); i++){
+        ofDrawLine( 0, 0, _posLine[i].x, _posLine[i].y );
     }
     
     ofSetColor( _c, 180 );
     
-    for (int i=0; i<posLine.size()-1; i++){
-        ofDrawLine( posLine[i].x, posLine[i].y, posLine[i+1].x, posLine[i+1].y );
+    for (int i=0; i<_posLine.size()-1; i++){
+        ofDrawLine( _posLine[i].x, _posLine[i].y, _posLine[i+1].x, _posLine[i+1].y );
     }
-    ofDrawLine( posLine[0].x, posLine[0].y, posLine[posLine.size()-1].x, posLine[posLine.size()-1].y );
+    ofDrawLine( _posLine[0].x, _posLine[0].y, _posLine[_posLine.size()-1].x, _posLine[_posLine.size()-1].y );
     
     ofPopMatrix();
     ofPopStyle();
@@ -1527,16 +1518,9 @@ void ofApp::drawShapeCeterLine(ofPoint pos, int base, int size, ofColor _c){
 
 
 //--------------------------------------------------------------
-void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _b, int _s, ofColor _c){
+void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _base, int _size, ofColor _c){
     
-    ofPoint _pos = _p;
-    
-    vector<ofPoint> posLine;
-    
-    int _base = _b;
-    int _size = _s;
-    
-    ofColor color = _c;
+    vector<ofPoint> _posLine;
     
     for (int i=0; i<_base; i++) {
         float _sizeDegree = i * 360 / _base + 180.0;
@@ -1544,7 +1528,7 @@ void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _b, int _s, ofColor 
         float _y = cos(ofDegToRad( _sizeDegree )) * _size;
         
         ofPoint _p = ofPoint( _x, _y );
-        posLine.push_back( _p );
+        _posLine.push_back( _p );
     }
     
     
@@ -1552,21 +1536,21 @@ void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _b, int _s, ofColor 
     ofPushStyle();
     
     
-    ofTranslate( _pos );
+    ofTranslate( _p );
     ofRotateZDeg( 45 );
     
     ofSetLineWidth( 3 );
     
-    ofSetColor( color.r, color.g, color.b, color.a * 0.2 );
-    for (int i=0; i<posLine.size(); i++){
-        ofDrawLine( 0, 0, posLine[i].x, posLine[i].y );
+    ofSetColor( _c.r, _c.g, _c.b, _c.a * 0.2 );
+    for (int i=0; i<_posLine.size(); i++){
+        ofDrawLine( 0, 0, _posLine[i].x, _posLine[i].y );
     }
     
-    ofSetColor( color );
-    for (int i=0; i<posLine.size()-1; i++){
-        ofDrawLine( posLine[i].x, posLine[i].y, posLine[i+1].x, posLine[i+1].y );
+    ofSetColor( _c );
+    for (int i=0; i<_posLine.size()-1; i++){
+        ofDrawLine( _posLine[i].x, _posLine[i].y, _posLine[i+1].x, _posLine[i+1].y );
     }
-    ofDrawLine( posLine[0].x, posLine[0].y, posLine[posLine.size()-1].x, posLine[posLine.size()-1].y );
+    ofDrawLine( _posLine[0].x, _posLine[0].y, _posLine[_posLine.size()-1].x, _posLine[_posLine.size()-1].y );
     
     ofPopMatrix();
     ofPopStyle();
@@ -1577,14 +1561,10 @@ void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _b, int _s, ofColor 
 
 
 //--------------------------------------------------------------
-void ofApp::drawShape(ofPoint pos, int base, int size){
+void ofApp::drawShape(ofPoint _pos, int _base, int _size){
     
-    ofPoint _pos = pos;
     
-    vector<ofPoint> posLine;
-    
-    int _base = base;
-    int _size = size;
+    vector<ofPoint> _posLine;
     
     for (int i=0; i<_base; i++) {
         float _sizeDegree = i * 360 / _base + 180.0;
@@ -1592,7 +1572,7 @@ void ofApp::drawShape(ofPoint pos, int base, int size){
         float _y = cos(ofDegToRad( _sizeDegree )) * _size;
         
         ofPoint _p = ofPoint( _x, _y );
-        posLine.push_back( _p );
+        _posLine.push_back( _p );
     }
     
     
@@ -1600,10 +1580,10 @@ void ofApp::drawShape(ofPoint pos, int base, int size){
     
     ofTranslate( _pos );
     
-    for (int i=0; i<posLine.size()-1; i++){
-        ofDrawLine( posLine[i].x, posLine[i].y, posLine[i+1].x, posLine[i+1].y );
+    for (int i=0; i<_posLine.size()-1; i++){
+        ofDrawLine( _posLine[i].x, _posLine[i].y, _posLine[i+1].x, _posLine[i+1].y );
     }
-    ofDrawLine( posLine[0].x, posLine[0].y, posLine[posLine.size()-1].x, posLine[posLine.size()-1].y );
+    ofDrawLine( _posLine[0].x, _posLine[0].y, _posLine[_posLine.size()-1].x, _posLine[_posLine.size()-1].y );
     
     ofPopMatrix();
     
@@ -1647,7 +1627,7 @@ void ofApp::debugControlPDraw(){
 void ofApp::audioRequested (float * output, int bufferSize, int nChannels){
     
     synthMain.fillBufferOfFloats(output, bufferSize, nChannels);
-    
+
 }
 
 
@@ -1671,24 +1651,16 @@ void ofApp::mainCaptureOnOff(){
                 _list[i].clear();
             }
             
-            
             vector< vector<int> > _melody = melodyOutput();
             for (int i=0; i<_melody.size(); i++) {
                 _melody[i].clear();
             }
-            
-//            for (int i=0; i<oldScoreNote.size(); i++) {
-//                oldScoreNote[i] = 0;
-//                _list[i].noteArray.push_back(0);
-//                _melody[i].melodyLine.push_back(0);
-//            }
             
         } else {
             scoreMake();
 //            printScoreMake();
             //                noteIndex = index;
             ofAddListener(*metroOut, this, &ofApp::triggerReceive);
-            bPlayNote = true;
         }
         
         grayThresholdTouch = 120;
@@ -1719,12 +1691,6 @@ void ofApp::mainCaptureOff(){
             for (int i=0; i<_melody.size(); i++) {
                 _melody[i].clear();
             }
-            
-//            for (int i=0; i<oldScoreNote.size(); i++) {
-//                oldScoreNote[i] = 0;
-//                _list[i].noteArray.push_back(0);
-//                _melody[i].melodyLine.push_back(0);
-//            }
             
         }
     }
@@ -1881,7 +1847,6 @@ void ofApp::mouseDragged(int x, int y, int button){
         (_adjustTouchPos.y<screenH)&&(_adjustTouchPos.y>0) ) {
         grayThresholdTouch = 120 + (_adjustTouchPos.y - touchDownDefault);
 
-        cout << ctrl12OnOff << endl;
         ctrl12OnOff = false;
     
         mainCaptureOff();
@@ -1968,18 +1933,6 @@ void ofApp::mouseReleased(int x, int y, int button){
         touchOnOffCheck = false;
     }
     
-    
-    //    if ( (_adjustTouchPos.x<guideWidthStep * 11) && (_adjustTouchPos.x>guideWidthStep * 4) && (_adjustTouchPos.y>ctrlPnY) && (_adjustTouchPos.y<screenH) && bCameraCapturePlay ) {
-    //
-    //        bPlayNote = !bPlayNote;
-    //
-    //        if ( !bPlayNote ) {
-    //            ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
-    //        } else {
-    //            ofAddListener(*metroOut, this, &ofApp::triggerReceive);
-    //        }
-    //
-    //    }
     
     float _tolerance = 2;
     
@@ -2356,37 +2309,6 @@ void ofApp::trigScoreNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scor
             _synth.setParameter( tPitch, _scaledNoteE);
         }
     }
-    
-}
-
-
-
-//--------------------------------------------------------------
-void ofApp::checkSameNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scoreCh ){
-    
-    int _idLoop = ((noteIndex) % (whitePixels.size()-1))+1;
-    int _idLoopOld = ((noteIndex + 1) % (whitePixels.size()-1))+1;
-    
-    vector<int> _scoreNote = _vNote;
-    ofxTonicSynth _synth = _synthIn;
-    
-    int _note = _scoreNote[_idLoop];
-    int _noteOld = _scoreNote[_idLoopOld];
-    
-    int _scaledNote = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
-    int _scaledNoteOld = scaleSetting.noteSelector(baseSelection, _scoreCh, _noteOld);
-    
-    string tName = "trigger" + ofToString(_scoreCh);
-    string tPitch = "carrierPitch" + ofToString(_scoreCh);
-    
-    if ( abs(_scaledNoteOld - _scaledNote) >= intervalDist ) {
-        if (_note>0) {
-            int _scaledNoteE = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
-            _synth.setParameter( tName, 1);
-            _synth.setParameter( tPitch, _scaledNoteE);
-        }
-    }
-    
     
 }
 
