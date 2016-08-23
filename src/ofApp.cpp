@@ -1440,12 +1440,6 @@ void ofApp::drawScoreCircleLine( vector<int> _scoreNote, int _scoreCh ){
 
 
 
-//--------------------------------------------------------------
-void ofApp::controlGuide(){
-    
-}
-
-
 
 //--------------------------------------------------------------
 void ofApp::drawBaseInterface(){

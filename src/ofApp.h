@@ -134,7 +134,6 @@ public:
     float ctrlPnX, ctrlPnY, ctrlPnW, ctrlPnH;
     int guideWidthStep, guideHeightStep;
     int maxSpeed, minSpeed;
-    void controlGuide();
     
     float ctrlRectS;
     
