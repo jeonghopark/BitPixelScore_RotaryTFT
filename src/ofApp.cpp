@@ -135,7 +135,6 @@ void ofApp::setup(){
     base9Pos = ofPoint( _posIndexLeft, _baseCtrlPosY + _stepBasePos * 8.5 );
     baseSize = ctrlRectS * 0.55;
     
-    bPlayNote = false;
     bCameraCapturePlay = false;
     
     scaleSetting.setup();
@@ -143,14 +142,6 @@ void ofApp::setup(){
     lineScoreNumber = 23;
     
     allPlayOnOff = false;
-    
-//    melodies.resize(NOTE_SIZE);
-    oldScoreNote.resize(NOTE_SIZE);
-    
-    for (int i=0; i<NOTE_SIZE; i++) {
-        oldScoreNote[i] = 0;
-//        melodies[i].melodyLine.push_back(0);
-    }
     
     
     faceFind.setup("haarcascade_frontalface_default.xml");
@@ -377,10 +368,9 @@ void ofApp::update(){
         }
     } else {
         
-        
-        
     }
     
+
     
 }
 
@@ -393,15 +383,15 @@ void ofApp::triggerReceive(float & metro){
     index++;
     noteIndex = index;
     
-    vector<noteList> _list = scoreMakeOutput();
+    vector< vector<int> > _list = scoreMakeOutput();
     
-    trigScoreNote( _list[0].noteArray, synth1, 1 );
-    trigScoreNote( _list[1].noteArray, synth2, 2 );
-    trigScoreNote( _list[2].noteArray, synth3, 3 );
-    trigScoreNote( _list[3].noteArray, synth4, 4 );
-    trigScoreNote( _list[4].noteArray, synth5, 5 );
-    trigScoreNote( _list[5].noteArray, synth6, 6 );
-    trigScoreNote( _list[6].noteArray, synth7, 7 );
+    trigScoreNote( _list[0], synth1, 1 );
+    trigScoreNote( _list[1], synth2, 2 );
+    trigScoreNote( _list[2], synth3, 3 );
+    trigScoreNote( _list[3], synth4, 4 );
+    trigScoreNote( _list[4], synth5, 5 );
+    trigScoreNote( _list[5], synth6, 6 );
+    trigScoreNote( _list[6], synth7, 7 );
     
 }
 
@@ -417,8 +407,13 @@ void ofApp::draw(){
     float _stepLine = 15;
     float _xSizeFactor = _stepLine * 8;
     
-    vector<melody> _melody = melodyOutput();
-    int _melodyNoteNum = _melody.data()->melodyLine.size();
+    vector< vector<int> > _melody = melodyOutput();
+    int _melodyNoteNum;
+    
+    if (_melody.size()>0) {
+        _melodyNoteNum = _melody[0].size();
+    }
+    
     if (_melodyNoteNum>0) {
         int _index = noteIndex % _melodyNoteNum;
         float _x1 = ofMap(_index, 0, _melodyNoteNum, -ofGetWidth()*0.5,  -ofGetWidth());
@@ -426,7 +421,7 @@ void ofApp::draw(){
         //        ofDrawLine(_x1, _y1 + 200, _x1, _y1 - 200);
         
         ofTranslate( _x1, ofGetHeight());
-        ofRotateZ(-90);
+        ofRotateZDeg(-90);
         printScoreFbo.draw(0, ofGetHeight() - 512 * 0.5, 384 * 0.5, ofGetWidth() * 1.5);
     }
     ofPopMatrix();
@@ -487,10 +482,10 @@ void ofApp::draw(){
 //            drawPlayingShapeNote( noteLists[i].noteArray, i );
 //        }
 
-        vector<noteList> _list = scoreMakeOutput();
+        vector< vector<int> > _list = scoreMakeOutput();
         for (int i=0; i<_list.size(); i++) {
-            drawPixelAllNoteShapes( _list[i].noteArray, i );
-            drawPlayingShapeNote( _list[i].noteArray, i );
+            drawPixelAllNoteShapes( _list[i], i );
+            drawPlayingShapeNote( _list[i], i );
         }
 
     }
@@ -614,7 +609,7 @@ void ofApp::drawPrintScoreFBO(){
     ofSetColor(255);
     ofDrawRectangle(10, 10, printScoreFbo.getWidth()-20, printScoreFbo.getHeight()-20);
     
-    ofRotateZ(90);
+    ofRotateZDeg(90);
     
     
     ofRectMode(OF_RECT_CENTER);
@@ -628,8 +623,12 @@ void ofApp::drawPrintScoreFBO(){
     float _upBaseLine = _downBaseLine - _stepLine * 7;
     float _xSizeFactor = _stepLine * 8;
     
-    vector<melody> _melody = melodyOutput();
-    int _melodyNoteNum = _melody.data()->melodyLine.size();
+    vector< vector<int> > _melody = melodyOutput();
+    int _melodyNoteNum;
+    
+    if (_melody.size()>0) {
+        _melodyNoteNum = _melody[0].size();
+    }
     
     float _scoreXStart = 0;
     float _scoreXEnd = ofGetWidth() * 3 - _xSizeFactor - (ofGetWidth() * 3 - 20.0) / _melodyNoteNum * 0.5;
@@ -703,17 +702,17 @@ void ofApp::drawPrintScoreFBO(){
     
     for (int i=0; i<_melody.size(); i++) {
         
-        for (int j=0; j<_melody[i].melodyLine.size(); j++) {
+        for (int j=0; j<_melody[i].size(); j++) {
             
-            float _x1 = ofMap(j, 0, _melody[i].melodyLine.size(), _xSizeFactor, ofGetWidth() * 3 -_xSizeFactor);
+            float _x1 = ofMap(j, 0, _melody[i].size(), _xSizeFactor, ofGetWidth() * 3 -_xSizeFactor);
             
-            if (_melody[i].melodyLine[j]>0) {
+            if (_melody[i][j]>0) {
                 
                 //TODO: Fix Score
                 if (i%3==0 || i%3==1) {
-                    int _note = _melody[i].melodyLine[j] % 12;
+                    int _note = _melody[i][j] % 12;
                     int _offsetOctave = octaveScaleFactor[i];
-                    int _noteOctave = (_melody[i].melodyLine[j] - _offsetOctave) / 12;
+                    int _noteOctave = (_melody[i][j] - _offsetOctave) / 12;
                     
                     float _posY = notePosition(_note, _stepLine);
                     float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
@@ -733,9 +732,9 @@ void ofApp::drawPrintScoreFBO(){
                     
                 } else {
                     
-                    int _note = _melody[i].melodyLine[j] % 12;
+                    int _note = _melody[i][j] % 12;
                     int _offsetOctave = octaveScaleFactor[i];
-                    int _noteOctave = (_melody[i].melodyLine[j] - _offsetOctave) / 12 - 2;
+                    int _noteOctave = (_melody[i][j] - _offsetOctave) / 12 - 2;
                     
                     float _posY = notePosition(_note, _stepLine);
                     float _yOutput = _posY - _noteOctave * _stepLine * 3.5;
@@ -883,11 +882,11 @@ void ofApp::printScoreMake(){
 
 
 //--------------------------------------------------------------
-vector<melody> ofApp::melodyOutput(){
+vector< vector<int> > ofApp::melodyOutput(){
     
-    vector<melody> _melody;
+    vector< vector<int> > _melody;
     
-    vector<noteList> _noteList = scoreMakeOutput();
+    vector< vector<int> > _noteList = scoreMakeOutput();
     
     _melody.resize(NOTE_SIZE);
     
@@ -898,23 +897,23 @@ vector<melody> ofApp::melodyOutput(){
     
     for (int j=0; j<_noteList.size(); j++) {
         
-        for (int i=1; i<_noteList[j].noteArray.size(); i++) {
+        for (int i=1; i<_noteList[j].size(); i++) {
             
-            int _note = _noteList[j].noteArray[i];
-            int _noteOld = _noteList[j].noteArray[i-1];
+            int _note = _noteList[j][i];
+            int _noteOld = _noteList[j][i-1];
             
             int _outputNote;
             if ( abs(_noteOld - _note) >= intervalDist ) {
                 
                 if (_note>0) {
                     _outputNote = scaleSetting.noteSelector(baseSelection, j+1, _note);
-                    _melody[j].melodyLine.push_back(_outputNote);
+                    _melody[j].push_back(_outputNote);
                 } else {
-                    _melody[j].melodyLine.push_back(0);
+                    _melody[j].push_back(0);
                 }
                 
             } else {
-                _melody[j].melodyLine.push_back(0);
+                _melody[j].push_back(0);
             }
             
         }
@@ -1329,9 +1328,9 @@ void ofApp::drawLineScore(){
         ofSetColor( 0, 120 );
         
         
-        vector<noteList> _list = scoreMakeOutput();
+        vector< vector<int> > _list = scoreMakeOutput();
         for (int i=0; i<_list.size(); i++) {
-            drawScoreCircleLine( _list[i].noteArray, i );
+            drawScoreCircleLine( _list[i], i );
         }
 
 //        for (int i=0; i<noteLists.size(); i++) {
@@ -1351,7 +1350,7 @@ void ofApp::drawLineScore(){
 
 
 //--------------------------------------------------------------
-void ofApp::drawScoreCircleLine( vector<int> _vNote, int _scoreCh ){
+void ofApp::drawScoreCircleLine( vector<int> _scoreNote, int _scoreCh ){
     
     
     int _xNumber = lineScoreNumber;
@@ -1361,8 +1360,6 @@ void ofApp::drawScoreCircleLine( vector<int> _vNote, int _scoreCh ){
     int _defaultNote = 56;
     int _size = 3;
     int _xDefaultPos = _stepX * (_xNumber-1);
-    
-    vector<int> _scoreNote = _vNote;
     
     float _h = ofMap( _scoreCh, 1, 7, 0, 255 );
     ofColor _c = ofColor::fromHsb( _h, 180, 255, 180 );
@@ -1443,12 +1440,6 @@ void ofApp::drawScoreCircleLine( vector<int> _vNote, int _scoreCh ){
 
 
 
-//--------------------------------------------------------------
-void ofApp::controlGuide(){
-    
-}
-
-
 
 //--------------------------------------------------------------
 void ofApp::drawBaseInterface(){
@@ -1481,14 +1472,9 @@ void ofApp::drawBaseInterface(){
 
 
 //--------------------------------------------------------------
-void ofApp::drawShapeCeterLine(ofPoint pos, int base, int size, ofColor _c){
+void ofApp::drawShapeCeterLine(ofPoint _pos, int _base, int _size, ofColor _c){
     
-    ofPoint _pos = pos;
-    
-    vector<ofPoint> posLine;
-    
-    int _base = base;
-    int _size = size;
+    vector<ofPoint> _posLine;
     
     for (int i=0; i<_base; i++) {
         float _sizeDegree = i * 360 / _base + 180.0;
@@ -1496,7 +1482,7 @@ void ofApp::drawShapeCeterLine(ofPoint pos, int base, int size, ofColor _c){
         float _y = cos(ofDegToRad( _sizeDegree )) * _size;
         
         ofPoint _p = ofPoint( _x, _y );
-        posLine.push_back( _p );
+        _posLine.push_back( _p );
     }
     
     
@@ -1507,16 +1493,16 @@ void ofApp::drawShapeCeterLine(ofPoint pos, int base, int size, ofColor _c){
     
     ofSetColor( _c, 60 );
     
-    for (int i=0; i<posLine.size(); i++){
-        ofDrawLine( 0, 0, posLine[i].x, posLine[i].y );
+    for (int i=0; i<_posLine.size(); i++){
+        ofDrawLine( 0, 0, _posLine[i].x, _posLine[i].y );
     }
     
     ofSetColor( _c, 180 );
     
-    for (int i=0; i<posLine.size()-1; i++){
-        ofDrawLine( posLine[i].x, posLine[i].y, posLine[i+1].x, posLine[i+1].y );
+    for (int i=0; i<_posLine.size()-1; i++){
+        ofDrawLine( _posLine[i].x, _posLine[i].y, _posLine[i+1].x, _posLine[i+1].y );
     }
-    ofDrawLine( posLine[0].x, posLine[0].y, posLine[posLine.size()-1].x, posLine[posLine.size()-1].y );
+    ofDrawLine( _posLine[0].x, _posLine[0].y, _posLine[_posLine.size()-1].x, _posLine[_posLine.size()-1].y );
     
     ofPopMatrix();
     ofPopStyle();
@@ -1526,16 +1512,9 @@ void ofApp::drawShapeCeterLine(ofPoint pos, int base, int size, ofColor _c){
 
 
 //--------------------------------------------------------------
-void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _b, int _s, ofColor _c){
+void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _base, int _size, ofColor _c){
     
-    ofPoint _pos = _p;
-    
-    vector<ofPoint> posLine;
-    
-    int _base = _b;
-    int _size = _s;
-    
-    ofColor color = _c;
+    vector<ofPoint> _posLine;
     
     for (int i=0; i<_base; i++) {
         float _sizeDegree = i * 360 / _base + 180.0;
@@ -1543,7 +1522,7 @@ void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _b, int _s, ofColor 
         float _y = cos(ofDegToRad( _sizeDegree )) * _size;
         
         ofPoint _p = ofPoint( _x, _y );
-        posLine.push_back( _p );
+        _posLine.push_back( _p );
     }
     
     
@@ -1551,21 +1530,21 @@ void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _b, int _s, ofColor 
     ofPushStyle();
     
     
-    ofTranslate( _pos );
-    ofRotateZ( 45 );
+    ofTranslate( _p );
+    ofRotateZDeg( 45 );
     
     ofSetLineWidth( 3 );
     
-    ofSetColor( color.r, color.g, color.b, color.a * 0.2 );
-    for (int i=0; i<posLine.size(); i++){
-        ofDrawLine( 0, 0, posLine[i].x, posLine[i].y );
+    ofSetColor( _c.r, _c.g, _c.b, _c.a * 0.2 );
+    for (int i=0; i<_posLine.size(); i++){
+        ofDrawLine( 0, 0, _posLine[i].x, _posLine[i].y );
     }
     
-    ofSetColor( color );
-    for (int i=0; i<posLine.size()-1; i++){
-        ofDrawLine( posLine[i].x, posLine[i].y, posLine[i+1].x, posLine[i+1].y );
+    ofSetColor( _c );
+    for (int i=0; i<_posLine.size()-1; i++){
+        ofDrawLine( _posLine[i].x, _posLine[i].y, _posLine[i+1].x, _posLine[i+1].y );
     }
-    ofDrawLine( posLine[0].x, posLine[0].y, posLine[posLine.size()-1].x, posLine[posLine.size()-1].y );
+    ofDrawLine( _posLine[0].x, _posLine[0].y, _posLine[_posLine.size()-1].x, _posLine[_posLine.size()-1].y );
     
     ofPopMatrix();
     ofPopStyle();
@@ -1576,14 +1555,10 @@ void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _b, int _s, ofColor 
 
 
 //--------------------------------------------------------------
-void ofApp::drawShape(ofPoint pos, int base, int size){
+void ofApp::drawShape(ofPoint _pos, int _base, int _size){
     
-    ofPoint _pos = pos;
     
-    vector<ofPoint> posLine;
-    
-    int _base = base;
-    int _size = size;
+    vector<ofPoint> _posLine;
     
     for (int i=0; i<_base; i++) {
         float _sizeDegree = i * 360 / _base + 180.0;
@@ -1591,7 +1566,7 @@ void ofApp::drawShape(ofPoint pos, int base, int size){
         float _y = cos(ofDegToRad( _sizeDegree )) * _size;
         
         ofPoint _p = ofPoint( _x, _y );
-        posLine.push_back( _p );
+        _posLine.push_back( _p );
     }
     
     
@@ -1599,10 +1574,10 @@ void ofApp::drawShape(ofPoint pos, int base, int size){
     
     ofTranslate( _pos );
     
-    for (int i=0; i<posLine.size()-1; i++){
-        ofDrawLine( posLine[i].x, posLine[i].y, posLine[i+1].x, posLine[i+1].y );
+    for (int i=0; i<_posLine.size()-1; i++){
+        ofDrawLine( _posLine[i].x, _posLine[i].y, _posLine[i+1].x, _posLine[i+1].y );
     }
-    ofDrawLine( posLine[0].x, posLine[0].y, posLine[posLine.size()-1].x, posLine[posLine.size()-1].y );
+    ofDrawLine( _posLine[0].x, _posLine[0].y, _posLine[_posLine.size()-1].x, _posLine[_posLine.size()-1].y );
     
     ofPopMatrix();
     
@@ -1646,7 +1621,7 @@ void ofApp::debugControlPDraw(){
 void ofApp::audioRequested (float * output, int bufferSize, int nChannels){
     
     synthMain.fillBufferOfFloats(output, bufferSize, nChannels);
-    
+
 }
 
 
@@ -1666,22 +1641,14 @@ void ofApp::mainCaptureOnOff(){
             index = -1;
             ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
             
-            vector<noteList> _list = scoreMakeOutput();
+            vector< vector<int> > _list = scoreMakeOutput();
             for (int i=0; i<_list.size(); i++) {
-                _list[i].noteArray.clear();
+                _list[i].clear();
             }
             
-            
-            vector<melody> _melody = melodyOutput();
+            vector< vector<int> > _melody = melodyOutput();
             for (int i=0; i<_melody.size(); i++) {
-                _melody[i].melodyLine.clear();
-            }
-            
-            vector<int> _oldNote = oldNoteOutput();
-            for (int i=0; i<_oldNote.size(); i++) {
-                _oldNote[i] = 0;
-                _list[i].noteArray.push_back(0);
-                _melody[i].melodyLine.push_back(0);
+                _melody[i].clear();
             }
             
         } else {
@@ -1689,7 +1656,6 @@ void ofApp::mainCaptureOnOff(){
 //            printScoreMake();
             //                noteIndex = index;
             ofAddListener(*metroOut, this, &ofApp::triggerReceive);
-            bPlayNote = true;
         }
         
         grayThresholdTouch = 120;
@@ -1713,21 +1679,14 @@ void ofApp::mainCaptureOff(){
             index = -1;
             ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
 
-            vector<noteList> _list = scoreMakeOutput();
+            vector< vector<int> > _list = scoreMakeOutput();
             for (int i=0; i<_list.size(); i++) {
-                _list[i].noteArray.clear();
+                _list[i].clear();
             }
             
-            vector<melody> _melody = melodyOutput();
+            vector< vector<int> > _melody = melodyOutput();
             for (int i=0; i<_melody.size(); i++) {
-                _melody[i].melodyLine.clear();
-            }
-            
-            vector<int> _oldNote = oldNoteOutput();
-            for (int i=0; i<_oldNote.size(); i++) {
-                _oldNote[i] = 0;
-                _list[i].noteArray.push_back(0);
-                _melody[i].melodyLine.push_back(0);
+                _melody[i].clear();
             }
             
         }
@@ -1885,7 +1844,6 @@ void ofApp::mouseDragged(int x, int y, int button){
         (_adjustTouchPos.y<screenH)&&(_adjustTouchPos.y>0) ) {
         grayThresholdTouch = 120 + (_adjustTouchPos.y - touchDownDefault);
 
-        cout << ctrl12OnOff << endl;
         ctrl12OnOff = false;
     
         mainCaptureOff();
@@ -1972,18 +1930,6 @@ void ofApp::mouseReleased(int x, int y, int button){
         touchOnOffCheck = false;
     }
     
-    
-    //    if ( (_adjustTouchPos.x<guideWidthStep * 11) && (_adjustTouchPos.x>guideWidthStep * 4) && (_adjustTouchPos.y>ctrlPnY) && (_adjustTouchPos.y<screenH) && bCameraCapturePlay ) {
-    //
-    //        bPlayNote = !bPlayNote;
-    //
-    //        if ( !bPlayNote ) {
-    //            ofRemoveListener(*metroOut, this, &ofApp::triggerReceive);
-    //        } else {
-    //            ofAddListener(*metroOut, this, &ofApp::triggerReceive);
-    //        }
-    //
-    //    }
     
     float _tolerance = 2;
     
@@ -2291,10 +2237,17 @@ void ofApp::scoreMake(){
 
 
 //--------------------------------------------------------------
-vector<noteList> ofApp::scoreMakeOutput(){
+vector< vector<int> > ofApp::scoreMakeOutput(){
     
-    vector<noteList> _noteList;
+    vector< vector<int> > _noteList;
     _noteList.resize(NOTE_SIZE);
+
+    
+    vector<int> _bufferScoreNote;
+    _bufferScoreNote.resize(NOTE_SIZE);
+    for (int i=0; i<NOTE_SIZE; i++){
+        _bufferScoreNote[i] = 0;
+    }
     
 //    vector<int> oldScoreNote;
 //    oldScoreNote.resize(NOTE_SIZE);
@@ -2305,28 +2258,27 @@ vector<noteList> ofApp::scoreMakeOutput(){
 
     
     if (whitePixels.size()>1) {
-    for (int i=0; i<whitePixels.size(); i++) {
-        
-        vector<int> _bitNumber;
-        _bitNumber.resize(NOTE_SIZE);
-        
-        int _idLoop = ((i) % (whitePixels.size()-1))+1;
-        int _pixelNrs = whitePixels[ _idLoop ].pixelN;
-        _bitNumber = convertDecimalToNBase( _pixelNrs, baseSelection, (int)_bitNumber.size());
-        
-        
-        for (int j=0; j<NOTE_SIZE; j++) {
+        for (int i=0; i<whitePixels.size(); i++) {
             
-            if ( abs(_bitNumber[j] - _oldNote[j]) >= _intervalDist ) {
-                _noteList[j].noteArray.push_back(_bitNumber[j]);
-            } else {
-                _noteList[j].noteArray.push_back(-1);
+            vector<int> _bitNumber;
+            _bitNumber.resize(NOTE_SIZE);
+            
+            int _idLoop = ((i) % (whitePixels.size()-1))+1;
+            int _pixelNrs = whitePixels[ _idLoop ].pixelN;
+            _bitNumber = convertDecimalToNBase( _pixelNrs, baseSelection, (int)_bitNumber.size());
+            
+            for (int j=0; j<NOTE_SIZE; j++) {
+                
+                if ( abs(_bitNumber[j] - _bufferScoreNote[j]) >= _intervalDist ) {
+                    _noteList[j].push_back(_bitNumber[j]);
+                } else {
+                    _noteList[j].push_back(-1);
+                }
+                _bufferScoreNote[j] = _bitNumber[j];
+                
             }
-//            oldScoreNote[j] = _bitNumber[j];
             
         }
-        
-    }
     }
     
     return _noteList;
@@ -2392,37 +2344,6 @@ void ofApp::trigScoreNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scor
             _synth.setParameter( tPitch, _scaledNoteE);
         }
     }
-    
-}
-
-
-
-//--------------------------------------------------------------
-void ofApp::checkSameNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scoreCh ){
-    
-    int _idLoop = ((noteIndex) % (whitePixels.size()-1))+1;
-    int _idLoopOld = ((noteIndex + 1) % (whitePixels.size()-1))+1;
-    
-    vector<int> _scoreNote = _vNote;
-    ofxTonicSynth _synth = _synthIn;
-    
-    int _note = _scoreNote[_idLoop];
-    int _noteOld = _scoreNote[_idLoopOld];
-    
-    int _scaledNote = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
-    int _scaledNoteOld = scaleSetting.noteSelector(baseSelection, _scoreCh, _noteOld);
-    
-    string tName = "trigger" + ofToString(_scoreCh);
-    string tPitch = "carrierPitch" + ofToString(_scoreCh);
-    
-    if ( abs(_scaledNoteOld - _scaledNote) >= intervalDist ) {
-        if (_note>0) {
-            int _scaledNoteE = scaleSetting.noteSelector(baseSelection, _scoreCh, _note);
-            _synth.setParameter( tName, 1);
-            _synth.setParameter( tPitch, _scaledNoteE);
-        }
-    }
-    
     
 }
 

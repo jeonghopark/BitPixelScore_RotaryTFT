@@ -26,16 +26,6 @@ struct colorPixels{
 };
 
 
-struct melody{
-    vector<int> melodyLine;
-};
-
-
-struct noteList{
-    vector<int> noteArray;
-};
-
-
 using namespace Tonic;
 
 
@@ -69,7 +59,6 @@ public:
     void audioRequested (float * output, int bufferSize, int nChannels);
 
     
-    bool bPlayNote;
     bool bCameraCapturePlay;
     
     
@@ -145,7 +134,6 @@ public:
     float ctrlPnX, ctrlPnY, ctrlPnW, ctrlPnH;
     int guideWidthStep, guideHeightStep;
     int maxSpeed, minSpeed;
-    void controlGuide();
     
     float ctrlRectS;
     
@@ -188,8 +176,6 @@ public:
     
     // Line Score
     void drawLineScore();
-    
-    vector<int> oldScoreNote;
     
     int lineScoreStepX, lineScoreStepY;
     void scoreMake();
@@ -237,10 +223,7 @@ public:
     ofParameterGroup parameters2;
     ofParameter<float> thresholdF2;
 
-//    vector<melody> melodies;
-
     void printScoreMake();
-    void checkSameNote( vector<int> _vNote, ofxTonicSynth _synthIn, int _scoreCh );
     
     int notePosition(int _note, int _stepLine);
     
@@ -307,9 +290,8 @@ public:
     bool stopOnOn;
     
     
-    vector<noteList> scoreMakeOutput();
-    vector<melody> melodyOutput();
-    vector<int> oldNoteOutput();
+    vector< vector<int> > scoreMakeOutput();
+    vector< vector<int> > melodyOutput();
     
     
 };
