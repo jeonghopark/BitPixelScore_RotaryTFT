@@ -289,7 +289,7 @@ public:
     
     bool stopOnOn;
     
-    
+    vector<int> oldNoteOutput();
     vector< vector<int> > scoreMakeOutput();
     vector< vector<int> > melodyOutput();
     
