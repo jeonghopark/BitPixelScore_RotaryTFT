@@ -21,10 +21,13 @@ void ofApp::setup(){
     uiText.load("vera.ttf", 18);
     
     printer.open("/dev/cu.usbserial");
+//    printer.open("/dev/cu.usbmodem1421");
+
     string _date = ofGetTimestampString();
     printer.println("------------------------");
     printer.println("------------------------");
     printer.println(_date);
+    printer.println("Hochschule Trier, TRIER");
     printer.println("------------------------");
     printer.println(" ");
 
@@ -421,7 +424,7 @@ void ofApp::draw(){
         //        ofDrawLine(_x1, _y1 + 200, _x1, _y1 - 200);
         
         ofTranslate( _x1, ofGetHeight());
-        ofRotateZDeg(-90);
+        ofRotateZ(-90);
         printScoreFbo.draw(0, ofGetHeight() - 512 * 0.5, 384 * 0.5, ofGetWidth() * 1.5);
     }
     ofPopMatrix();
@@ -609,7 +612,7 @@ void ofApp::drawPrintScoreFBO(){
     ofSetColor(255);
     ofDrawRectangle(10, 10, printScoreFbo.getWidth()-20, printScoreFbo.getHeight()-20);
     
-    ofRotateZDeg(90);
+    ofRotateZ(90);
     
     
     ofRectMode(OF_RECT_CENTER);
@@ -1531,7 +1534,7 @@ void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _base, int _size, of
     
     
     ofTranslate( _p );
-    ofRotateZDeg( 45 );
+    ofRotateZ( 45 );
     
     ofSetLineWidth( 3 );
     

@@ -6,7 +6,7 @@ endif
 
 # make sure the the OF_ROOT location is defined
 ifndef OF_ROOT
-    OF_ROOT=../../..
+    OF_ROOT=../../../../openFrameworks/../openFrameworks/../openFrameworks/../of_v0.9.4_RC1_osx_release/../of_v0.9.4_RC1_osx_release/../of_v0.9.4_RC1_osx_release/../of_v0.9.4_RC1_osx_release
 endif
 
 # call the project makefile!
