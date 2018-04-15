@@ -9,6 +9,7 @@
 
 #include "ScaleSetting.h"
 
+
 #define NOTE_SIZE 7
 
 struct blackWhitePixels{
@@ -293,7 +294,7 @@ public:
     vector< vector<int> > scoreMakeOutput();
     vector< vector<int> > melodyOutput();
     
-    
+
 };
 
 

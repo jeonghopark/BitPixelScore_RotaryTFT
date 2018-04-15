@@ -11,7 +11,8 @@ int octaveScaleFactor[NOTE_SIZE] = {60, 86, 36, 48, 72, 36, 36};
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    
+
+
     ofSetFrameRate(60);
     ofEnableAntiAliasing();
     ofSetCircleResolution(16);
@@ -20,8 +21,8 @@ void ofApp::setup(){
     printText.load("vera.ttf", 28);
     uiText.load("vera.ttf", 18);
     
-    printer.open("/dev/cu.usbserial");
-//    printer.open("/dev/cu.usbmodem1421");
+//    printer.open("/dev/cu.usbserial");
+    printer.open("/dev/cu.usbmodem1421");
 
     string _date = ofGetTimestampString();
     printer.println("------------------------");
@@ -46,7 +47,7 @@ void ofApp::setup(){
     guiSetting();
     
     
-    cam.setDeviceID(0);
+    cam.setDeviceID(1);
     cam.setup( 800, 600 );
     cam.setDesiredFrameRate(30);
     screenW = 600;
@@ -188,7 +189,7 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    
+
     cam.update();
     
     if(cam.isFrameNew()) {
@@ -404,7 +405,7 @@ void ofApp::triggerReceive(float & metro){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    
+
     ofPushMatrix();
     
     float _stepLine = 15;
@@ -1724,8 +1725,9 @@ void ofApp::keyReleased(int key){
     } else if (key == 'e') {
         
         printer.close();
-        printer.open("/dev/cu.usbserial");
-        
+//        printer.open("/dev/cu.usbserial");
+        printer.open("/dev/cu.usbmodem1421");
+
     } else if (key == 'i') {
         
         printCamView();
@@ -1740,8 +1742,10 @@ void ofApp::keyReleased(int key){
         
     } else if (key == 'r') {
         
+        printer.close();
         printer.reset();
-        printer.open("/dev/cu.usbserial");
+//        printer.open("/dev/cu.usbserial");
+        printer.open("/dev/cu.usbmodem1421");
         string _date = ofGetTimestampString();
         printer.println("@RESET");
         printer.println("------------------------");
@@ -2068,11 +2072,11 @@ void ofApp::printScore(){
     printer.println(" ");
     ofPixels _p;
     printScoreFbo.readToPixels(_p);
-    ofImage _image;
-    float _w = printScoreFbo.getWidth();
-    float _h = printScoreFbo.getHeight();
-    _image.setFromPixels(_p.getData(), _w, _h, OF_IMAGE_COLOR_ALPHA);
-    printer.print(_image, 100);
+//    ofImage _image;
+//    float _w = printScoreFbo.getWidth();
+//    float _h = printScoreFbo.getHeight();
+//    _image.setFromPixels(_p.getData(), _w, _h, OF_IMAGE_COLOR_ALPHA);
+    printer.print(_p, 250);
     
 }
 
