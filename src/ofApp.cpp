@@ -12,7 +12,6 @@ int octaveScaleFactor[NOTE_SIZE] = {60, 86, 36, 48, 72, 36, 36};
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-
     ofSetFrameRate(60);
     ofEnableAntiAliasing();
     ofSetCircleResolution(16);
@@ -28,7 +27,7 @@ void ofApp::setup(){
     printer.println("------------------------");
     printer.println("------------------------");
     printer.println(_date);
-    printer.println("Hochschule Trier, TRIER");
+    printer.println("Nokta Festival, Opole Glowne");
     printer.println("------------------------");
     printer.println(" ");
 
@@ -425,7 +424,7 @@ void ofApp::draw(){
         //        ofDrawLine(_x1, _y1 + 200, _x1, _y1 - 200);
         
         ofTranslate( _x1, ofGetHeight());
-        ofRotateZ(-90);
+        ofRotateZDeg(-90);
         printScoreFbo.draw(0, ofGetHeight() - 512 * 0.5, 384 * 0.5, ofGetWidth() * 1.5);
     }
     ofPopMatrix();
@@ -566,7 +565,8 @@ void ofApp::draw(){
         ofPopStyle();
 
     }
-    
+
+
     if ( ctrl12OnOff ) {
         
         ofPushStyle();
@@ -613,7 +613,7 @@ void ofApp::drawPrintScoreFBO(){
     ofSetColor(255);
     ofDrawRectangle(10, 10, printScoreFbo.getWidth()-20, printScoreFbo.getHeight()-20);
     
-    ofRotateZ(90);
+    ofRotateZDeg(90);
     
     
     ofRectMode(OF_RECT_CENTER);
@@ -1535,7 +1535,7 @@ void ofApp::drawShapeCeterLineColorRotation(ofPoint _p, int _base, int _size, of
     
     
     ofTranslate( _p );
-    ofRotateZ( 45 );
+    ofRotateZDeg( 45 );
     
     ofSetLineWidth( 3 );
     
