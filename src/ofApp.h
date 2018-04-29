@@ -9,6 +9,8 @@
 
 #include "ScaleSetting.h"
 
+#include "RotaryEncoder.hpp"
+
 
 #define NOTE_SIZE 7
 
@@ -58,6 +60,9 @@ public:
     void gotMessage(ofMessage msg);
     
     void audioRequested (float * output, int bufferSize, int nChannels);
+
+
+    RotaryEncoder rotaryEncoder;
 
     
     bool bCameraCapturePlay;

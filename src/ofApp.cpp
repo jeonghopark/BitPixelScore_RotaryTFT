@@ -19,7 +19,11 @@ void ofApp::setup(){
     
     printText.load("vera.ttf", 28);
     uiText.load("vera.ttf", 18);
+
+
+    rotaryEncoder.setup("/dev/cu.usbmodem1411");
     
+
 //    printer.open("/dev/cu.usbserial");
     printer.open("/dev/cu.usbmodem1421");
 
@@ -44,7 +48,7 @@ void ofApp::setup(){
     
     
     guiSetting();
-    
+
     
     cam.setDeviceID(1);
     cam.setup( 800, 600 );
@@ -187,7 +191,8 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    
+
+    rotaryEncoder.update();
 
     cam.update();
     
